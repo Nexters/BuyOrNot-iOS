@@ -14,7 +14,7 @@ let project = Project(
             name: "App",
             destinations: .iOS,
             product: .app,
-            bundleId: "com.test.tuist",
+            bundleId: "com.sseotdabwa.buyornot",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .extendingDefault(
                 with: [

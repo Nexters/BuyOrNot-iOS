@@ -14,7 +14,7 @@ let project = Project(
             name: "Login",
             destinations: .iOS,
             product: .staticFramework,
-            bundleId: "com.test.tuist.login",
+            bundleId: "com.sseotdabwa.buyornot.login",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
             sources: ["Targets/Login/Sources/**"],
