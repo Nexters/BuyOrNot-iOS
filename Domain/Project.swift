@@ -14,7 +14,7 @@ let project = Project(
             name: "Domain",
             destinations: .iOS,
             product: .staticFramework,
-            bundleId: "com.test.tuist.domain",
+            bundleId: "com.sseotdabwa.buyornot.domain",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
             sources: ["Targets/Domain/Sources/**"],
