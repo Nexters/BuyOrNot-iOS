@@ -14,11 +14,11 @@ let project = Project(
             name: "DesignSystem",
             destinations: .iOS,
             product: .staticFramework,
-            bundleId: "com.test.tuist.designsystem",
+            bundleId: "com.sseotdabwa.buyornot.designsystem",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["Targets/DesignSystem/Sources/**"],
-            resources: ["Targets/DesignSystem/Resources/**"],
+            sources: ["DesignSystem/Sources/**"],
+            resources: ["DesignSystem/Resources/**"],
             dependencies: [
                 .project(target: "Core", path: .relativeToRoot("Core")),
             ]
