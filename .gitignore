@@ -124,5 +124,15 @@ Packages
 xcuserdata
 *.xcodeproj
 
+### Tuist ###
+# Tuist generate file and cache
+Tuist/Generated/
+*.xcodeproj/
+**/*.xcodeproj/
+**/*.xcworkspace/
+**/DerivedData/
+Tuist/.cache/
+Tuist/.tuist-cache/
+Tuist/Dependencies/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,swift,swiftpackagemanager
