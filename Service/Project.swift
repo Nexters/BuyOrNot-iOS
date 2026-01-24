@@ -17,12 +17,13 @@ let project = Project(
             bundleId: "com.sseotdabwa.buyornot.service",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["Targets/Service/Sources/**"],
-            resources: ["Targets/Service/Resources/**"],
+            sources: ["Service/Sources/**"],
+            resources: ["Service/Resources/**"],
             dependencies: [
+                .project(target: "Domain", path: .relativeToRoot("Domain")),
                 .project(target: "Core", path: .relativeToRoot("Core"))
             ]
-        )
+        ),
     ],
     schemes: [
         .scheme(

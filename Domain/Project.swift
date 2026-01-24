@@ -17,10 +17,9 @@ let project = Project(
             bundleId: "com.sseotdabwa.buyornot.domain",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["Targets/Domain/Sources/**"],
-            resources: ["Targets/Domain/Resources/**"],
+            sources: ["Domain/Sources/**"],
+            resources: ["Domain/Resources/**"],
             dependencies: [
-                .project(target: "Service", path: .relativeToRoot("Service")),
                 .project(target: "Core", path: .relativeToRoot("Core")),
             ]
         )

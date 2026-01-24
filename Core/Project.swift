@@ -17,8 +17,8 @@ let project = Project(
             bundleId: "com.sseotdabwa.buyornot.core",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["Targets/Core/Sources/**"],
-            resources: ["Targets/Core/Resources/**"],
+            sources: ["Core/Sources/**"],
+            resources: ["Core/Resources/**"],
         )
     ],
     schemes: [
