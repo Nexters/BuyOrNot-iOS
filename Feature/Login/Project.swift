@@ -17,8 +17,8 @@ let project = Project(
             bundleId: "com.sseotdabwa.buyornot.login",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["Targets/Login/Sources/**"],
-            resources: ["Targets/Login/Resources/**"],
+            sources: ["Login/Sources/**"],
+            resources: ["Login/Resources/**"],
             dependencies: [
                 .project(target: "Core", path: .relativeToRoot("Core")),
                 .project(target: "Domain", path: .relativeToRoot("Domain")),
