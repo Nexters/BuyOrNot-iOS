@@ -7,8 +7,6 @@
 
 import ProjectDescription
 
-private let bundleID = "com.sseotdabwa.buyornot"
-
 public protocol ModuleTarget: ModuleName {
     func target(
         dependencies: [TargetDependency],
@@ -18,6 +16,14 @@ public protocol ModuleTarget: ModuleName {
 }
 
 public extension ModuleTarget {
+    private var bundleId: String {
+        var result = ProjectEnvironment.bundleIdPrefix
+        if product == .staticFramework {
+            result += ".\(moduleName.lowercased())"
+        }
+        return result
+    }
+    
     func target(
         dependencies: [TargetDependency],
         infoPlist: InfoPlist
@@ -26,8 +32,8 @@ public extension ModuleTarget {
             name: moduleName,
             destinations: .iOS,
             product: product,
-            bundleId: "\(bundleID)\(product == .staticFramework ? "." : "")\(moduleName.lowercased())",
-            deploymentTargets: .iOS("18.0"),
+            bundleId: bundleId,
+            deploymentTargets: ProjectEnvironment.deploymentTarget,
             infoPlist: infoPlist,
             sources: ["\(moduleName)/Sources/**"],
             resources: ["\(moduleName)/Resources/**"],
