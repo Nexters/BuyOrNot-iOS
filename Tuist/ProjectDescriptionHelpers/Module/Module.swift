@@ -25,7 +25,7 @@ public enum Module: String, CaseIterable {
     case service = "Service"
     
     /// 각 기능 모듈 (Feature 기반 분리)
-    enum Feature: String, CaseIterable {
+    public enum Feature: String, CaseIterable {
         /// 로그인
         case login = "Login"
     }

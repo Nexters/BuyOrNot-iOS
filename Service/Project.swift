@@ -6,30 +6,11 @@
 //
 
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let project = Project(
-    name: "Service",
-    targets: [
-        .target(
-            name: "Service",
-            destinations: .iOS,
-            product: .staticFramework,
-            bundleId: "com.sseotdabwa.buyornot.service",
-            deploymentTargets: .iOS("18.0"),
-            infoPlist: .default,
-            sources: ["Service/Sources/**"],
-            resources: ["Service/Resources/**"],
-            dependencies: [
-                .project(target: "Domain", path: .relativeToRoot("Domain")),
-                .project(target: "Core", path: .relativeToRoot("Core"))
-            ]
-        ),
-    ],
-    schemes: [
-        .scheme(
-            name: "Service",
-            shared: true,
-            buildAction: .buildAction(targets: ["Service"]),
-        )
+let project = Module.service.project(
+    dependencies: [
+        Module.domain.toDependency,
+        Module.core.toDependency,
     ]
 )

@@ -6,42 +6,24 @@
 //
 
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let project = Project(
-    name: "App",
-    targets: [
-        .target(
-            name: "App",
-            destinations: .iOS,
-            product: .app,
-            bundleId: "com.sseotdabwa.buyornot",
-            deploymentTargets: .iOS("18.0"),
-            infoPlist: .extendingDefault(
-                with: [
-                    "UISupportedInterfaceOrientations": [
-                        "UIInterfaceOrientationPortrait",
-                    ],
-                    "UISupportedInterfaceOrientations~ipad": [
-                        "UIInterfaceOrientationPortrait",
-                    ],
-                    "UILaunchScreen": .dictionary(
-                        ["UILaunchScreen": .dictionary([:])]
-                    )
-                ]
-            ),
-            sources: ["App/Sources/**"],
-            resources: ["App/Resources/**"],
-            dependencies: [
-                .project(target: "Login", path: .relativeToRoot("Feature/Login"), status: .required, condition: nil),
-                .external(name: "Swinject"),
-            ]
-        )
+let project = Module.app.project(
+    dependencies: [
+        Module.Feature.login.toDependency,
+        .external(name: "Swinject"),
     ],
-    schemes: [
-        .scheme(
-            name: "App",
-            shared: true,
-            buildAction: .buildAction(targets: ["App"]),
-        )
-    ]
+    infoPlist: .extendingDefault(
+        with: [
+            "UISupportedInterfaceOrientations": [
+                "UIInterfaceOrientationPortrait",
+            ],
+            "UISupportedInterfaceOrientations~ipad": [
+                "UIInterfaceOrientationPortrait",
+            ],
+            "UILaunchScreen": .dictionary(
+                ["UILaunchScreen": .dictionary([:])]
+            )
+        ]
+    )
 )
