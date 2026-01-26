@@ -7,12 +7,14 @@
 
 import ProjectDescription
 
-protocol ModuleProject: ModuleName, ModuleScheme, ModuleTarget, ModuleDependency {
+public protocol ModuleProject: ModuleScheme, ModuleTarget, ModuleDependency {
     func project(dependencies: [TargetDependency]) -> Project
 }
 
 extension ModuleProject {
-    func project(dependencies: [TargetDependency]) -> Project {
+    public func project(
+        dependencies: [TargetDependency] = []
+    ) -> Project {
         .init(
             name: moduleName,
             targets: [
@@ -26,3 +28,4 @@ extension ModuleProject {
         )
     }
 }
+

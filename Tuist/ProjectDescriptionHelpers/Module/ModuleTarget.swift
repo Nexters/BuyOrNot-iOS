@@ -9,12 +9,12 @@ import ProjectDescription
 
 private let bundleID = "com.sseotdabwa.buyornot"
 
-protocol ModuleTarget: ModuleName {
+public protocol ModuleTarget: ModuleName {
     func target(dependencies: [TargetDependency]) -> Target
     var product: Product { get }
 }
 
-extension ModuleTarget {
+public extension ModuleTarget {
     func target(dependencies: [TargetDependency]) -> Target {
         .target(
             name: moduleName,
