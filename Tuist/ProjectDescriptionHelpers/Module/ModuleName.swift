@@ -7,7 +7,7 @@
 
 import ProjectDescription
 
-protocol ModuleName {
+public protocol ModuleName {
     var moduleName: String { get }
     var projectPath: Path { get }
 }

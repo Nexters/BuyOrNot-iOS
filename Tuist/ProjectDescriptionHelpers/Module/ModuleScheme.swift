@@ -7,12 +7,12 @@
 
 import ProjectDescription
 
-protocol ModuleScheme: ModuleName {
+public protocol ModuleScheme: ModuleName {
     var scheme: Scheme { get }
 }
 
 extension ModuleScheme {
-    var scheme: Scheme {
+    public var scheme: Scheme {
         .scheme(
             name: moduleName,
             shared: true,

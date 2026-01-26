@@ -7,12 +7,12 @@
 
 import ProjectDescription
 
-protocol ModuleDependency: ModuleName {
+public protocol ModuleDependency: ModuleName {
     var toDependency: TargetDependency { get }
 }
 
 extension ModuleDependency {
-    var toDependency: TargetDependency {
+    public var toDependency: TargetDependency {
         .project(
             target: moduleName,
             path: projectPath,
