@@ -8,18 +8,23 @@
 import ProjectDescription
 
 public protocol ModuleProject: ModuleScheme, ModuleTarget, ModuleDependency {
-    func project(dependencies: [TargetDependency]) -> Project
+    func project(
+        dependencies: [TargetDependency],
+        infoPlist: InfoPlist
+    ) -> Project
 }
 
 extension ModuleProject {
     public func project(
-        dependencies: [TargetDependency] = []
+        dependencies: [TargetDependency] = [],
+        infoPlist: InfoPlist = .default
     ) -> Project {
         .init(
             name: moduleName,
             targets: [
                 target(
-                    dependencies: dependencies
+                    dependencies: dependencies,
+                    infoPlist: infoPlist
                 )
             ],
             schemes: [

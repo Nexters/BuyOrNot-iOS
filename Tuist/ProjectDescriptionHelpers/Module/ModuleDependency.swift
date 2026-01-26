@@ -15,7 +15,7 @@ extension ModuleDependency {
     public var toDependency: TargetDependency {
         .project(
             target: moduleName,
-            path: projectPath,
+            path: .relativeToRoot(projectPath.pathString),
         )
     }
 }

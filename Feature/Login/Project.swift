@@ -6,31 +6,12 @@
 //
 
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let project = Project(
-    name: "Login",
-    targets: [
-        .target(
-            name: "Login",
-            destinations: .iOS,
-            product: .staticFramework,
-            bundleId: "com.sseotdabwa.buyornot.login",
-            deploymentTargets: .iOS("18.0"),
-            infoPlist: .default,
-            sources: ["Login/Sources/**"],
-            resources: ["Login/Resources/**"],
-            dependencies: [
-                .project(target: "Core", path: .relativeToRoot("Core")),
-                .project(target: "Domain", path: .relativeToRoot("Domain")),
-                .project(target: "DesignSystem", path: .relativeToRoot("DesignSystem")),
-            ]
-        )
-    ],
-    schemes: [
-        .scheme(
-            name: "Login",
-            shared: true,
-            buildAction: .buildAction(targets: ["Login"]),
-        )
+let project = Module.Feature.login.project(
+    dependencies: [
+        Module.core.toDependency,
+        Module.domain.toDependency,
+        Module.designSystem.toDependency,
     ]
 )
