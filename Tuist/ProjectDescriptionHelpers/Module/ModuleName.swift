@@ -1,5 +1,5 @@
 //
-//  ModuleProject.swift
+//  ModuleName.swift
 //  Manifests
 //
 //  Created by 문종식 on 1/25/26.
