@@ -6,15 +6,10 @@
 //
 
 import ProjectDescription
+import ProjectDescriptionHelpers
 
 let workspace = Workspace(
     name: "BuyOrNot",
-    projects: [
-        "App",
-        "Core",
-        "DesignSystem",
-        "Domain",
-        "Service",
-        "Feature/Login",
-    ],
+    projects: Module.projects,
 )
+
