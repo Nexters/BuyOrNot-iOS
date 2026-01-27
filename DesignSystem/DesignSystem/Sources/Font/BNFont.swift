@@ -31,7 +31,7 @@ public struct BNFont {
     public static func registerFont(fontWeight: BNFontWeight) {
         guard let fontURL = Bundle.designSystem.url(
             forResource: "\(fontName)-\(fontWeight.rawValue)",
-            withExtension: "ttf",
+            withExtension: "otf",
         ) else {
             return
         }
