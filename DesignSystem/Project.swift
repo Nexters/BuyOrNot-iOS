@@ -11,5 +11,17 @@ import ProjectDescriptionHelpers
 let project = Module.designSystem.project(
     dependencies: [
         Module.core.toDependency
-    ]
+    ],
+    infoPlist: .extendingDefault(
+        with: [
+            "UIAppFonts" : .array(
+                [
+                    .string("Pretendard-Bold.otf"),
+                    .string("Pretendard-SemiBold.otf"),
+                    .string("Pretendard-Regular.otf"),
+                    .string("Pretendard-Medium.otf"),
+                ]
+            ),
+        ]
+    )
 )
