@@ -12,17 +12,37 @@ public struct FloatingButton: View {
     
     public var body: some View {
         ZStack {
-            if state == .open {
-                Color(BNColor(.dim).uiColor)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        self.state = .close
-                    }
-            }
+            Color(state == .open ? BNColor(.dim).uiColor : .clear)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    self.state = .close
+                }
+                .animation(.linear(duration: 0.2), value: state)
             HStack {
                 Spacer()
-                VStack(alignment: .trailing) {
+                VStack(
+                    alignment: .trailing,
+                    spacing: 10,
+                ) {
                     Spacer()
+                    if state == .open {
+                        FloatingContextMenu(
+                            menuButtons: [
+                                FloatingContextMenuButton(
+                                    icon: .vote,
+                                    text: "투표 등록",
+                                ) {
+                                    // TODO: (종식, 20260128) - 작업 필요
+                                },
+                                FloatingContextMenuButton(
+                                    icon: .product,
+                                    text: "상품 리뷰",
+                                ) {
+                                    // TODO: (종식, 20260128) - 작업 필요
+                                },
+                            ]
+                        )
+                    }
                     FloatingCircleButton(
                         state: $state
                     )
@@ -36,5 +56,5 @@ public struct FloatingButton: View {
 
 
 #Preview {
-    FloatingButton(state: .close)
+    FloatingButton(state: .open)
 }
