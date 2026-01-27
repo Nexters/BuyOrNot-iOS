@@ -37,16 +37,15 @@ struct FloatingCircleButton: View {
             .foregroundStyle(
                 BNColor(state == .open ? .gray800 : .gray0).color
             )
+            .animation(.linear(duration: 0.2), value: state)
         }
         .frame(width: 60, height: 60)
         .onTapGesture {
-            withAnimation(.linear(duration: 0.2)) {
-                switch (state) {
-                case .open:
-                    state = .close
-                case .close:
-                    state = .open
-                }
+            switch (state) {
+            case .open:
+                state = .close
+            case .close:
+                state = .open
             }
         }
     }
