@@ -27,9 +27,12 @@ public enum DesignSystemAsset: Sendable {
     public static let green200 = DesignSystemColors(name: "green200")
     public static let red100 = DesignSystemColors(name: "red100")
   }
-  public enum Gray {
+  public enum Color {
   public static let black = DesignSystemColors(name: "black")
-    public static let gray0 = DesignSystemColors(name: "gray0")
+    public static let dim = DesignSystemColors(name: "dim")
+  }
+  public enum Gray {
+  public static let gray0 = DesignSystemColors(name: "gray0")
     public static let gray100 = DesignSystemColors(name: "gray100")
     public static let gray1000 = DesignSystemColors(name: "gray1000")
     public static let gray200 = DesignSystemColors(name: "gray200")
@@ -42,8 +45,31 @@ public enum DesignSystemAsset: Sendable {
     public static let gray800 = DesignSystemColors(name: "gray800")
     public static let gray900 = DesignSystemColors(name: "gray900")
   }
+  public enum Icon {
+  public static let close = DesignSystemImages(name: "close")
+    public static let completed = DesignSystemImages(name: "completed")
+    public static let `left` = DesignSystemImages(name: "left")
+    public static let my = DesignSystemImages(name: "my")
+    public static let notification = DesignSystemImages(name: "notification")
+    public static let notificationFill = DesignSystemImages(name: "notification_fill")
+    public static let plus = DesignSystemImages(name: "plus")
+    public static let product = DesignSystemImages(name: "product")
+    public static let `right` = DesignSystemImages(name: "right")
+    public static let vote = DesignSystemImages(name: "vote")
+    public static let voteCheck = DesignSystemImages(name: "vote_check")
+  }
   public enum Image {
-  public static let loginBackground = DesignSystemImages(name: "login-background")
+  public static let loginBackground = DesignSystemImages(name: "login_background")
+    public static let logo = DesignSystemImages(name: "logo")
+  }
+  public enum Profile {
+  public static let a = DesignSystemImages(name: "a")
+    public static let b = DesignSystemImages(name: "b")
+    public static let c = DesignSystemImages(name: "c")
+    public static let d = DesignSystemImages(name: "d")
+    public static let e = DesignSystemImages(name: "e")
+    public static let f = DesignSystemImages(name: "f")
+    public static let g = DesignSystemImages(name: "g")
   }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name
