@@ -7,7 +7,6 @@
 
 public enum BNColorType: String {
     case black
-    case dim
     
     /// Gray
     case gray0

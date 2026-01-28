@@ -23,7 +23,7 @@ public struct BNImageSize {
     }
     
     public enum Icon {
-        static let size = BNImageSize(20)
+        public static let size = BNImageSize(20)
     }
     
     public enum Profile {
