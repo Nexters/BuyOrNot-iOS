@@ -8,40 +8,36 @@
 import SwiftUI
 
 public struct BNColor {
-    private let type: BNColorType?
-    private let hex: String?
-    
-    public var color: Color {
-        if let type = self.type {
-            return Color("\(type.name)", bundle: .module)
-        } else if let hex = self.hex {
-            var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-            hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-
-            var rgb: UInt64 = 0
-
-            Scanner(string: hexSanitized).scanHexInt64(&rgb)
-
-            let red = Double((rgb & 0xFF0000) >> 16) / 255.0
-            let green = Double((rgb & 0x00FF00) >> 8) / 255.0
-            let blue = Double(rgb & 0x0000FF) / 255.0
-
-            return Color(red: red, green: green, blue: blue)
-        }
-        return .clear
-    }
+    private let _color: Color
     
     public var uiColor: UIColor {
-        UIColor(color)
+        UIColor(_color)
+    }
+    
+    public var color: Color {
+        _color
     }
     
     public init(_ type: BNColorType) {
-        self.type = type
-        self.hex = nil
+        self._color = Color("\(type.name)", bundle: .module)
+    }
+    
+    public init(_ color: Color) {
+        self._color = color
     }
     
     public init(hex: String) {
-        self.type = nil
-        self.hex = hex
+        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+
+        var rgb: UInt64 = 0
+
+        Scanner(string: hexSanitized).scanHexInt64(&rgb)
+
+        let red = Double((rgb & 0xFF0000) >> 16) / 255.0
+        let green = Double((rgb & 0x00FF00) >> 8) / 255.0
+        let blue = Double(rgb & 0x0000FF) / 255.0
+
+        self._color = Color(red: red, green: green, blue: blue)
     }
 }
