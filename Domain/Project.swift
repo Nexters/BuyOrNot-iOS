@@ -6,29 +6,10 @@
 //
 
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let project = Project(
-    name: "Domain",
-    targets: [
-        .target(
-            name: "Domain",
-            destinations: .iOS,
-            product: .staticFramework,
-            bundleId: "com.sseotdabwa.buyornot.domain",
-            deploymentTargets: .iOS("18.0"),
-            infoPlist: .default,
-            sources: ["Domain/Sources/**"],
-            resources: ["Domain/Resources/**"],
-            dependencies: [
-                .project(target: "Core", path: .relativeToRoot("Core")),
-            ]
-        )
-    ],
-    schemes: [
-        .scheme(
-            name: "Domain",
-            shared: true,
-            buildAction: .buildAction(targets: ["Domain"]),
-        )
+let project = Module.domain.project(
+    dependencies: [
+        Module.core.toDependency
     ]
 )
