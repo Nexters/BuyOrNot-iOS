@@ -6,29 +6,22 @@
 //
 
 import ProjectDescription
+import ProjectDescriptionHelpers
 
-let project = Project(
-    name: "DesignSystem",
-    targets: [
-        .target(
-            name: "DesignSystem",
-            destinations: .iOS,
-            product: .staticFramework,
-            bundleId: "com.sseotdabwa.buyornot.designsystem",
-            deploymentTargets: .iOS("18.0"),
-            infoPlist: .default,
-            sources: ["DesignSystem/Sources/**"],
-            resources: ["DesignSystem/Resources/**"],
-            dependencies: [
-                .project(target: "Core", path: .relativeToRoot("Core")),
-            ]
-        )
+let project = Module.designSystem.project(
+    dependencies: [
+        Module.core.toDependency
     ],
-    schemes: [
-        .scheme(
-            name: "DesignSystem",
-            shared: true,
-            buildAction: .buildAction(targets: ["DesignSystem"]),
-        )
-    ]
+    infoPlist: .extendingDefault(
+        with: [
+            "UIAppFonts" : .array(
+                [
+                    .string("Pretendard-Bold.otf"),
+                    .string("Pretendard-SemiBold.otf"),
+                    .string("Pretendard-Regular.otf"),
+                    .string("Pretendard-Medium.otf"),
+                ]
+            ),
+        ]
+    )
 )
