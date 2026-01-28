@@ -8,6 +8,12 @@
 import SwiftUI
 
 public struct BNColor {
+    public enum Source {
+        case hex(String)
+        case color(Color)
+        case type(BNColorType)
+    }
+    
     private let _color: Color
     
     public var uiColor: UIColor {
@@ -18,26 +24,25 @@ public struct BNColor {
         _color
     }
     
-    public init(_ type: BNColorType) {
-        self._color = Color("\(type.name)", bundle: .module)
-    }
-    
-    public init(_ color: Color) {
-        self._color = color
-    }
-    
-    public init(hex: String) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+    public init(_ source: BNColor.Source) {
+        switch source {
+        case .hex(let hexString):
+            var hexSanitized = hexString.trimmingCharacters(in: .whitespacesAndNewlines)
+            hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
 
-        var rgb: UInt64 = 0
+            var rgb: UInt64 = 0
 
-        Scanner(string: hexSanitized).scanHexInt64(&rgb)
+            Scanner(string: hexSanitized).scanHexInt64(&rgb)
 
-        let red = Double((rgb & 0xFF0000) >> 16) / 255.0
-        let green = Double((rgb & 0x00FF00) >> 8) / 255.0
-        let blue = Double(rgb & 0x0000FF) / 255.0
+            let red = Double((rgb & 0xFF0000) >> 16) / 255.0
+            let green = Double((rgb & 0x00FF00) >> 8) / 255.0
+            let blue = Double(rgb & 0x0000FF) / 255.0
 
-        self._color = Color(red: red, green: green, blue: blue)
+            self._color = Color(red: red, green: green, blue: blue)
+        case .color(let color):
+            self._color = color
+        case .type(let type):
+            self._color = Color("\(type.name)", bundle: .module)
+        }
     }
 }
