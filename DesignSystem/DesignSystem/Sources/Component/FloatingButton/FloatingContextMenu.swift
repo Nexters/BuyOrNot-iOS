@@ -8,11 +8,11 @@
 import SwiftUI
 
 public struct FloatingContextMenu: View {
-    init(menuButtons: [FloatingContextMenuButton]) {
+    public init(menuButtons: [FloatingContextMenuButton]) {
         self.menuButtons = menuButtons
     }
     
-    let menuButtons: [FloatingContextMenuButton]
+    private let menuButtons: [FloatingContextMenuButton]
     
     public var body: some View {
         VStack(spacing: 0) {

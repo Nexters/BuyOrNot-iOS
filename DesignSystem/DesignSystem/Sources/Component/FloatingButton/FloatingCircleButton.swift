@@ -1,5 +1,5 @@
 //
-//  FloatingPrimaryButton.swift
+//  FloatingCircleButton.swift
 //  DesignSystem
 //
 //  Created by 문종식 on 1/28/26.

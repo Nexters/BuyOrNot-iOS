@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-typealias BNImage = Image
+public typealias BNImage = Image
 
 public extension BNImage {
     init(_ asset: BNImageAsset) {
