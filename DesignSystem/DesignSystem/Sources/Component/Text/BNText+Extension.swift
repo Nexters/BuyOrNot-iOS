@@ -8,41 +8,15 @@
 import SwiftUI
 
 extension BNText {
-    /// BNText 전용 Style Modifier - BNColor
+    /// BNText 전용 Style Modifier
     public func style(
         _ style: BNFontStyle,
-        _ color: BNColorType
+        _ color: BNColor.Source
     ) -> some View {
         self.modifier(
             BNTextStyle(
                 style: style,
                 color: BNColor(color)
-            )
-        )
-    }
-    
-    /// BNText 전용 Style Modifier - Color
-    public func style(
-        _ style: BNFontStyle,
-        _ color: Color
-    ) -> some View {
-        self.modifier(
-            BNTextStyle(
-                style: style,
-                color: BNColor(color)
-            )
-        )
-    }
-    
-    /// BNText 전용 Style Modifier - Hex String Color
-    public func style(
-        _ style: BNFontStyle,
-        _ color: String
-    ) -> some View {
-        self.modifier(
-            BNTextStyle(
-                style: style,
-                color: BNColor(hex: color)
             )
         )
     }

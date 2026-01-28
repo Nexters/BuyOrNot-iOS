@@ -7,22 +7,37 @@
 
 import Foundation
 
-enum BNImageSize {
-    enum Icon {
-        static let size: CGFloat = 20
+public struct BNImageSize {
+    public let width: CGFloat?
+    public let height: CGFloat?
+    
+    public init(_ size: CGFloat) {
+        self.width = size
+        self.height = size
     }
     
-    enum Profile {
+    
+    public init(width: CGFloat?, height: CGFloat?) {
+        self.width = width
+        self.height = height
+    }
+    
+    public enum Icon {
+        static let size = BNImageSize(20)
+    }
+    
+    public enum Profile {
         case small
         case medium
         case large
         
-        var size: CGFloat {
-            switch self {
+        public var size: BNImageSize {
+            let value: CGFloat = switch self {
             case .small:  18
             case .medium: 32
             case .large:  42
             }
+            return BNImageSize(value)
         }
     }
 }
