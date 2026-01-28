@@ -8,10 +8,10 @@
 import SwiftUI
 
 public struct BNTextStyle: ViewModifier {
-    public let style: BNFontStyle
-    public let color: BNColorType
+    private let style: BNFontStyle
+    private let color: BNColor
     
-    public init(style: BNFontStyle, color: BNColorType) {
+    public init(style: BNFontStyle, color: BNColor) {
         self.style = style
         self.color = color
     }
@@ -19,6 +19,6 @@ public struct BNTextStyle: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .font(BNFont.font(style))
-            .foregroundStyle(BNColor(color).color)
+            .foregroundStyle(color.color)
     }
 }
