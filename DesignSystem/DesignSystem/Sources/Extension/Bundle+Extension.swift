@@ -11,7 +11,7 @@ private class DesignSystemBundle { }
 private let designSystemBundleIdentifier: String = Bundle(for: DesignSystemBundle.self).bundleIdentifier ?? "com.sseotdabwa.buyornot.designsystem"
 
 public extension Bundle {
-    static var designSystem: Bundle  {
-        Bundle(identifier: designSystemBundleIdentifier) ?? .main
+    static var designSystem: Bundle {
+        return .module
     }
 }
