@@ -23,7 +23,8 @@ let project = Module.app.project(
             ],
             "UILaunchScreen": .dictionary(
                 ["UILaunchScreen": .dictionary([:])]
-            )
+            ),
+            "CFBundleDisplayName" : "살까말까",
         ]
     )
 )
