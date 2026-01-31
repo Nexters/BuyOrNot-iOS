@@ -29,7 +29,6 @@ public enum DesignSystemAsset: Sendable {
   }
   public enum Color {
   public static let black = DesignSystemColors(name: "black")
-    public static let dim = DesignSystemColors(name: "dim")
   }
   public enum Gray {
   public static let gray0 = DesignSystemColors(name: "gray0")
@@ -61,15 +60,6 @@ public enum DesignSystemAsset: Sendable {
   public enum Image {
   public static let loginBackground = DesignSystemImages(name: "login_background")
     public static let logo = DesignSystemImages(name: "logo")
-  }
-  public enum Profile {
-  public static let a = DesignSystemImages(name: "a")
-    public static let b = DesignSystemImages(name: "b")
-    public static let c = DesignSystemImages(name: "c")
-    public static let d = DesignSystemImages(name: "d")
-    public static let e = DesignSystemImages(name: "e")
-    public static let f = DesignSystemImages(name: "f")
-    public static let g = DesignSystemImages(name: "g")
   }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name
