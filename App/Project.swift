@@ -26,5 +26,6 @@ let project = Module.app.project(
             ),
             "CFBundleDisplayName" : "살까말까",
         ]
-    )
+    ),
+    entitlements: "App/App.entitlements",
 )
