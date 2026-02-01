@@ -19,28 +19,29 @@ public struct FloatingContextMenuButton: View {
         self.action = action
     }
     
-    let icon: BNImageAsset
-    let text: String
-    let action: () -> Void
+    private let icon: BNImageAsset
+    private let text: String
+    private let action: () -> Void
     
-    @State var isPressing: Bool = false
+    @State private var isPressing: Bool = false
     
     public var body: some View {
         HStack(spacing: 6) {
             BNImage(icon)
-                .image
-                .frame(width: 14, height: 14)
-            Text(text)
-                .font(BNFont.font(.b3m))
+                .style(.type(.gray800), BNImageSize(14), .fit)
+            BNText(text)
+                .style(.b3m, .type(.gray800))
         }
-        .foregroundStyle(BNColor(.gray800).color)
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background {
             RoundedRectangle(cornerRadius: 8)
                 .fill(
-                    BNColor(isPressing ? .gray200 : .gray0).color
+                    BNColor(.type(isPressing ? .gray200 : .gray0)).color
                 )
+        }
+        .onTapGesture {
+            action()
         }
         .onLongPressGesture(
             minimumDuration: .infinity,

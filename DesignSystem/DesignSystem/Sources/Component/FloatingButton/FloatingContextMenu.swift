@@ -8,11 +8,11 @@
 import SwiftUI
 
 public struct FloatingContextMenu: View {
-    init(menuButtons: [FloatingContextMenuButton]) {
+    public init(menuButtons: [FloatingContextMenuButton]) {
         self.menuButtons = menuButtons
     }
     
-    let menuButtons: [FloatingContextMenuButton]
+    private let menuButtons: [FloatingContextMenuButton]
     
     public var body: some View {
         VStack(spacing: 0) {
@@ -24,10 +24,10 @@ public struct FloatingContextMenu: View {
         .padding(.vertical, 14)
         .background {
             RoundedRectangle(cornerRadius: 14)
-                .fill(BNColor(.gray0).color)
+                .fill(BNColor(.type(.gray0)).color)
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .stroke(BNColor(.gray100).color, lineWidth: 1)
+                        .stroke(BNColor(.type(.gray100)).color, lineWidth: 1)
                 )
         }
     }
