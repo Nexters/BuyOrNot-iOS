@@ -9,6 +9,7 @@ import Core
 import SwiftUI
 
 @Observable
+@MainActor
 public final class BNSnackBarManager {
     let itemQueue = BNQueue<BNSnackBarItem>()
     
@@ -27,24 +28,17 @@ public final class BNSnackBarManager {
     }
     
     public func show() {
-        Task { [weak self] in
-            await MainActor.run { [weak self] in
-                self?.barState = .active
-            }
+        barState = .active
+        Task { @MainActor [weak self] in
+            guard let self else { return }
             try? await Task.sleep(nanoseconds: 5 * .second)
-            await MainActor.run { [weak self] in
-                self?.barState = .inactive
-            }
+            self.barState = .inactive
             try? await Task.sleep(nanoseconds: 300 * .millisecond)
-            await MainActor.run { [weak self] in
-                self?.currentItem = .empty
-            }
+            self.currentItem = .empty
             try? await Task.sleep(nanoseconds: 100 * .millisecond)
-            if let item = self?.itemQueue.dequeue() {
-                await MainActor.run { [weak self] in
-                    self?.currentItem = item
-                    self?.show()
-                }
+            if let item = self.itemQueue.dequeue() {
+                self.currentItem = item
+                self.show()
             }
         }
     }
