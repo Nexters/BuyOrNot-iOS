@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct VoteGroup: View {
 
-    public struct Option: Identifiable {
+    public struct VoteOption: Identifiable {
         public let id: Int
         public let text: String
         public let voteCount: Int
@@ -28,7 +28,7 @@ public struct VoteGroup: View {
         }
     }
 
-    private let options: [Option]
+    private let options: [VoteOption]
     private let isPeriodDone: Bool
     private let selectedOptionId: Int?
     private let onVote: ((Int) -> Void)?
@@ -58,7 +58,7 @@ public struct VoteGroup: View {
     // MARK: - Initializer
 
     public init(
-        options: [Option],
+        options: [VoteOption],
         isPeriodDone: Bool = false,
         selectedOptionId: Int? = nil,
         onVote: ((Int) -> Void)? = nil
@@ -85,7 +85,7 @@ public struct VoteGroup: View {
     // MARK: - Subviews
 
     @ViewBuilder
-    private func optionButton(for option: Option) -> some View {
+    private func optionButton(for option: VoteOption) -> some View {
         let percent = calculatePercent(for: option)
         let isSelected = selectedOptionId == option.id
 
@@ -113,7 +113,7 @@ public struct VoteGroup: View {
 
     // MARK: - Methods
 
-    private func calculatePercent(for option: Option) -> Int {
+    private func calculatePercent(for option: VoteOption) -> Int {
         guard totalVotes > 0 else { return 0 }
         return Int(round(Double(option.voteCount) / Double(totalVotes) * 100))
     }
