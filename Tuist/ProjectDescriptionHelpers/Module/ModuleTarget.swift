@@ -10,7 +10,9 @@ import ProjectDescription
 public protocol ModuleTarget: ModuleName {
     func target(
         dependencies: [TargetDependency],
-        infoPlist: InfoPlist
+        infoPlist: InfoPlist,
+        entitlements: Entitlements?,
+        settings: Settings?
     ) -> Target
     var product: Product { get }
 }
@@ -26,7 +28,9 @@ public extension ModuleTarget {
     
     func target(
         dependencies: [TargetDependency],
-        infoPlist: InfoPlist
+        infoPlist: InfoPlist,
+        entitlements: Entitlements? = nil,
+        settings: Settings? = nil
     ) -> Target {
         .target(
             name: moduleName,
@@ -37,9 +41,9 @@ public extension ModuleTarget {
             infoPlist: infoPlist,
             sources: ["\(moduleName)/Sources/**"],
             resources: ["\(moduleName)/Resources/**"],
-            dependencies: dependencies
+            entitlements: entitlements,
+            dependencies: dependencies,
+            settings: settings,
         )
     }
-    
-    
 }
