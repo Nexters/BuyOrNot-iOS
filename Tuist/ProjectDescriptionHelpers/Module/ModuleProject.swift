@@ -11,7 +11,8 @@ public protocol ModuleProject: ModuleScheme, ModuleTarget, ModuleDependency {
     func project(
         dependencies: [TargetDependency],
         infoPlist: InfoPlist,
-        entitlements: Entitlements?
+        entitlements: Entitlements?,
+        settings: Settings?
     ) -> Project
 }
 
@@ -19,7 +20,8 @@ extension ModuleProject {
     public func project(
         dependencies: [TargetDependency] = [],
         infoPlist: InfoPlist = .default,
-        entitlements: Entitlements? = nil
+        entitlements: Entitlements? = nil,
+        settings: Settings? = nil
     ) -> Project {
         .init(
             name: moduleName,
@@ -27,7 +29,8 @@ extension ModuleProject {
                 target(
                     dependencies: dependencies,
                     infoPlist: infoPlist,
-                    entitlements: entitlements
+                    entitlements: entitlements,
+                    settings: settings
                 )
             ],
             schemes: [
