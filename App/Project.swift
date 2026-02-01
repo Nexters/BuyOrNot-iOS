@@ -23,7 +23,17 @@ let project = Module.app.project(
             ],
             "UILaunchScreen": .dictionary(
                 ["UILaunchScreen": .dictionary([:])]
-            )
+            ),
+            "UILaunchStoryboardName": "LaunchScreen",
+            "CFBundleDisplayName":
+                "살까말까",
+            "UIUserInterfaceStyle":
+                "Light",
+            "NSPhotoLibraryAddUsageDescription":
+                "투표 등록 시 사진을 등록하기 위해서 앨범 접근 권한이 필요합니다.",
+            "NSPhotoLibraryUsageDescription":
+                "투표 등록 시 사진을 등록하기 위해서 앨범 접근 권한이 필요합니다.",
         ]
-    )
+    ),
+    entitlements: "App/App.entitlements",
 )

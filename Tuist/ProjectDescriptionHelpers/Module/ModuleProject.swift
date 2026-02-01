@@ -10,26 +10,32 @@ import ProjectDescription
 public protocol ModuleProject: ModuleScheme, ModuleTarget, ModuleDependency {
     func project(
         dependencies: [TargetDependency],
-        infoPlist: InfoPlist
+        infoPlist: InfoPlist,
+        entitlements: Entitlements?,
+        settings: Settings?
     ) -> Project
 }
 
 extension ModuleProject {
     public func project(
         dependencies: [TargetDependency] = [],
-        infoPlist: InfoPlist = .default
+        infoPlist: InfoPlist = .default,
+        entitlements: Entitlements? = nil,
+        settings: Settings? = nil
     ) -> Project {
         .init(
             name: moduleName,
             targets: [
                 target(
                     dependencies: dependencies,
-                    infoPlist: infoPlist
+                    infoPlist: infoPlist,
+                    entitlements: entitlements,
+                    settings: settings
                 )
             ],
             schemes: [
                 scheme
-            ]
+            ],
         )
     }
 }
