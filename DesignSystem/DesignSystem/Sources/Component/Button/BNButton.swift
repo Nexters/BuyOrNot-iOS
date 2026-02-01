@@ -9,95 +9,102 @@ import SwiftUI
 
 public struct BNButton: View {
     let text: String
-    let style: BNButtonStyle
-    let isEnabled: Bool
+    var type: BNButtonType
+    @State var state: BNButtonState
+    let width: CGFloat?
     let action: () -> Void
-    let width: CGFloat
+    
+    private var appearance: BNButtonAppearance {
+        BNButtonAppearance(
+            type: self.type,
+            state: self.state
+        )
+    }
+    
+    private var backgroundColor: Color {
+        BNColor(appearance.backgroundColor).color
+    }
+    
+    private var borderColor: Color {
+        BNColor(appearance.borderColor).color
+    }
     
     public init(
         text: String,
-        style: BNButtonStyle,
-        isEnabled: Bool,
+        type: BNButtonType,
+        state: BNButtonState,
         width: CGFloat? = nil,
         action: @escaping () -> Void
     ) {
         self.text = text
-        self.style = style
-        self.isEnabled = isEnabled
-        self.width = width ?? style.defaultWidth
+        self.type = type
+        self.state = state
+        self.width = width
         self.action = action
     }
     
-    /// 폰트
-    private var fontColor: BNColor.Source {
-        .type(style.textColor(isEnabled: isEnabled))
-    }
-    
-    /// 배경색
-    private var backgroundColor: Color {
-        BNColor(.type(style.backgroundColor(isEnabled: isEnabled))).color
-    }
-    
-    /// 테두리색
-    private var borderColor: Color {
-        guard let borderColor = style.borderColor else {
-            return .clear
-        }
-        return BNColor(.type(borderColor)).color
-    }
-    
     public var body: some View {
-        Button {
-            action()
-        } label: {
-            BNText(text)
-                .style(
-                    style: style.textStyle,
-                    color: fontColor
+        BNText(text)
+            .style(
+                style: appearance.textStyle,
+                color: appearance.textColor
+            )
+            .padding(.vertical, appearance.verticalPadding)
+            .padding(.horizontal, appearance.horizontalPadding)
+            .frame(
+                width: width,
+            )
+            .background {
+                RoundedRectangle(
+                    cornerRadius: appearance.cornerRadius,
+                    style: .circular
                 )
-                .padding(.vertical, style.verticalPadding)
-                .frame(
-                    width: width,
-                    height: style.height
-                )
-                .background {
+                .fill(backgroundColor)
+                .overlay(
                     RoundedRectangle(
-                        cornerRadius: style.cornerRadius,
+                        cornerRadius: appearance.cornerRadius,
                         style: .circular
                     )
-                    .fill(backgroundColor)
-                    .overlay(
-                        RoundedRectangle(
-                            cornerRadius: style.cornerRadius,
-                            style: .circular
-                        )
-                        .stroke(
-                            borderColor,
-                            lineWidth: style.borderWidth
-                        )
+                    .stroke(
+                        borderColor,
+                        lineWidth: appearance.borderWidth
                     )
-                }
-            
-        }
-        .disabled(!isEnabled)
+                )
+            }
+            .onTapGesture {
+                action()
+            }
+            .onLongPressGesture(
+                minimumDuration: .infinity,
+                perform: {}
+            ) { isPressing in
+                state = isPressing ? .pressed : .enabled
+            }
+            .disabled(state == .disabled)
     }
 }
 
 #Preview {
-    let style: [BNButtonStyle] = [
-        .default,
+    let type: [BNButtonType] = [
+        .primary,
+        .secondary,
         .outline,
-        .round
+        .capsule,
     ]
-    let isEnabledFlags = [true, false]
+    
+    let state: [BNButtonState] = [
+        .enabled,
+        .disabled
+    ]
     
     VStack(spacing: 15) {
-        ForEach (0..<style.count, id: \.self) { index in
-            ForEach (0..<isEnabledFlags.count, id: \.self) { isEnabledIndex in
+        ForEach (0..<type.count, id: \.self) { t in
+            ForEach (0..<state.count, id: \.self) { s in
                 BNButton(
                     text: "Button",
-                    style: style[index],
-                    isEnabled: isEnabledFlags[isEnabledIndex]
+                    type: type[t],
+                    state: state[s],
+                    width: type[t] == .primary ? 147 : nil,
                 ) {
                     
                 }
