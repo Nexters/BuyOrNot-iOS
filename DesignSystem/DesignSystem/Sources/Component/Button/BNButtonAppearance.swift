@@ -1,0 +1,111 @@
+//
+//  BNButtonAppearance.swift
+//  DesignSystem
+//
+//  Created by 문종식 on 2/1/26.
+//
+
+import Foundation
+
+struct BNButtonAppearance {
+    let backgroundColor: BNColor.Source
+    let textColor: BNColor.Source
+    let textStyle: BNFontStyle
+    let cornerRadius: CGFloat
+    let borderWidth: CGFloat
+    let borderColor: BNColor.Source
+    let verticalPadding: CGFloat
+    let horizontalPadding: CGFloat
+    
+    init(
+        type: BNButtonType,
+        state: BNButtonState,
+    ) {
+        switch type {
+        case .primary:
+            self.textStyle = .t2b
+            self.cornerRadius = 14
+            self.borderWidth = 0
+            self.borderColor = .color(.clear)
+            self.verticalPadding = 15
+            self.horizontalPadding = 0
+            switch state {
+            case .enabled:
+                self.backgroundColor = .type(.gray900)
+                self.textColor = .type(.gray0)
+//            case .hover:
+//                self.backgroundColor = .type(.gray800)
+//                self.textColor = .type(.gray0)
+            case .pressed:
+                self.backgroundColor = .type(.gray1000)
+                self.textColor = .type(.gray0)
+            case .disabled:
+                self.backgroundColor = .type(.gray300)
+                self.textColor = .type(.gray700)
+            }
+        case .secondary:
+            self.textStyle = .s5sb
+            self.cornerRadius = 10
+            self.borderWidth = 0
+            self.borderColor = .color(.clear)
+            self.verticalPadding = 12
+            self.horizontalPadding = 12
+            switch state {
+            case .enabled:
+                self.backgroundColor = .type(.gray100)
+                self.textColor = .type(.gray700)
+//            case .hover:
+//                self.backgroundColor = .type(.gray300)
+//                self.textColor = .type(.gray700)
+            case .pressed:
+                self.backgroundColor = .type(.gray400)
+                self.textColor = .type(.gray700)
+            case .disabled:
+                self.backgroundColor = .type(.gray100)
+                self.textColor = .type(.gray500)
+            }
+        case .outline:
+            self.textStyle = .s5sb
+            self.cornerRadius = 10
+            self.borderWidth = 1
+            self.borderColor = .type(.gray300)
+            self.verticalPadding = 12
+            self.horizontalPadding = 12
+            switch state {
+            case .enabled:
+                self.backgroundColor = .type(.gray0)
+                self.textColor = .type(.gray800)
+//            case .hover:
+//                self.backgroundColor = .type(.gray100)
+//                self.textColor = .type(.gray800)
+            case .pressed:
+                self.backgroundColor = .type(.gray400)
+                self.textColor = .type(.gray800)
+            case .disabled:
+                self.backgroundColor = .type(.gray0)
+                self.textColor = .type(.gray500)
+            }
+        case .capsule:
+            self.textStyle = .s5sb
+            self.cornerRadius = 20
+            self.borderWidth = 0
+            self.borderColor = .color(.clear)
+            self.verticalPadding = 12
+            self.horizontalPadding = 12
+            switch state {
+            case .enabled:
+                self.backgroundColor = .type(.gray900)
+                self.textColor = .type(.gray0)
+//            case .hover:
+//                self.backgroundColor = .type(.gray800)
+//                self.textColor = .type(.gray0)
+            case .pressed:
+                self.backgroundColor = .type(.gray1000)
+                self.textColor = .type(.gray0)
+            case .disabled:
+                self.backgroundColor = .type(.gray300)
+                self.textColor = .type(.gray700)
+            }
+        }
+    }
+}

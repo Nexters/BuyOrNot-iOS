@@ -13,5 +13,11 @@ let project = Module.Feature.login.project(
         Module.core.toDependency,
         Module.domain.toDependency,
         Module.designSystem.toDependency,
+        .external(name: "GoogleSignIn"),
+        .external(name: "GoogleSignInSwift"),
+        .external(name: "KakaoSDKCommon"),
+        .external(name: "KakaoSDKAuth"),
+        .external(name: "KakaoSDKUser"),
+        .external(name: "FirebaseMessaging"),
     ]
 )
