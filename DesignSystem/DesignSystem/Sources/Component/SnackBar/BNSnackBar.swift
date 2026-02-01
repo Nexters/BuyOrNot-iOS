@@ -66,17 +66,45 @@ private struct BNSnackBarPreview: View {
     
     var body: some View {
         ZStack {
-            Button {
-                let item = BNSnackBarItem(
-                    text: "스낵바입니다. 안내 메세지를 작성해주세요.\(count)",
-                    icon: .completed,
-                    color: .type(.green200),
-                )
-                count += 1
-                manager.addItem(item)
-            } label: {
-                Text("SnackBarItem 추가")
+            VStack(spacing: 15) {
+                Button {
+                    let item = BNSnackBarItem(
+                        text: "스낵바입니다. 안내 메세지를 작성해주세요. \(count)",
+                        icon: .completed,
+                        color: .type(.green200),
+                    )
+                    count += 1
+                    manager.addItem(item)
+                } label: {
+                    Text("SnackBarItem 추가")
+                }
+                
+                Button {
+                    let item = BNSnackBarItem(
+                        text: "신고가 완료되었습니다.",
+                        icon: .completed,
+                        color: .type(.red100),
+                    )
+                    count += 1
+                    manager.addItem(item)
+                } label: {
+                    Text("게시글 신고")
+                }
+                
+                Button {
+                    let item = BNSnackBarItem(
+                        text: "삭제가 완료되었습니다.",
+                        icon: .completed,
+                        color: .type(.green100),
+                    )
+                    count += 1
+                    manager.addItem(item)
+                } label: {
+                    Text("게시글 삭제")
+                }
+                Text("Count: \(count)")
             }
+            
             VStack {
                 Spacer()
                 BNSnackBar(
@@ -85,7 +113,6 @@ private struct BNSnackBarPreview: View {
                 )
             }
         }
-
     }
 }
 

@@ -21,22 +21,23 @@ public final class BNSnackBarManager {
         case .active:
             itemQueue.enqueue(item)
         case .inactive:
-            show(item)
+            currentItem = item
+            show()
         }
     }
     
-    public func show(_ item: BNSnackBarItem) {
-        currentItem = item
-        barState = .active
+    public func show() {
         Task { [weak self] in
+            self?.barState = .active
             try? await Task.sleep(nanoseconds: 5 * .second)
             self?.barState = .inactive
-            try? await Task.sleep(nanoseconds: 5 * .second / 2)
+            try? await Task.sleep(nanoseconds: 300 * .millisecond)
             self?.currentItem = .empty
-            guard let item = self?.itemQueue.dequeue() else {
-                return
+            try? await Task.sleep(nanoseconds: 100 * .millisecond)
+            if let item = self?.itemQueue.dequeue() {
+                self?.currentItem = item
+                self?.show()
             }
-            self?.show(item)
         }
     }
 }
