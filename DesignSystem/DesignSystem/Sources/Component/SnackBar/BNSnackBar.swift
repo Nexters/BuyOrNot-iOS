@@ -9,14 +9,20 @@ import SwiftUI
 
 public struct BNSnackBar: View {
     private let item: BNSnackBarItem
+    private let iconSize: CGFloat = 16
     private var backgroundColor: Color {
         BNColor(.type(.gray900)).color
     }
     
     @State var opacity: Double = 0
+    @Binding var state: BNSnackBarState
     
-    init(item: BNSnackBarItem) {
+    public init(
+        item: BNSnackBarItem,
+        state: Binding<BNSnackBarState>
+    ) {
         self.item = item
+        self._state = state
     }
     
     public var body: some View {
@@ -25,7 +31,7 @@ public struct BNSnackBar: View {
                 BNImage(iconConfig.icon)
                     .style(
                         color: iconConfig.color,
-                        size: iconConfig.size
+                        size: iconSize
                     )
             }
             BNText(item.text)
@@ -44,24 +50,46 @@ public struct BNSnackBar: View {
             .fill(backgroundColor)
         }
         .padding(.horizontal, 20)
+        .offset(y: state.offsetY)
+        .opacity(state.opacity)
+        .animation(
+            .linear(duration: 0.3),
+            value: state
+        )
     }
 }
 
-#Preview {
-    ZStack {
-        VStack {
-            Spacer()
-            BNSnackBar(
-                item: BNSnackBarItem(
-                    text: "스낵바입니다. 안내 메세지를 작성해주세요.",
-                    iconConfig: .init(
-                        icon: .completed,
-                        color: .type(.green200),
-                        size: 16
-                    )
+
+private struct BNSnackBarPreview: View {
+    @State private var manager = BNSnackBarManager()
+    @State private var count = 0
+    
+    var body: some View {
+        ZStack {
+            Button {
+                let item = BNSnackBarItem(
+                    text: "스낵바입니다. 안내 메세지를 작성해주세요.\(count)",
+                    icon: .completed,
+                    color: .type(.green200),
                 )
-            )
+                count += 1
+                manager.addItem(item)
+            } label: {
+                Text("SnackBarItem 추가")
+            }
+            VStack {
+                Spacer()
+                BNSnackBar(
+                    item: manager.currentItem,
+                    state: $manager.barState
+                )
+            }
         }
 
     }
 }
+
+#Preview {
+    BNSnackBarPreview()
+}
+
