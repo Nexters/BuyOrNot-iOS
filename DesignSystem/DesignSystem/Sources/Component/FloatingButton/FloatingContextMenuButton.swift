@@ -25,20 +25,28 @@ public struct FloatingContextMenuButton: View {
     
     @State private var isPressing: Bool = false
     
+    private var backgroundColor: Color {
+        BNColor(.type(isPressing ? .gray200 : .gray0)).color
+    }
+    
     public var body: some View {
         HStack(spacing: 6) {
             BNImage(icon)
-                .style(.type(.gray800), BNImageSize(14), .fit)
+                .style(
+                    color: .type(.gray800),
+                    size: 14,
+                )
             BNText(text)
-                .style(.b3m, .type(.gray800))
+                .style(
+                    style: .b3m,
+                    color: .type(.gray800)
+                )
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background {
             RoundedRectangle(cornerRadius: 8)
-                .fill(
-                    BNColor(.type(isPressing ? .gray200 : .gray0)).color
-                )
+                .fill(backgroundColor)
         }
         .onTapGesture {
             action()

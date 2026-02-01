@@ -23,14 +23,29 @@ public struct BNText: View {
     VStack(spacing: 10) {
         BNText("without Style")
         BNText("Display1 Green200")
-            .style(.d1b, .type(.green200))
+            .style(
+                style: .d1b,
+                color: .type(.green200)
+            )
         BNText("Heading3 Red100")
-            .style(.h3b, .type(.red100))
+            .style(
+                style: .h3b,
+                color: .type(.red100)
+            )
         BNText("Body1 Color.yellow")
-            .style(.b1m, .color(.yellow))
+            .style(
+                style: .b1m,
+                color: .color(.yellow)
+            )
         BNText("Body4 Gray600")
-            .style(.b4m, .type(.gray600))
+            .style(
+                style: .b4m,
+                color: .type(.gray600)
+            )
         BNText("Paragraph Medium2 Blue100")
-            .style(.p2m, .type(.blue100))
+            .style(
+                style: .p2m,
+                color: .type(.blue100)
+            )
     }
 }

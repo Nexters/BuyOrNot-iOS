@@ -16,18 +16,22 @@ public extension BNImage {
     
     /// BNImage 전용 Style Modifier  - 정방향
     func style(
-        _ color: BNColor.Source,
-        _ size: CGFloat,
-        _ contentMode: ContentMode
+        color: BNColor.Source,
+        size: CGFloat,
+        contentMode: ContentMode = .fit
     ) -> some View {
-        self.style(color, BNImageSize(size), contentMode)
+        self.style(
+            color: color,
+            size: BNImageSize(size),
+            contentMode: contentMode
+        )
     }
     
     /// BNImage 전용 Style Modifier
     func style(
-        _ color: BNColor.Source,
-        _ size: BNImageSize? = nil,
-        _ contentMode: ContentMode
+        color: BNColor.Source,
+        size: BNImageSize? = nil,
+        contentMode: ContentMode = .fit
     ) -> some View {
         @ViewBuilder var image: some View {
             switch size {
@@ -48,11 +52,20 @@ public extension BNImage {
 #Preview {
     VStack(spacing: 10) {
         BNImage(.notification)
-            .style(.type(.red100), 30, .fit)
+            .style(
+                color: .type(.red100),
+                size: 30,
+            )
         BNImage(.product)
-            .style(.type(.blue100), 10, .fit)
+            .style(
+                color: .type(.blue100),
+                size: 10
+            )
         BNImage(.completed)
-            .style(.type(.gray800), 20, .fit)
+            .style(
+                color: .type(.gray800),
+                size: 20
+            )
     }
 }
 
