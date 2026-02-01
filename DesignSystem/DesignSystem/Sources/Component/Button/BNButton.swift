@@ -8,11 +8,11 @@
 import SwiftUI
 
 public struct BNButton: View {
-    let text: String
-    var type: BNButtonType
-    @State var state: BNButtonState
-    let width: CGFloat?
-    let action: () -> Void
+    private let text: String
+    private let type: BNButtonType
+    @State private var state: BNButtonState
+    private let width: CGFloat?
+    private let action: () -> Void
     
     private var appearance: BNButtonAppearance {
         BNButtonAppearance(

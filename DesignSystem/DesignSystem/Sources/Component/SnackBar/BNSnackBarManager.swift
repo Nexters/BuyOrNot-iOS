@@ -12,9 +12,9 @@ import SwiftUI
 public final class BNSnackBarManager {
     let itemQueue = BNQueue<BNSnackBarItem>()
     
-    var currentItem: BNSnackBarItem = .empty
+    public var currentItem: BNSnackBarItem = .empty
     
-    var barState: BNSnackBarState = .inactive
+    public var barState: BNSnackBarState = .inactive
     
     public func addItem(_ item: BNSnackBarItem) {
         switch barState {
@@ -28,15 +28,23 @@ public final class BNSnackBarManager {
     
     public func show() {
         Task { [weak self] in
-            self?.barState = .active
+            await MainActor.run { [weak self] in
+                self?.barState = .active
+            }
             try? await Task.sleep(nanoseconds: 5 * .second)
-            self?.barState = .inactive
+            await MainActor.run { [weak self] in
+                self?.barState = .inactive
+            }
             try? await Task.sleep(nanoseconds: 300 * .millisecond)
-            self?.currentItem = .empty
+            await MainActor.run { [weak self] in
+                self?.currentItem = .empty
+            }
             try? await Task.sleep(nanoseconds: 100 * .millisecond)
             if let item = self?.itemQueue.dequeue() {
-                self?.currentItem = item
-                self?.show()
+                await MainActor.run { [weak self] in
+                    self?.currentItem = item
+                    self?.show()
+                }
             }
         }
     }

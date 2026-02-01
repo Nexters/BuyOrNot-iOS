@@ -14,7 +14,6 @@ public struct BNSnackBar: View {
         BNColor(.type(.gray900)).color
     }
     
-    @State var opacity: Double = 0
     @Binding var state: BNSnackBarState
     
     public init(
