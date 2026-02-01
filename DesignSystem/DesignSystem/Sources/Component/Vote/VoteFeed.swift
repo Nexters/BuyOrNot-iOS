@@ -178,8 +178,7 @@ private struct FeedContent: View {
 
                 ProductImageCard(
                     imageURL: productImageURL,
-                    price: price,
-                    pricePadding: horizontalPadding
+                    price: price
                 )
 
                 VoteGroup(
@@ -201,7 +200,6 @@ private struct FeedContent: View {
 private struct ProductImageCard: View {
     let imageURL: String
     let price: String
-    let pricePadding: CGFloat
 
     var body: some View {
         GeometryReader { geometry in
@@ -214,6 +212,7 @@ private struct ProductImageCard: View {
                         image
                             .resizable()
                             .scaledToFill()
+                        /// TODO: 이미지 비율에 따라서 다르게 보이는 로직 추가 예정
                     case .failure:
                         Image(systemName: "photo")
                             .foregroundColor(.gray)
@@ -237,7 +236,7 @@ private struct ProductImageCard: View {
                 Text(price)
                     .font(BNFont.font(.t1b))
                     .foregroundColor(BNColor(.gray0).color)
-                    .padding(.leading, pricePadding)
+                    .padding(.leading, 14)
                     .padding(.bottom, 16)
                     .shadow(
                         color: BNColor(.gray1000).color.opacity(0.4),
