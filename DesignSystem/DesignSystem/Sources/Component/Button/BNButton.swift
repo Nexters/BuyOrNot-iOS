@@ -14,7 +14,7 @@ public struct BNButton: View {
     let action: () -> Void
     let width: CGFloat
     
-    init(
+    public init(
         text: String,
         style: BNButtonStyle,
         isEnabled: Bool,
@@ -52,8 +52,8 @@ public struct BNButton: View {
         } label: {
             BNText(text)
                 .style(
-                    style.textStyle,
-                    fontColor
+                    style: style.textStyle,
+                    color: fontColor
                 )
                 .padding(.vertical, style.verticalPadding)
                 .frame(
