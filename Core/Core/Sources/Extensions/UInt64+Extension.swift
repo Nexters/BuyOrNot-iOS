@@ -6,5 +6,6 @@
 //
 
 extension UInt64 {
-    public static let second: Self = 1_000_000_000
+    public static let second: Self = millisecond * 1000
+    public static let millisecond: Self = 1_000_000
 }
