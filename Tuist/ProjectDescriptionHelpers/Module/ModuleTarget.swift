@@ -11,7 +11,8 @@ public protocol ModuleTarget: ModuleName {
     func target(
         dependencies: [TargetDependency],
         infoPlist: InfoPlist,
-        entitlements: Entitlements?
+        entitlements: Entitlements?,
+        settings: Settings?
     ) -> Target
     var product: Product { get }
 }
@@ -28,7 +29,8 @@ public extension ModuleTarget {
     func target(
         dependencies: [TargetDependency],
         infoPlist: InfoPlist,
-        entitlements: Entitlements? = nil
+        entitlements: Entitlements? = nil,
+        settings: Settings? = nil
     ) -> Target {
         .target(
             name: moduleName,
@@ -41,6 +43,7 @@ public extension ModuleTarget {
             resources: ["\(moduleName)/Resources/**"],
             entitlements: entitlements,
             dependencies: dependencies,
+            settings: settings,
         )
     }
 }
