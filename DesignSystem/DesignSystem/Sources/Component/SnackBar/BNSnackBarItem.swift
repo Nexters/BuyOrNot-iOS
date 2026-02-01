@@ -7,19 +7,16 @@
 
 import Foundation
 
-public struct BNSnackBarIconConfig {
+struct BNSnackBarIconConfig {
     let icon: BNImageAsset
     let color: BNColor.Source
-    let size: CGFloat
     
-    public init(
+    init(
         icon: BNImageAsset,
         color: BNColor.Source,
-        size: CGFloat
     ) {
         self.icon = icon
         self.color = color
-        self.size = size
     }
 }
 
@@ -29,9 +26,21 @@ public struct BNSnackBarItem {
     
     public init(
         text: String,
-        iconConfig: BNSnackBarIconConfig?
+        icon: BNImageAsset? = nil,
+        color: BNColor.Source? = nil
     ) {
         self.text = text
-        self.iconConfig = iconConfig
+        if let icon, let color {
+            self.iconConfig = BNSnackBarIconConfig(
+                icon: icon,
+                color: color
+            )
+        } else {
+            self.iconConfig = nil
+        }
     }
+    
+    static let empty: Self = .init(
+        text: "",
+    )
 }
