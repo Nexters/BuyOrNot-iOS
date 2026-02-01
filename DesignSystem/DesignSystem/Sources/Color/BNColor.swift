@@ -8,40 +8,46 @@
 import SwiftUI
 
 public struct BNColor {
-    private let type: BNColorType?
-    private let hex: String?
-    
-    public var color: Color {
-        if let type = self.type {
-            return Color("\(type.name)", bundle: .module)
-        } else if let hex = self.hex {
-            var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-            hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-
-            var rgb: UInt64 = 0
-
-            Scanner(string: hexSanitized).scanHexInt64(&rgb)
-
-            let red = Double((rgb & 0xFF0000) >> 16) / 255.0
-            let green = Double((rgb & 0x00FF00) >> 8) / 255.0
-            let blue = Double(rgb & 0x0000FF) / 255.0
-
-            return Color(red: red, green: green, blue: blue)
-        }
-        return .clear
+    public enum Source {
+        case hex(String)
+        case color(Color)
+        case type(BNColorType)
     }
+    
+    private let _color: Color
     
     public var uiColor: UIColor {
-        UIColor(color)
+        UIColor(_color)
     }
     
-    public init(_ type: BNColorType) {
-        self.type = type
-        self.hex = nil
+    public var color: Color {
+        _color
     }
     
-    public init(hex: String) {
-        self.type = nil
-        self.hex = hex
+    public init(_ source: BNColor.Source) {
+        switch source {
+        case .hex(let hexString):
+            var hexSanitized = hexString.trimmingCharacters(in: .whitespacesAndNewlines)
+            hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+            let isValidLength = hexSanitized.count == 6 || hexSanitized.count == 8
+            
+            var rgb: UInt64 = 0
+            guard isValidLength, Scanner(string: hexSanitized).scanHexInt64(&rgb) else {
+                self._color = .clear
+                return
+            }
+
+            let hasAlpha = hexSanitized.count == 8
+            let red = Double((rgb & (hasAlpha ? 0x00FF0000 : 0xFF0000)) >> (hasAlpha ? 16 : 16)) / 255.0
+            let green = Double((rgb & (hasAlpha ? 0x0000FF00 : 0x00FF00)) >> (hasAlpha ? 8 : 8)) / 255.0
+            let blue = Double(rgb & (hasAlpha ? 0x000000FF : 0x0000FF)) / 255.0
+            let alpha = hasAlpha ? Double((rgb & 0xFF000000) >> 24) / 255.0 : 1.0
+
+            self._color = Color(red: red, green: green, blue: blue, opacity: alpha)
+        case .color(let color):
+            self._color = color
+        case .type(let type):
+            self._color = Color("\(type.name)", bundle: .module)
+        }
     }
 }
