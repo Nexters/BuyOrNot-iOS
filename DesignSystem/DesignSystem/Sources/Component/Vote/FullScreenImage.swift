@@ -45,6 +45,8 @@ public struct FullScreenImageView: View {
                                         withAnimation {
                                             scale = 1.0
                                             lastScale = 1.0
+                                            offset = .zero
+                                            lastOffset = .zero
                                         }
                                     }
                                 }
