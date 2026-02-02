@@ -21,4 +21,7 @@ public enum BNImageAsset: String {
     case right = "right"
     case vote_check = "vote_check"
     case vote = "vote"
+    case won = "won"
+    case check = "check"
+    case camera = "camera"
 }
