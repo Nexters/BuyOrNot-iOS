@@ -28,5 +28,8 @@ public enum Module: String, CaseIterable {
     public enum Feature: String, CaseIterable {
         /// 로그인
         case login = "Login"
+        
+        /// 투표 생성
+        case createVote = "CreateVote"
     }
 }
