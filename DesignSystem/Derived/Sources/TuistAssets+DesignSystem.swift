@@ -46,7 +46,9 @@ public enum DesignSystemAsset: Sendable {
   }
   public enum Icon {
   public static let close = DesignSystemImages(name: "close")
+    public static let combinedShape = DesignSystemImages(name: "combined_shape")
     public static let completed = DesignSystemImages(name: "completed")
+    public static let extend = DesignSystemImages(name: "extend")
     public static let `left` = DesignSystemImages(name: "left")
     public static let my = DesignSystemImages(name: "my")
     public static let notification = DesignSystemImages(name: "notification")
