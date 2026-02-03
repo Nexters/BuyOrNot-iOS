@@ -66,7 +66,7 @@ public struct VoteFeed: View {
     public var body: some View {
         VStack(spacing: 0) {
             Divider()
-                .foregroundStyle(BNColor(.gray200).color)
+                .foregroundStyle(BNColor(.type(.gray200)).color)
                 .frame(height: 2)
 
             VStack(spacing: 0) {
@@ -124,33 +124,31 @@ private struct FeedHeader: View {
                 HStack(spacing: 4) {
                     Text(userName)
                         .font(BNFont.font(.b6m))
-                        .foregroundStyle(BNColor(.gray800).color)
+                        .foregroundStyle(BNColor(.type(.gray800)).color)
 
                     BNImage(.right)
-                        .image
                         .resizable()
                         .frame(width: 10, height: 10)
-                        .foregroundStyle(BNColor(.gray600).color)
+                        .foregroundStyle(BNColor(.type(.gray600)).color)
 
                     Text(category)
                         .font(BNFont.font(.b6m))
-                        .foregroundStyle(BNColor(.gray800).color)
+                        .foregroundStyle(BNColor(.type(.gray800)).color)
 
                     Spacer()
 
                     Button(action: onProductTap) {
                         BNImage(.combined_shape)
-                            .image
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
-                            .foregroundStyle(BNColor(.gray500).color)
+                            .foregroundStyle(BNColor(.type(.gray500)).color)
                     }
                 }
 
                 Text(timeAgo)
                     .font(BNFont.font(.b7m))
-                    .foregroundStyle(BNColor(.gray600).color)
+                    .foregroundStyle(BNColor(.type(.gray600)).color)
             }
         }
     }
@@ -173,7 +171,7 @@ private struct FeedContent: View {
             VStack(spacing: 12) {
                 Text(content)
                     .font(BNFont.font(.p4m))
-                    .foregroundStyle(BNColor(.gray900).color)
+                    .foregroundStyle(BNColor(.type(.gray900)).color)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 ProductImageCard(
@@ -190,7 +188,7 @@ private struct FeedContent: View {
             .padding(.vertical, 16)
             .padding(.horizontal, horizontalPadding)
         }
-        .background(BNColor(.gray100).color)
+        .background(BNColor(.type(.gray100)).color)
         .cornerRadius(16)
     }
 }
@@ -235,11 +233,11 @@ private struct ProductImageCard: View {
 
                 Text(price)
                     .font(BNFont.font(.t1b))
-                    .foregroundColor(BNColor(.gray0).color)
+                    .foregroundColor(BNColor(.type(.gray0)).color)
                     .padding(.leading, 14)
                     .padding(.bottom, 16)
                     .shadow(
-                        color: BNColor(.gray1000).color.opacity(0.4),
+                        color: BNColor(.type(.gray1000)).color.opacity(0.4),
                         radius: 4,
                         x: 0,
                         y: 4
@@ -252,12 +250,11 @@ private struct ProductImageCard: View {
                             FullScreenImageView(imageURL: imageURL)
                         } label: {
                             BNImage(.extend)
-                                .image
                                 .resizable()
                                 .scaledToFill()
-                                .foregroundColor(BNColor(.gray300).color)
+                                .foregroundColor(BNColor(.type(.gray300)).color)
                                 .padding(8)
-                                .background(BNColor(.gray1000).color.opacity(0.5))
+                                .background(BNColor(.type(.gray1000)).color.opacity(0.5))
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .frame(width: 30, height: 30)
                         }
