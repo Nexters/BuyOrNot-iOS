@@ -75,10 +75,9 @@ public struct VoteButton: View {
                 }
             }
         }
-        .frame(width: 307, height: 46)
+        .frame(height: 46)
         .clipShape(RoundedRectangle(cornerRadius: Layout.cornerRadius))
         .overlay(strokeBorder)
-        .buttonStyle(.plain)
     }
 
     // MARK: - Subviews
