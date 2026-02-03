@@ -33,12 +33,6 @@ struct BNButtonAppearance {
             case .enabled:
                 self.backgroundColor = .type(.gray900)
                 self.textColor = .type(.gray0)
-//            case .hover:
-//                self.backgroundColor = .type(.gray800)
-//                self.textColor = .type(.gray0)
-            case .pressed:
-                self.backgroundColor = .type(.gray1000)
-                self.textColor = .type(.gray0)
             case .disabled:
                 self.backgroundColor = .type(.gray300)
                 self.textColor = .type(.gray700)
@@ -53,12 +47,6 @@ struct BNButtonAppearance {
             switch state {
             case .enabled:
                 self.backgroundColor = .type(.gray100)
-                self.textColor = .type(.gray700)
-//            case .hover:
-//                self.backgroundColor = .type(.gray300)
-//                self.textColor = .type(.gray700)
-            case .pressed:
-                self.backgroundColor = .type(.gray400)
                 self.textColor = .type(.gray700)
             case .disabled:
                 self.backgroundColor = .type(.gray100)
@@ -75,12 +63,6 @@ struct BNButtonAppearance {
             case .enabled:
                 self.backgroundColor = .type(.gray0)
                 self.textColor = .type(.gray800)
-//            case .hover:
-//                self.backgroundColor = .type(.gray100)
-//                self.textColor = .type(.gray800)
-            case .pressed:
-                self.backgroundColor = .type(.gray400)
-                self.textColor = .type(.gray800)
             case .disabled:
                 self.backgroundColor = .type(.gray0)
                 self.textColor = .type(.gray500)
@@ -95,12 +77,6 @@ struct BNButtonAppearance {
             switch state {
             case .enabled:
                 self.backgroundColor = .type(.gray900)
-                self.textColor = .type(.gray0)
-//            case .hover:
-//                self.backgroundColor = .type(.gray800)
-//                self.textColor = .type(.gray0)
-            case .pressed:
-                self.backgroundColor = .type(.gray1000)
                 self.textColor = .type(.gray0)
             case .disabled:
                 self.backgroundColor = .type(.gray300)
