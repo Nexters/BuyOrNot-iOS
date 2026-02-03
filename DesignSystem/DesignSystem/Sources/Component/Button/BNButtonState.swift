@@ -7,7 +7,5 @@
 
 public enum BNButtonState {
     case enabled
-//    case hover
-    case pressed
     case disabled
 }
