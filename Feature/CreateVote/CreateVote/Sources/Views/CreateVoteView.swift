@@ -20,7 +20,7 @@ public struct CreateVoteView: View {
     public var body: some View {
         VStack(spacing: 0) {
             HStack {
-                cancel()
+                cancel
                     .padding(.bottom, 14)
                 Spacer()
             }
@@ -30,11 +30,11 @@ public struct CreateVoteView: View {
                 category(viewModel.category)
                     .padding(.vertical, 18)
                 BNDivider(size: .s)
-                price()
+                price
                 BNDivider(size: .s)
-                contents()
+                contents
                 HStack {
-                    addPhoto()
+                    addPhoto
                     Spacer()
                 }
                 Spacer()
@@ -64,15 +64,31 @@ public struct CreateVoteView: View {
             switch (newValue) {
             case .price:
                 priceFocused = true
+                contentsFocused = false
             case .contents:
+                priceFocused = false
                 contentsFocused = true
+            case nil:
+                priceFocused = false
+                contentsFocused = false
             }
         }
-        
+        .bnBottomSheet(
+            isPresented: $viewModel.showCategoryBottomSheet,
+            isEnableDismiss: true,
+        ) {
+            CategorySheetView(
+                viewModel.categories,
+                viewModel.category
+            )
+        }
+        .interactiveDismissDisabled(
+            viewModel.showCategoryBottomSheet
+        )
     }
     
     @ViewBuilder
-    private func cancel() -> some View {
+    private var cancel: some View {
         Button {
             
         } label: {
@@ -89,7 +105,8 @@ public struct CreateVoteView: View {
             BNImage(.right)
                 .style(color: .type(.gray600), size: 14)
             Button {
-                
+                viewModel.showCategoryBottomSheet = true
+                viewModel.focusField = nil
             } label: {
                 if let text {
                     BNText(text)
@@ -104,7 +121,7 @@ public struct CreateVoteView: View {
     }
     
     @ViewBuilder
-    private func price() -> some View {
+    private var price: some View {
         HStack(spacing: 6) {
             BNImage(.won)
                 .style(color: .type(.gray600), size: 18)
@@ -131,7 +148,7 @@ public struct CreateVoteView: View {
     }
     
     @ViewBuilder
-    private func addPhoto() -> some View {
+    private var addPhoto: some View {
         Button {
             Task {
                 await viewModel.checkPhotoPermission()
@@ -153,7 +170,7 @@ public struct CreateVoteView: View {
     }
     
     @ViewBuilder
-    private func contents() -> some View {
+    private var contents: some View {
         let placeHolder: String = "고민 이유를 자세히 적을수록 더 정확한 투표 결과를 얻을 수 있어요!"
         
         VStack(spacing: 0) {

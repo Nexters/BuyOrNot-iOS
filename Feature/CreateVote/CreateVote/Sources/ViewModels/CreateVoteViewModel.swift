@@ -16,16 +16,20 @@ final class CreateVoteViewModel: ObservableObject {
     // MARK: - Model 정의 필요
     var contents: String = ""
     var price: String = ""
-    var category: String?
+    var category: String? = String(repeating: "b", count: 10)
+    var categories: [String] = "abcdefghijklmnop".map { c in
+        String(repeating: c, count: 10)
+    }
     
-    var createButtonState: BNButtonState = .enabled
+    var createButtonState: BNButtonState = .disabled
     
-    var focusField: FocusedTextField = .price
+    var focusField: FocusedTextField? = .price
     
     var selectedItem: PhotosPickerItem?
     var selectedImage: Image?
     var showPhotoPicker = false
     var showCustomAlert = false
+    var showCategoryBottomSheet = false
     
     var contentsLimitCount: Int {
         _contentsLimitCount
