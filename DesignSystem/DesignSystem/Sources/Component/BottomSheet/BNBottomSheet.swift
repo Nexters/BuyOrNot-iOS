@@ -1,0 +1,136 @@
+//
+//  BNBottomSheet.swift
+//  DesignSystem
+//
+//  Created by 문종식 on 2/4/26.
+//
+
+import SwiftUI
+
+public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
+    @Binding private var isPresented: Bool
+    @State private var dragOffset: CGFloat = 0
+    private let isEnableDismiss: Bool
+    private let sheetContent: () -> SheetView
+    
+    public init(
+        isPresented: Binding<Bool>,
+        isEnableDismiss: Bool,
+        @ViewBuilder content: @escaping () -> SheetView
+    ) {
+        self._isPresented = isPresented
+        self.isEnableDismiss = isEnableDismiss
+        self.sheetContent = content
+    }
+    
+    private let hiddenOffset: CGFloat = UIScreen.main.bounds.height
+    private let animation: Animation = .spring(
+        response: 0.3,
+        dampingFraction: 1
+    )
+    
+    public func body(content: Content) -> some View {
+        ZStack {
+            content
+            
+            ZStack(alignment: .bottom) {
+                dimView
+                    .opacity(isPresented ? 1 : 0)
+                
+                sheetView
+                    .offset(y: isPresented ? max(dragOffset, 0) : hiddenOffset)
+                    .gesture(dragGesture)
+            }
+        }
+        .onChange(of: isPresented) { oldValue, newValue in
+            if !newValue {
+                dragOffset = 0
+            }
+        }
+        .animation(
+            animation,
+            value: isPresented
+        )
+    }
+    
+    private var dimView: some View {
+        BNColor(.type(.gray1000))
+            .color
+            .opacity(0.5)
+            .ignoresSafeArea()
+            .onTapGesture {
+                guard isEnableDismiss else { return }
+                dismiss()
+            }
+    }
+    
+    @ViewBuilder
+    private var sheetView: some View {
+        VStack(spacing: 0) {
+            handleView
+                .padding(.top, 10)
+                .padding(.bottom, 16)
+            sheetContent()
+        }
+        .frame(maxWidth: .infinity)
+        .background(BNColor(.type(.gray0)).color)
+        .clipShape(
+            RoundedRectangle(
+                cornerRadius: 26,
+                style: .continuous
+            )
+        )
+        .padding(.horizontal, 14)
+        .padding(.bottom, 10)
+        .animation(.linear(duration: 0.2), value: dragOffset)
+    }
+    
+    @ViewBuilder
+    private var handleView: some View {
+        let colorSource: BNColor.Source = isEnableDismiss ? .hex("#D9D9D9"): .type(.gray0)
+        Capsule()
+            .fill(BNColor(colorSource).color)
+            .frame(width: 40, height: 4)
+    }
+    
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                guard isEnableDismiss else { return }
+                dragOffset = value.translation.height
+            }
+            .onEnded { value in
+                guard isEnableDismiss else { return }
+                let translation = value.translation.height
+                if translation > 120 {
+                    dismiss()
+                } else {
+                    withAnimation(animation) {
+                        dragOffset = 0
+                    }
+                }
+            }
+    }
+    
+    private func dismiss() {
+        withAnimation(animation) {
+            isPresented = false
+        }
+    }
+}
+
+public extension View {
+    func bnBottomSheet<SheetContent: View>(
+        isPresented: Binding<Bool>,
+        isEnableDismiss: Bool = true,
+        @ViewBuilder content: @escaping () -> SheetContent
+    ) -> some View {
+        modifier(
+            BNBottomSheetModifier(
+                isPresented: isPresented,
+                isEnableDismiss: isEnableDismiss,
+                content: content
+            )
+        )
+    }
+}
