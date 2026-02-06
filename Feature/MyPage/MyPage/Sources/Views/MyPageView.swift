@@ -48,16 +48,8 @@ public struct MyPageView: View {
     private var menus: some View {
         VStack(spacing: 25) {
             ForEach(MyPageMenu.allCases, id: \.self) { menu in
-                Button {
-                    
-                } label: {
-                    HStack {
-                        BNText(menu.title)
-                            .style(style: .p1m, color: .type(.gray900))
-                        Spacer()
-                    }
-                    .padding(.vertical, 9)
-                    .contentShape(Rectangle())
+                MenuTile(menu: menu) {
+                    viewModel.didTapMenu(menu)
                 }
             }
         }
