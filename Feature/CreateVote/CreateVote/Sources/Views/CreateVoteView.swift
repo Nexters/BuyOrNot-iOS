@@ -10,8 +10,8 @@ import DesignSystem
 
 public struct CreateVoteView: View {
     @StateObject var viewModel = CreateVoteViewModel()
-    @FocusState private var priceFocused: Bool
-    @FocusState private var contentsFocused: Bool
+    @FocusState var priceFocused: Bool
+    @FocusState var contentsFocused: Bool
     
     public init() {
         
@@ -61,30 +61,21 @@ public struct CreateVoteView: View {
             photoLibrary: .shared()
         )
         .onChange(of: viewModel.focusField) { oldValue, newValue in
-            switch (newValue) {
-            case .price:
-                priceFocused = true
-                contentsFocused = false
-            case .contents:
-                priceFocused = false
-                contentsFocused = true
-            case nil:
-                priceFocused = false
-                contentsFocused = false
-            }
+            
         }
         .bnBottomSheet(
             isPresented: $viewModel.showCategoryBottomSheet,
             isEnableDismiss: true,
-        ) {
+        ) { dismiss in
             CategorySheetView(
                 viewModel.categories,
                 viewModel.category
-            )
+            ) { category in
+                dismiss()
+                viewModel.didChangeCategory(category)
+                priceFocused = true
+            }
         }
-        .interactiveDismissDisabled(
-            viewModel.showCategoryBottomSheet
-        )
     }
     
     @ViewBuilder
@@ -106,7 +97,7 @@ public struct CreateVoteView: View {
                 .style(color: .type(.gray600), size: 14)
             Button {
                 viewModel.showCategoryBottomSheet = true
-                viewModel.focusField = nil
+                priceFocused = false
             } label: {
                 if let text {
                     BNText(text)
@@ -138,7 +129,6 @@ public struct CreateVoteView: View {
                 viewModel.didChangePrice(previous: oldValue, text: newValue)
             }
             .onAppear {
-                viewModel.focusField = .price
                 priceFocused = true
             }
             Spacer()

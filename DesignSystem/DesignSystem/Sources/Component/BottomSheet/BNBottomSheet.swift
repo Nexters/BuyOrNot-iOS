@@ -10,13 +10,14 @@ import SwiftUI
 public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     @Binding private var isPresented: Bool
     @State private var dragOffset: CGFloat = 0
+    @State private var isFullScreenViewVisible = false
     private let isEnableDismiss: Bool
-    private let sheetContent: () -> SheetView
+    private let sheetContent: (@escaping VoidCallBack) -> SheetView
     
     public init(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool,
-        @ViewBuilder content: @escaping () -> SheetView
+        @ViewBuilder content: @escaping (@escaping VoidCallBack) -> SheetView
     ) {
         self._isPresented = isPresented
         self.isEnableDismiss = isEnableDismiss
@@ -30,27 +31,36 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     )
     
     public func body(content: Content) -> some View {
-        ZStack {
-            content
-            
-            ZStack(alignment: .bottom) {
-                dimView
-                    .opacity(isPresented ? 1 : 0)
-                
-                sheetView
-                    .offset(y: isPresented ? max(dragOffset, 0) : hiddenOffset)
-                    .gesture(dragGesture)
+        content
+            .fullScreenCover(isPresented: $isPresented) {
+                Group{
+                    ZStack {
+                        ZStack(alignment: .bottom) {
+                            dimView
+                                .opacity(isFullScreenViewVisible ? 1 : 0)
+                            
+                            sheetView
+                                .offset(y: isFullScreenViewVisible ? max(dragOffset, 0) : hiddenOffset)
+                                .gesture(dragGesture)
+                        }
+                    }
+                    .onChange(of: isFullScreenViewVisible) { oldValue, newValue in
+                        if !newValue {
+                            dragOffset = 0
+                        }
+                    }
+                    .animation(
+                        animation,
+                        value: isFullScreenViewVisible
+                    )
+                }
+                .clearBackground()
+                .onAppear {
+                    isFullScreenViewVisible = true
+                }
             }
-        }
-        .onChange(of: isPresented) { oldValue, newValue in
-            if !newValue {
-                dragOffset = 0
-            }
-        }
-        .animation(
-            animation,
-            value: isPresented
-        )
+            .transaction({ transaction in transaction.disablesAnimations = true })
+            .animation(animation, value: isFullScreenViewVisible)
     }
     
     private var dimView: some View {
@@ -70,7 +80,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
             handleView
                 .padding(.top, 10)
                 .padding(.bottom, 16)
-            sheetContent()
+            sheetContent(dismiss)
         }
         .frame(maxWidth: .infinity)
         .background(BNColor(.type(.gray0)).color)
@@ -97,12 +107,13 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
         DragGesture()
             .onChanged { value in
                 guard isEnableDismiss else { return }
-                dragOffset = value.translation.height
+                let translation = value.translation.height
+                dragOffset = translation
             }
             .onEnded { value in
                 guard isEnableDismiss else { return }
                 let translation = value.translation.height
-                if translation > 120 {
+                if translation > 100 {
                     dismiss()
                 } else {
                     withAnimation(animation) {
@@ -114,7 +125,10 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     
     private func dismiss() {
         withAnimation(animation) {
-            isPresented = false
+            isFullScreenViewVisible = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                isPresented = false
+            }
         }
     }
 }
@@ -123,7 +137,7 @@ public extension View {
     func bnBottomSheet<SheetContent: View>(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool = true,
-        @ViewBuilder content: @escaping () -> SheetContent
+        @ViewBuilder content: @escaping (@escaping VoidCallBack) -> SheetContent
     ) -> some View {
         modifier(
             BNBottomSheetModifier(
