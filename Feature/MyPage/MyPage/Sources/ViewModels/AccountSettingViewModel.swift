@@ -17,13 +17,13 @@ final class AccountSettingViewModel: ObservableObject {
         case .email:
             break
         case .logout:
-            <#code#>
+            toggleLogoutAlert()
         case .deleteAccount:
             break
         }
     }
     
-    private func showLogoutAlert() {
+    private func toggleLogoutAlert() {
         showLogoutAlert = true
     }
 }

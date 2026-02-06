@@ -7,12 +7,12 @@
 
 public struct BNAlertConfig {
     let title: String?
-    let message: String
+    let message: String?
     let buttons: [BNAlertButtonConfig]
     
     public init(
-        title: String?,
-        message: String,
+        title: String? = nil,
+        message: String? = nil,
         buttons: [BNAlertButtonConfig]
     ) {
         self.title = title

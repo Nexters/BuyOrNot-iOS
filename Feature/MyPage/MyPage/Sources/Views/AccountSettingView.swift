@@ -23,6 +23,25 @@ public struct AccountSettingView: View {
             .basedOnSize,
             axes: .vertical
         )
+        .bnAlert(
+            isPresented: $viewModel.showLogoutAlert,
+            isEnableDismiss: false,
+            config: BNAlertConfig(
+                title: "로그아웃 하시겠어요?",
+                buttons: [
+                    BNAlertButtonConfig(
+                        text: "로그아웃",
+                        type: .secondaryLarge,
+                    ) {
+                        /// TODO: 작업 예정
+                    },
+                    BNAlertButtonConfig(
+                        text: "유지하기",
+                        type: .primary,
+                    ) { },
+                ]
+            )
+        )
     }
     
     @ViewBuilder
