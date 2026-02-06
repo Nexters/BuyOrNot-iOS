@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension View {
+public extension View {
     func clearBackground() -> some View {
         self.background(ClearBackground())
     }

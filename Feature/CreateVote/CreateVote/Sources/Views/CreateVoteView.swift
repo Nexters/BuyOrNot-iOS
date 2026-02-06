@@ -10,12 +10,12 @@ import Core
 import DesignSystem
 
 public struct CreateVoteView: View {
+    @Environment(\.dismiss) var dismiss
     @StateObject var viewModel = CreateVoteViewModel()
-    @FocusState var priceFocused: Bool
-    @FocusState var contentsFocused: Bool
+    @FocusState var focusState: FocusedTextField?
     
     public init() {
-        
+        self.focusState = .price
     }
     
     public var body: some View {
@@ -50,17 +50,17 @@ public struct CreateVoteView: View {
             }
             .padding(.horizontal, 20)
         }
+        .onAppear {
+            self.focusState = .price
+        }
         .padding(.top, 20)
         .padding(.bottom, 10)
         .sheet(isPresented: $viewModel.showPhotoPicker) {
             SinglePhotoPicker { image in
-                viewModel.didPickPendingImage(image)
+                viewModel.didPickedImage(image)
             }
             .presentationDetents([.large])
             .presentationCornerRadius(18)
-        }
-        .onChange(of: viewModel.focusField) { oldValue, newValue in
-            
         }
         .bnBottomSheet(
             isPresented: $viewModel.showCategoryBottomSheet,
@@ -72,7 +72,6 @@ public struct CreateVoteView: View {
             ) { category in
                 dismiss()
                 viewModel.didChangeCategory(category)
-                priceFocused = true
             }
         }
     }
@@ -80,7 +79,7 @@ public struct CreateVoteView: View {
     @ViewBuilder
     private var cancel: some View {
         Button {
-            
+            dismiss()
         } label: {
             BNText("취소")
                 .style(style: .s4sb, color: .type(.gray700))
@@ -96,7 +95,6 @@ public struct CreateVoteView: View {
                 .style(color: .type(.gray600), size: 14)
             Button {
                 viewModel.showCategoryBottomSheet = true
-                priceFocused = false
             } label: {
                 if let text {
                     BNText(text)
@@ -119,21 +117,21 @@ public struct CreateVoteView: View {
                 BNText("상품 가격을 입력해주세요.")
                     .style(style: .s3sb, color: .type(.gray600))
             }
-            .focused($priceFocused)
+            .focused($focusState, equals: .price)
             .keyboardType(.numberPad)
             .font(BNFont.font(.s3sb))
-            .foregroundStyle(BNColor(.type(.gray800)).color)
-            .tint(BNColor(.type(.gray900)).color)
+            .foregroundStyle(.bnType(.gray800))
+            .tint(.bnType(.gray900))
             .onChange(of: viewModel.price) { oldValue, newValue in
                 viewModel.didChangePrice(previous: oldValue, text: newValue)
-            }
-            .onAppear {
-                priceFocused = true
             }
             Spacer()
         }
         .frame(height: 18)
         .padding(.vertical, 18)
+        .onTapGesture {
+            focusState = .price
+        }
     }
     
     @ViewBuilder
@@ -141,7 +139,22 @@ public struct CreateVoteView: View {
         let placeHolder: String = "고민 이유를 자세히 적을수록 더 정확한 투표 결과를 얻을 수 있어요!"
         
         VStack(spacing: 0) {
-            ZStack {
+            TextField(
+                "",
+                text: $viewModel.contents,
+                axis: .vertical
+            )
+            .font(BNFont.font(.p2m))
+            .foregroundStyle(.bnType(.gray900))
+            .tint(.bnType(.gray900))
+            .focused($focusState, equals: .contents)
+            .lineLimit(nil)
+            .scrollContentBackground(.hidden)
+            .frame(height: 84, alignment: .topLeading)
+            .onChange(of: viewModel.contents) { oldValue, newValue in
+                viewModel.didChangeContents(text: newValue)
+            }
+            .overlay {
                 if viewModel.contents.isEmpty {
                     VStack {
                         HStack {
@@ -151,23 +164,6 @@ public struct CreateVoteView: View {
                         }
                         Spacer()
                     }
-                }
-                
-                TextField(
-                    text: $viewModel.contents,
-                    axis: .vertical
-                ) {
-                    
-                }
-                .font(BNFont.font(.p2m))
-                .foregroundStyle(BNColor(.type(.gray900)).color)
-                .tint(BNColor(.type(.gray900)).color)
-                .focused($contentsFocused)
-                .lineLimit(nil)
-                .scrollContentBackground(.hidden)
-                .frame(height: 84, alignment: .topLeading)
-                .onChange(of: viewModel.contents) { oldValue, newValue in
-                    viewModel.didChangeContents(text: newValue)
                 }
             }
             .frame(height: 84)
@@ -179,11 +175,9 @@ public struct CreateVoteView: View {
             .padding(.vertical, 10)
         }
         .padding(.top, 20)
-        .onLongPressGesture(
-            minimumDuration: .infinity,
-            perform: {}
-        ) { _ in
-            viewModel.didTapContentsTextField()
+        .background(.white)
+        .onTapGesture {
+            focusState = .contents
         }
     }
     
@@ -192,8 +186,6 @@ public struct CreateVoteView: View {
         HStack(spacing: 8) {
             Button {
                 Task {
-                    priceFocused = false
-                    contentsFocused = false
                     await viewModel.checkPhotoPermission()
                 }
             } label: {
@@ -207,7 +199,7 @@ public struct CreateVoteView: View {
                 .padding(.vertical, 15)
                 .background {
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(BNColor(.type(.gray100)).color)
+                        .fill(.bnType(.gray100))
                 }
             }
             if let image = viewModel.selectedImage {
@@ -224,7 +216,7 @@ public struct CreateVoteView: View {
                                     viewModel.didTapDeleteImage()
                                 } label: {
                                     Circle()
-                                        .fill(BNColor(.type(.black)).color.opacity(0.4))
+                                        .fill(.bnType(.black).opacity(0.4))
                                         .overlay {
                                             BNImage(.close)
                                                 .style(color: .type(.gray0), size: 10)

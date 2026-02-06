@@ -26,7 +26,7 @@ public struct FloatingContextMenuButton: View {
     @State private var isPressing: Bool = false
     
     private var backgroundColor: Color {
-        BNColor(.type(isPressing ? .gray200 : .gray0)).color
+        .bnType(isPressing ? .gray200 : .gray0)
     }
     
     public var body: some View {
