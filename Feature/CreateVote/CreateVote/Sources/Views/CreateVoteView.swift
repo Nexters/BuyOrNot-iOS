@@ -33,10 +33,7 @@ public struct CreateVoteView: View {
                 price
                 BNDivider(size: .s)
                 contents
-                HStack {
-                    addPhoto
-                    Spacer()
-                }
+                addPhoto
                 Spacer()
                 HStack {
                     Spacer()
@@ -54,12 +51,13 @@ public struct CreateVoteView: View {
         }
         .padding(.top, 20)
         .padding(.bottom, 10)
-        .photosPicker(
-            isPresented: $viewModel.showPhotoPicker,
-            selection: $viewModel.selectedItem,
-            matching: .images,
-            photoLibrary: .shared()
-        )
+        .sheet(isPresented: $viewModel.showPhotoPicker) {
+            PhotoPicker { image in
+                viewModel.didPickPendingImage(image)
+            }
+            .presentationDetents([.large])
+            .presentationCornerRadius(18)
+        }
         .onChange(of: viewModel.focusField) { oldValue, newValue in
             
         }
@@ -138,28 +136,6 @@ public struct CreateVoteView: View {
     }
     
     @ViewBuilder
-    private var addPhoto: some View {
-        Button {
-            Task {
-                await viewModel.checkPhotoPermission()
-            }
-        } label: {
-            VStack(spacing: 2) {
-                BNImage(.camera)
-                    .style(color: .type(.gray600), size: 20)
-                BNText("0/1")
-                    .style(style: .s5sb, color: .type(.gray600))
-            }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 15)
-            .background {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(BNColor(.type(.gray100)).color)
-            }
-        }
-    }
-    
-    @ViewBuilder
     private var contents: some View {
         let placeHolder: String = "고민 이유를 자세히 적을수록 더 정확한 투표 결과를 얻을 수 있어요!"
         
@@ -209,8 +185,109 @@ public struct CreateVoteView: View {
             viewModel.didTapContentsTextField()
         }
     }
+    
+    @ViewBuilder
+    private var addPhoto: some View {
+        HStack(spacing: 8) {
+            Button {
+                Task {
+                    priceFocused = false
+                    contentsFocused = false
+                    await viewModel.checkPhotoPermission()
+                }
+            } label: {
+                VStack(spacing: 2) {
+                    BNImage(.camera)
+                        .style(color: .type(.gray600), size: 20)
+                    BNText("\(viewModel.selectedImage == nil ? 0 : 1)/1")
+                        .style(style: .s5sb, color: .type(.gray600))
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 15)
+                .background {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(BNColor(.type(.gray100)).color)
+                }
+            }
+            if let image = viewModel.selectedImage {
+                image
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 68, height: 68)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay {
+                        HStack {
+                            Spacer()
+                            VStack {
+                                Button {
+                                    viewModel.didTapDeleteImage()
+                                } label: {
+                                    Circle()
+                                        .fill(BNColor(.type(.black)).color.opacity(0.4))
+                                        .overlay {
+                                            BNImage(.close)
+                                                .style(color: .type(.gray0), size: 10)
+                                        }
+                                        .frame(width: 20, height: 20)
+                                        .padding(4)
+                                }
+                                Spacer()
+                            }
+                        }
+                    }
+            }
+            Spacer()
+        }
+    }
 }
 
 #Preview {
     CreateVoteView()
+}
+
+import SwiftUI
+import PhotosUI
+
+struct PhotoPicker: UIViewControllerRepresentable {
+    let onPicked: (Image) -> Void
+    
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.filter = .images
+        config.selectionLimit = 1
+        
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = context.coordinator
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    final class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        private let parent: PhotoPicker
+        
+        init(_ parent: PhotoPicker) {
+            self.parent = parent
+        }
+        
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            picker.dismiss(animated: true)
+            
+            guard let itemProvider = results.first?.itemProvider,
+                  itemProvider.canLoadObject(ofClass: UIImage.self) else {
+                return
+            }
+            
+            itemProvider.loadObject(ofClass: UIImage.self) { object, _ in
+                guard let uiImage = object as? UIImage else { return }
+                DispatchQueue.main.async {
+                    self.parent.onPicked(Image(uiImage: uiImage))
+                }
+            }
+        }
+    }
 }

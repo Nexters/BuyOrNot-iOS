@@ -59,7 +59,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
                     isFullScreenViewVisible = true
                 }
             }
-            .transaction({ transaction in transaction.disablesAnimations = true })
+            .transaction({ transaction in transaction.disablesAnimations = isPresented })
             .animation(animation, value: isFullScreenViewVisible)
     }
     
