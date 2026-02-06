@@ -10,7 +10,7 @@ import SwiftUI
 public struct BNButton: View {
     private let text: String
     private let type: BNButtonType
-    @State private var state: BNButtonState
+    private let state: BNButtonState
     private let width: CGFloat?
     private let action: () -> Void
     
@@ -51,7 +51,10 @@ public struct BNButton: View {
                 .padding(.vertical, appearance.verticalPadding)
                 .padding(.horizontal, appearance.horizontalPadding)
                 .frame(
-                    width: width,
+                    width: width
+                )
+                .frame(
+                    maxWidth: width == nil ? .infinity : nil
                 )
                 .background {
                     RoundedRectangle(
@@ -89,7 +92,8 @@ private struct BNButtonStyle: ButtonStyle {
 #Preview {
     let type: [BNButtonType] = [
         .primary,
-        .secondary,
+        .secondaryLarge,
+        .secondarySmall,
         .outline,
         .capsule,
     ]

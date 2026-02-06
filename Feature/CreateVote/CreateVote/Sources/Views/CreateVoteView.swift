@@ -14,9 +14,7 @@ public struct CreateVoteView: View {
     @StateObject var viewModel = CreateVoteViewModel()
     @FocusState var focusState: FocusedTextField?
     
-    public init() {
-        self.focusState = .price
-    }
+    public init() {}
     
     public var body: some View {
         VStack(spacing: 0) {
@@ -44,7 +42,10 @@ public struct CreateVoteView: View {
                         state: viewModel.createButtonState,
                         width: 80
                     ) {
-                        
+                        let result = viewModel.postVote()
+                        if result {
+                            dismiss()
+                        }
                     }
                 }
             }
@@ -56,8 +57,8 @@ public struct CreateVoteView: View {
         .padding(.top, 20)
         .padding(.bottom, 10)
         .sheet(isPresented: $viewModel.showPhotoPicker) {
-            SinglePhotoPicker { image in
-                viewModel.didPickedImage(image)
+            SinglePhotoPicker { image, data in
+                viewModel.didSelectedImage(image, data)
             }
             .presentationDetents([.large])
             .presentationCornerRadius(18)
@@ -74,6 +75,23 @@ public struct CreateVoteView: View {
                 viewModel.didChangeCategory(category)
             }
         }
+        .bnAlert(
+            isPresented: $viewModel.showCustomAlert,
+            isEnableDismiss: true,
+            config: BNAlertConfig(
+                title: "사진 접근 권한을 허용해주세요",
+                message: "더 쉽고 편하게 사진을 올릴 수 있어요.",
+                buttons: [
+                    .close,
+                    BNAlertButtonConfig(
+                        text: "접근 허용하기",
+                        type: .primary,
+                    ) {
+                        viewModel.openPhotoAuthorizationSetting()
+                    },
+                ]
+            )
+        )
     }
     
     @ViewBuilder

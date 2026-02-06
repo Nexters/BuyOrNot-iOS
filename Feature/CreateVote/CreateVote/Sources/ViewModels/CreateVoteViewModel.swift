@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 import Photos
 import PhotosUI
 import DesignSystem
@@ -33,7 +34,7 @@ final class CreateVoteViewModel: ObservableObject {
     
     
     @Published var createButtonState: BNButtonState = .disabled
-    @Published var selectedItem: PhotosPickerItem?
+    @Published var selectedImageData: Data?
     @Published var selectedImage: Image?
     @Published var showPhotoPicker = false
     @Published var showCustomAlert = false
@@ -97,26 +98,44 @@ final class CreateVoteViewModel: ObservableObject {
             showCustomAlert = true
         }
     }
-
-    func didPickedImage(_ image: Image) {
+    
+    @MainActor
+    func openPhotoAuthorizationSetting() {
+        guard let url = URL(string: UIApplication.openSettingsURLString),
+        UIApplication.shared.canOpenURL(url) else {
+            return
+        }
+        UIApplication.shared.open(url)
+    }
+    
+    func didSelectedImage(_ image: Image, _ data: Data) {
         defer {
             validatePost()
         }
+        selectedImageData = data
         selectedImage = image
     }
-
+    
     func didTapDeleteImage() {
         defer {
             validatePost()
         }
-        selectedItem = nil
+        selectedImageData = nil
         selectedImage = nil
     }
     
     private func validatePost() {
+        let isValidPrice = price.isEmpty == false
         let isValidCategory = category != nil
-        let isValidImage = selectedItem != nil && selectedImage != nil
-        let isValid = isValidImage && isValidCategory
+        let isValidImage = selectedImageData != nil && selectedImage != nil
+        let isValid = isValidImage && isValidCategory && isValidPrice
+        print(isValid, isValidImage, isValidCategory, isValidPrice)
         createButtonState = isValid ? .enabled : .disabled
+        print(createButtonState)
+    }
+    
+    func postVote() -> Bool {
+        // TODO: 작업 필요
+        return true
     }
 }

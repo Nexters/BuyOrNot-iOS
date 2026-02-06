@@ -59,7 +59,9 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
                     isFullScreenViewVisible = true
                 }
             }
-            .transaction({ transaction in transaction.disablesAnimations = isPresented })
+            .transaction { transaction in
+                transaction.disablesAnimations = isPresented
+            }
             .animation(animation, value: isFullScreenViewVisible)
     }
     
@@ -125,7 +127,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     private func dismiss() {
         withAnimation(animation) {
             isFullScreenViewVisible = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 isPresented = false
             }
         }
