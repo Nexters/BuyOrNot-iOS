@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Core
 import DesignSystem
 
 public struct CreateVoteView: View {
@@ -52,7 +53,7 @@ public struct CreateVoteView: View {
         .padding(.top, 20)
         .padding(.bottom, 10)
         .sheet(isPresented: $viewModel.showPhotoPicker) {
-            PhotoPicker { image in
+            SinglePhotoPicker { image in
                 viewModel.didPickPendingImage(image)
             }
             .presentationDetents([.large])
@@ -243,51 +244,4 @@ public struct CreateVoteView: View {
 
 #Preview {
     CreateVoteView()
-}
-
-import SwiftUI
-import PhotosUI
-
-struct PhotoPicker: UIViewControllerRepresentable {
-    let onPicked: (Image) -> Void
-    
-    func makeUIViewController(context: Context) -> PHPickerViewController {
-        var config = PHPickerConfiguration(photoLibrary: .shared())
-        config.filter = .images
-        config.selectionLimit = 1
-        
-        let picker = PHPickerViewController(configuration: config)
-        picker.delegate = context.coordinator
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    final class Coordinator: NSObject, PHPickerViewControllerDelegate {
-        private let parent: PhotoPicker
-        
-        init(_ parent: PhotoPicker) {
-            self.parent = parent
-        }
-        
-        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            picker.dismiss(animated: true)
-            
-            guard let itemProvider = results.first?.itemProvider,
-                  itemProvider.canLoadObject(ofClass: UIImage.self) else {
-                return
-            }
-            
-            itemProvider.loadObject(ofClass: UIImage.self) { object, _ in
-                guard let uiImage = object as? UIImage else { return }
-                DispatchQueue.main.async {
-                    self.parent.onPicked(Image(uiImage: uiImage))
-                }
-            }
-        }
-    }
 }

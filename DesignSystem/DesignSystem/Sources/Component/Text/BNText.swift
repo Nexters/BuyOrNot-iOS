@@ -35,7 +35,7 @@ public struct BNText: View {
         BNText("Body1 Color.yellow")
             .style(
                 style: .b1m,
-                color: .color(.yellow)
+                color: .yellow
             )
         BNText("Body4 Gray600")
             .style(

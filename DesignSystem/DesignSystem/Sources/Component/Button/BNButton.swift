@@ -25,10 +25,6 @@ public struct BNButton: View {
         BNColor(appearance.backgroundColor).color
     }
     
-    private var borderColor: Color {
-        BNColor(appearance.borderColor).color
-    }
-    
     public init(
         text: String,
         type: BNButtonType,
@@ -69,7 +65,7 @@ public struct BNButton: View {
                             style: .circular
                         )
                         .stroke(
-                            borderColor,
+                            appearance.borderColor,
                             lineWidth: appearance.borderWidth
                         )
                     )

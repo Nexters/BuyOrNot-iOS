@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension BNText {
-    /// BNText 전용 Style Modifier
+    /// BNText 전용 Style Modifier - BNColor
     public func style(
         style: BNFontStyle,
         color: BNColor.Source
@@ -17,6 +17,19 @@ extension BNText {
             BNTextStyle(
                 style: style,
                 color: BNColor(color)
+            )
+        )
+    }
+    
+    /// BNText 전용 Style Modifier - Color
+    public func style(
+        style: BNFontStyle,
+        color: Color
+    ) -> some View {
+        self.modifier(
+            BNTextStyle(
+                style: style,
+                color: color
             )
         )
     }
