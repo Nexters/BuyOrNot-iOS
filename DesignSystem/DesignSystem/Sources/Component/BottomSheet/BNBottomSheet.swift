@@ -127,7 +127,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     private func dismiss() {
         withAnimation(animation) {
             isFullScreenViewVisible = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                 isPresented = false
             }
         }

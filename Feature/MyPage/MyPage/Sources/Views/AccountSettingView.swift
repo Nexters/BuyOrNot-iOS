@@ -25,7 +25,7 @@ public struct AccountSettingView: View {
         )
         .bnAlert(
             isPresented: $viewModel.showLogoutAlert,
-            isEnableDismiss: false,
+            isEnableDismiss: true,
             config: BNAlertConfig(
                 title: "로그아웃 하시겠어요?",
                 buttons: [

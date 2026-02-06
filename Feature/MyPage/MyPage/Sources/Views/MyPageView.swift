@@ -17,7 +17,7 @@ public struct MyPageView: View {
     
     public var body: some View {
         ScrollView {
-            VStack {
+            VStack(spacing: 0) {
                 profile
                 BNDivider(size: .s)
                     .padding(.vertical, 20)
