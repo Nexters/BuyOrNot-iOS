@@ -65,6 +65,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
             .opacity(0.5)
             .ignoresSafeArea()
             .onTapGesture {
+                guard isEnableDismiss else { return }
                 dismiss()
             }
     }
@@ -83,10 +84,12 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
                         Spacer()
                     }
                 }
-                HStack {
-                    BNText(config.message)
-                        .style(style: .p2m, color: .type(.gray700))
-                    Spacer()
+                if let message = config.message {
+                    HStack {
+                        BNText(message)
+                            .style(style: .p2m, color: .type(.gray700))
+                        Spacer()
+                    }
                 }
             }
             alertContent()
