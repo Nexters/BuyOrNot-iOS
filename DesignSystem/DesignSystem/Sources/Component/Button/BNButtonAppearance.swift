@@ -34,10 +34,25 @@ struct BNButtonAppearance {
                 self.backgroundColor = .type(.gray900)
                 self.textColor = .type(.gray0)
             case .disabled:
+                self.backgroundColor = .type(.gray200)
+                self.textColor = .type(.gray600)
+            }
+        case .secondaryLarge:
+            self.textStyle = .t2b
+            self.cornerRadius = 14
+            self.borderWidth = 0
+            self.borderColor = .clear
+            self.verticalPadding = 15
+            self.horizontalPadding = 0
+            switch state {
+            case .enabled:
                 self.backgroundColor = .type(.gray300)
                 self.textColor = .type(.gray700)
+            case .disabled:
+                self.backgroundColor = .type(.gray200)
+                self.textColor = .type(.gray600)
             }
-        case .secondary:
+        case .secondarySmall:
             self.textStyle = .s5sb
             self.cornerRadius = 10
             self.borderWidth = 0
