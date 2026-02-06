@@ -45,14 +45,10 @@ public enum DesignSystemAsset: Sendable {
     public static let gray900 = DesignSystemColors(name: "gray900")
   }
   public enum Icon {
-<<<<<<< HEAD
   public static let camera = DesignSystemImages(name: "camera")
     public static let check = DesignSystemImages(name: "check")
     public static let close = DesignSystemImages(name: "close")
-=======
-  public static let close = DesignSystemImages(name: "close")
     public static let combinedShape = DesignSystemImages(name: "combined_shape")
->>>>>>> main
     public static let completed = DesignSystemImages(name: "completed")
     public static let extend = DesignSystemImages(name: "extend")
     public static let `left` = DesignSystemImages(name: "left")
