@@ -145,7 +145,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
     private func dismiss() {
         withAnimation(animation) {
             isFullScreenViewVisible = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                 isPresented = false
             }
         }
