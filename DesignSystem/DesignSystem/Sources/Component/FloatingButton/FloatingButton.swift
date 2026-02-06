@@ -14,9 +14,16 @@ public struct FloatingButton: View {
         self.state = state
     }
     
+    @ViewBuilder
+    var dimColor: Color {
+        (state == .open)
+        ? Color.bnType(.gray1000)
+        : Color.clear
+    }
+    
     public var body: some View {
         ZStack {
-            Color(state == .open ? BNColor(.type(.gray1000)).uiColor : .clear)
+            dimColor
                 .opacity(0.5)
                 .ignoresSafeArea()
                 .onTapGesture {

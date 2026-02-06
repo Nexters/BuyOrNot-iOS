@@ -33,8 +33,6 @@ final class CreateVoteViewModel: ObservableObject {
     
     
     @Published var createButtonState: BNButtonState = .disabled
-    @Published var focusField: FocusedTextField? = .price
-    
     @Published var selectedItem: PhotosPickerItem?
     @Published var selectedImage: Image?
     @Published var showPhotoPicker = false
@@ -50,10 +48,16 @@ final class CreateVoteViewModel: ObservableObject {
     private let _maxPrice = 100_000_000
     
     func didChangeCategory(_ category: String) {
+        defer {
+            validatePost()
+        }
         self.category = category
     }
     
     func didChangePrice(previous: String, text: String) {
+        defer {
+            validatePost()
+        }
         if (!text.isInt) {
             self.price = ""
         }
@@ -72,10 +76,6 @@ final class CreateVoteViewModel: ObservableObject {
         if text.count > _contentsLimitCount {
             self.contents = String(text.prefix(_contentsLimitCount))
         }
-    }
-    
-    func didTapContentsTextField() {
-        focusField = .contents
     }
     
     @MainActor
@@ -97,24 +97,26 @@ final class CreateVoteViewModel: ObservableObject {
             showCustomAlert = true
         }
     }
-    
-    func loadImage() async {
-        guard let item = selectedItem else { return }
-        do {
-            if let image = try await item.loadTransferable(type: Image.self) {
-                selectedImage = image
-            }
-        } catch {
-            print("\(error)")
-        }
-    }
 
-    func didPickPendingImage(_ image: Image) {
+    func didPickedImage(_ image: Image) {
+        defer {
+            validatePost()
+        }
         selectedImage = image
     }
 
     func didTapDeleteImage() {
+        defer {
+            validatePost()
+        }
         selectedItem = nil
         selectedImage = nil
+    }
+    
+    private func validatePost() {
+        let isValidCategory = category != nil
+        let isValidImage = selectedItem != nil && selectedImage != nil
+        let isValid = isValidImage && isValidCategory
+        createButtonState = isValid ? .enabled : .disabled
     }
 }

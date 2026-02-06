@@ -16,9 +16,7 @@ struct FloatingCircleButton: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(
-                    BNColor(.type(state == .open ? .gray0 : .gray800)).color
-                )
+                .fill(.bnType(state == .open ? .gray0 : .gray800))
                 .shadow(
                     color: state == .close ? BNColor(.hex("#313540")).color.opacity(0.2) : .clear,
                     radius: state == .close ? 30 : 0,
