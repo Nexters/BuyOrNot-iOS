@@ -35,8 +35,8 @@ final class CreateVoteViewModel: ObservableObject {
     @Published var createButtonState: BNButtonState = .disabled
     @Published var focusField: FocusedTextField? = .price
     
-    var selectedItem: PhotosPickerItem?
-    var selectedImage: Image?
+    @Published var selectedItem: PhotosPickerItem?
+    @Published var selectedImage: Image?
     @Published var showPhotoPicker = false
     @Published var showCustomAlert = false
     @Published var showCategoryBottomSheet = false
@@ -78,6 +78,7 @@ final class CreateVoteViewModel: ObservableObject {
         focusField = .contents
     }
     
+    @MainActor
     func checkPhotoPermission() async {
         let status = PHPhotoLibrary.authorizationStatus(for: _accessLevel)
         switch status {
@@ -106,5 +107,14 @@ final class CreateVoteViewModel: ObservableObject {
         } catch {
             print("\(error)")
         }
+    }
+
+    func didPickPendingImage(_ image: Image) {
+        selectedImage = image
+    }
+
+    func didTapDeleteImage() {
+        selectedItem = nil
+        selectedImage = nil
     }
 }
