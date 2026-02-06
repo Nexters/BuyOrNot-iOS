@@ -5,7 +5,9 @@
 //  Created by 문종식 on 1/18/26.
 //
 
-public enum MyPageMenu: Hashable, CaseIterable {
+import SwiftUI
+
+public enum MyPageMenu: Hashable, CaseIterable, MenuTileItem {
     case accountInfo
     case terms
     case feedback
