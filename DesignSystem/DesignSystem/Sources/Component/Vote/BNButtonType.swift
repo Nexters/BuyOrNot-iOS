@@ -9,7 +9,8 @@ import Foundation
 
 public enum BNButtonType {
     case primary
-    case secondary
+    case secondaryLarge
+    case secondarySmall
     case outline
     case capsule
 }

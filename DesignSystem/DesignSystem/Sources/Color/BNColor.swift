@@ -10,7 +10,6 @@ import SwiftUI
 public struct BNColor {
     public enum Source {
         case hex(String)
-        case color(Color)
         case type(BNColorType)
     }
     
@@ -44,8 +43,6 @@ public struct BNColor {
             let alpha = hasAlpha ? Double((rgb & 0xFF000000) >> 24) / 255.0 : 1.0
 
             self._color = Color(red: red, green: green, blue: blue, opacity: alpha)
-        case .color(let color):
-            self._color = color
         case .type(let type):
             self._color = Color("\(type.name)", bundle: .module)
         }
