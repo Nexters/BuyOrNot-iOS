@@ -136,3 +136,6 @@ Tuist/.tuist-cache/
 Tuist/Dependencies/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,swift,swiftpackagemanager
+
+
+secret.xcconfig
