@@ -61,6 +61,7 @@ final class CreateVoteViewModel: ObservableObject {
         }
         if (!text.isInt) {
             self.price = ""
+            return
         }
         guard let price = text.toInt else {
             self.price = ""
@@ -129,9 +130,7 @@ final class CreateVoteViewModel: ObservableObject {
         let isValidCategory = category != nil
         let isValidImage = selectedImageData != nil && selectedImage != nil
         let isValid = isValidImage && isValidCategory && isValidPrice
-        print(isValid, isValidImage, isValidCategory, isValidPrice)
         createButtonState = isValid ? .enabled : .disabled
-        print(createButtonState)
     }
     
     func postVote() -> Bool {

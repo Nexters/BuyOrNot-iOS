@@ -10,7 +10,7 @@ import Foundation
 public extension Int {
     /*
      * 문자열을 화폐단위 형식으로 변환합니다.
-     * 변환에 실패할 경우 빈 문자열을 반환합니다.
+     * 변환에 실패할 경우 숫자의 문자열 표현을 반환합니다.
      */
     var toCurrency: String {
         let formatter = NumberFormatter()

@@ -13,7 +13,7 @@ public extension String {
      * 숫자 변환에 실패할 경우 빈 문자열을 반환합니다.
      */
     var toCurrency: String {
-        guard let num = Int(self) else {
+        guard let num = self.toInt else {
             return ""
         }
         return num.toCurrency
