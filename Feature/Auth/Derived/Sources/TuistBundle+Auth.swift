@@ -6,9 +6,9 @@ import Foundation
 // MARK: - Swift Bundle Accessor - for SPM
 private class BundleFinder {}
 extension Foundation.Bundle {
-/// Since MyPage is a static framework, the bundle containing the resources is copied into the final product.
+/// Since Auth is a static framework, the bundle containing the resources is copied into the final product.
 static let module: Bundle = {
-    let bundleName = "MyPage_MyPage"
+    let bundleName = "Auth_Auth"
     let bundleFinderResourceURL = Bundle(for: BundleFinder.self).resourceURL
     var candidates = [
         Bundle.main.resourceURL,
@@ -45,12 +45,12 @@ static let module: Bundle = {
             return bundle
         }
     }
-    fatalError("unable to find bundle named MyPage_MyPage")
+    fatalError("unable to find bundle named Auth_Auth")
 }()
 }
 // MARK: - Objective-C Bundle Accessor
 @objc
-public class MyPageResources: NSObject {
+public class AuthResources: NSObject {
 @objc public class var bundle: Bundle {
     return .module
 }
