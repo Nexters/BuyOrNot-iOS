@@ -8,7 +8,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Module.Feature.login.project(
+let project = Module.Feature.auth.project(
     dependencies: [
         Module.core.toDependency,
         Module.domain.toDependency,
