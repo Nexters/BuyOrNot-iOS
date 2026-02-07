@@ -10,9 +10,8 @@ import ProjectDescriptionHelpers
 
 let project = Module.app.project(
     dependencies: [
-        Module.Feature.login.toDependency,
-        Module.Feature.createVote.toDependency,
-        Module.Feature.myPage.toDependency,
+        Module.Feature.auth.toDependency,
+        Module.Feature.vote.toDependency,
         .external(name: "Swinject"),
     ],
     infoPlist: .extendingDefault(

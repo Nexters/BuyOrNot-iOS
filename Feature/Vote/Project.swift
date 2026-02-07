@@ -8,12 +8,12 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Module.Feature.createVote.project(
+let project = Module.Feature.vote.project(
     dependencies: [
         Module.core.toDependency,
         Module.domain.toDependency,
         Module.designSystem.toDependency,
-        Module.Feature.login.toDependency,
+        Module.Feature.auth.toDependency,
     ],
     infoPlist: .extendingDefault(
         with: [
