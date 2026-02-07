@@ -31,5 +31,8 @@ public enum Module: String, CaseIterable {
         
         /// 투표 생성
         case createVote = "CreateVote"
+        
+        /// 마이페이지
+        case myPage = "MyPage"
     }
 }

@@ -12,6 +12,7 @@ let project = Module.app.project(
     dependencies: [
         Module.Feature.login.toDependency,
         Module.Feature.createVote.toDependency,
+        Module.Feature.myPage.toDependency,
         .external(name: "Swinject"),
     ],
     infoPlist: .extendingDefault(
