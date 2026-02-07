@@ -6,9 +6,9 @@ import Foundation
 // MARK: - Swift Bundle Accessor - for SPM
 private class BundleFinder {}
 extension Foundation.Bundle {
-/// Since Login is a static framework, the bundle containing the resources is copied into the final product.
+/// Since Vote is a static framework, the bundle containing the resources is copied into the final product.
 static let module: Bundle = {
-    let bundleName = "Login_Login"
+    let bundleName = "Vote_Vote"
     let bundleFinderResourceURL = Bundle(for: BundleFinder.self).resourceURL
     var candidates = [
         Bundle.main.resourceURL,
@@ -45,12 +45,12 @@ static let module: Bundle = {
             return bundle
         }
     }
-    fatalError("unable to find bundle named Login_Login")
+    fatalError("unable to find bundle named Vote_Vote")
 }()
 }
 // MARK: - Objective-C Bundle Accessor
 @objc
-public class LoginResources: NSObject {
+public class VoteResources: NSObject {
 @objc public class var bundle: Bundle {
     return .module
 }

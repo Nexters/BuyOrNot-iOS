@@ -27,12 +27,9 @@ public enum Module: String, CaseIterable {
     /// 각 기능 모듈 (Feature 기반 분리)
     public enum Feature: String, CaseIterable {
         /// 로그인
-        case login = "Login"
-        
-        /// 투표 생성
-        case createVote = "CreateVote"
-        
-        /// 마이페이지
-        case myPage = "MyPage"
+        case auth = "Auth"
+
+        /// 투표
+        case vote = "Vote"
     }
 }
