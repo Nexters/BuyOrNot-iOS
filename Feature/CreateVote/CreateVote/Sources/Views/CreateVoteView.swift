@@ -11,8 +11,8 @@ import DesignSystem
 
 public struct CreateVoteView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject var viewModel = CreateVoteViewModel()
-    @FocusState var focusState: FocusedTextField?
+    @StateObject private var viewModel = CreateVoteViewModel()
+    @FocusState private var focusState: FocusedTextField?
     
     public init() {}
     
