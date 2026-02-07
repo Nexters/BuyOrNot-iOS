@@ -63,7 +63,8 @@ public enum DesignSystemAsset: Sendable {
     public static let won = DesignSystemImages(name: "won")
   }
   public enum Image {
-  public static let loginBackground = DesignSystemImages(name: "login_background")
+  public static let feedBanner = DesignSystemImages(name: "feed_banner")
+    public static let loginBackground = DesignSystemImages(name: "login_background")
     public static let logo = DesignSystemImages(name: "logo")
   }
 }
