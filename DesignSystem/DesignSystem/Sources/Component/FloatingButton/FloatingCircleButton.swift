@@ -27,7 +27,7 @@ struct FloatingCircleButton: View {
             ZStack {
                 BNImage(.plus)
                     .style(
-                        color: .type(.gray0),
+                        color: .gray0,
                         size: iconSize
                     )
                     .rotationEffect(.degrees(state == .open ? -45 : 0))
@@ -35,7 +35,7 @@ struct FloatingCircleButton: View {
                 
                 BNImage(.close)
                     .style(
-                        color: .type(.gray800),
+                        color: .gray800,
                         size: iconSize
                     )
                     .rotationEffect(.degrees(state == .open ? 0 : 45))

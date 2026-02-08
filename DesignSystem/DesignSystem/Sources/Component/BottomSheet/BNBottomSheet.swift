@@ -85,7 +85,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
             sheetContent(dismiss)
         }
         .frame(maxWidth: .infinity)
-        .background(.type(.gray0))
+        .background(.gray0)
         .clipShape(
             RoundedRectangle(
                 cornerRadius: 26,
