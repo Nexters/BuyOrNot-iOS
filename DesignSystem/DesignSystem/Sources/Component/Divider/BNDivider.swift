@@ -16,7 +16,7 @@ public struct BNDivider: View {
     
     public var body: some View {
         Rectangle()
-            .fill(.type(.gray100))
+            .fill(.gray100)
             .frame(height: size.height)
     }
 }

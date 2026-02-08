@@ -110,7 +110,7 @@ public struct CreateVoteView: View {
             BNText("투표 등록")
                 .style(style: .s3sb, color: .gray800)
             BNImage(.right)
-                .style(color: .type(.gray600), size: 14)
+                .style(color: .gray600, size: 14)
             Button {
                 viewModel.showCategoryBottomSheet = true
             } label: {
@@ -130,14 +130,14 @@ public struct CreateVoteView: View {
     private var price: some View {
         HStack(spacing: 6) {
             BNImage(.won)
-                .style(color: .type(.gray600), size: 18)
+                .style(color: .gray600, size: 18)
             TextField(text: $viewModel.price) {
                 BNText("상품 가격을 입력해주세요.")
                     .style(style: .s3sb, color: .gray600)
             }
             .focused($focusState, equals: .price)
             .keyboardType(.numberPad)
-            .font(BNFont.font(.s3sb))
+            .font(.s3sb)
             .foregroundStyle(.type(.gray800))
             .tint(.type(.gray900))
             .onChange(of: viewModel.price) { oldValue, newValue in
@@ -162,7 +162,7 @@ public struct CreateVoteView: View {
                 text: $viewModel.contents,
                 axis: .vertical
             )
-            .font(BNFont.font(.p2m))
+            .font(.p2m)
             .foregroundStyle(.type(.gray900))
             .tint(.type(.gray900))
             .focused($focusState, equals: .contents)
@@ -209,7 +209,7 @@ public struct CreateVoteView: View {
             } label: {
                 VStack(spacing: 2) {
                     BNImage(.camera)
-                        .style(color: .type(.gray600), size: 20)
+                        .style(color: .gray600, size: 20)
                     BNText("\(viewModel.selectedImage == nil ? 0 : 1)/1")
                         .style(style: .s5sb, color: .gray600)
                 }
@@ -217,7 +217,7 @@ public struct CreateVoteView: View {
                 .padding(.vertical, 15)
                 .background {
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(.type(.gray100))
+                        .fill(.gray100)
                 }
             }
             if let image = viewModel.selectedImage {
@@ -237,7 +237,7 @@ public struct CreateVoteView: View {
                                         .fill(.type(.black).opacity(0.4))
                                         .overlay {
                                             BNImage(.close)
-                                                .style(color: .type(.gray0), size: 10)
+                                                .style(color: .gray0, size: 10)
                                         }
                                         .frame(width: 20, height: 20)
                                         .padding(4)

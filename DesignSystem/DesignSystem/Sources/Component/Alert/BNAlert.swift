@@ -98,7 +98,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
         .padding(.top, 26)
         .padding(.horizontal, 18)
         .padding(.bottom, 16)
-        .background(.type(.gray0))
+        .background(.gray0)
         .clipShape(
             RoundedRectangle(
                 cornerRadius: 24,

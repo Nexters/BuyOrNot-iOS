@@ -79,17 +79,17 @@ public extension BNImage {
     VStack(spacing: 10) {
         BNImage(.notification)
             .style(
-                color: .type(.red100),
+                color: .red100,
                 size: 30,
             )
         BNImage(.product)
             .style(
-                color: .type(.blue100),
+                color: .blue100,
                 size: 10
             )
         BNImage(.completed)
             .style(
-                color: .type(.gray800),
+                color: .gray800,
                 size: 20
             )
     }
