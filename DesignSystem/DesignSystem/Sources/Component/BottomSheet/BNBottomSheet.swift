@@ -67,7 +67,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     
     private var dimView: some View {
         Color
-            .bnType(.gray1000)
+            .type(.gray1000)
             .opacity(0.5)
             .ignoresSafeArea()
             .onTapGesture {
@@ -85,7 +85,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
             sheetContent(dismiss)
         }
         .frame(maxWidth: .infinity)
-        .background(.bnType(.gray0))
+        .background(.type(.gray0))
         .clipShape(
             RoundedRectangle(
                 cornerRadius: 26,
@@ -100,7 +100,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     @ViewBuilder
     private var handleView: some View {
         Capsule()
-            .fill(isEnableDismiss ? .hex("#D9D9D9"): .bnType(.gray0))
+            .fill(isEnableDismiss ? .hex("#D9D9D9"): .type(.gray0))
             .frame(width: 40, height: 4)
     }
     

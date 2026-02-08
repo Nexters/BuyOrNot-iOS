@@ -8,21 +8,17 @@
 import SwiftUI
 
 public extension Color {
-    static func bnType(_ type: BNColorType) -> Self {
-        BNColor(.type(type)).color
+    static func source(_ source: BNColor.Source) -> Self {
+        BNColor(source).color
+    }
+    
+    static func type(_ type: BNColorType) -> Self {
+        self.source(.type(type))
     }
     
     static func hex(_ hex: String) -> Self {
-        BNColor(.hex(hex)).color
+        self.source(.hex(hex))
     }
 }
 
-public extension ShapeStyle where Self == Color {
-    static func bnType(_ type: BNColorType) -> Color {
-        Color.bnType(type)
-    }
 
-    static func hex(_ hex: String) -> Color {
-        Color.hex(hex)
-    }
-}
