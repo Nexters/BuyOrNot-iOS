@@ -12,7 +12,7 @@ public struct Banner: View {
     private let text: String
     private let onClose: () -> Void
     private let onAction: () -> Void
-
+    
     public init(
         image: BNImageAsset,
         text: String,
@@ -24,7 +24,7 @@ public struct Banner: View {
         self.onClose = onClose
         self.onAction = onAction
     }
-
+    
     public var body: some View {
         VStack(spacing: 10) {
             HStack {
@@ -40,7 +40,7 @@ public struct Banner: View {
             }
             .padding(.top, 8)
             .padding(.trailing, 24)
-
+            
             ZStack {
                 BNImage(image)
                     .resizable()
@@ -55,13 +55,12 @@ public struct Banner: View {
             }
             .frame(width: 168, height: 92)
             .padding(.top, -14)
-
+            
             Button {
                 onAction()
             } label: {
-                Text(text)
-                    .font(BNFont.font(.s4sb))
-                    .foregroundColor(BNColor(.type(.gray0)).color)
+                BNText(text)
+                    .style(style: .s4sb, color: .gray0)
                     .frame(height: 44)
                     .padding(.horizontal, 82)
                     .background(
@@ -83,9 +82,9 @@ public struct Banner: View {
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .shadow(color: Color.black.opacity(0.1), radius: 20, x: 0, y: 4)
         .overlay(
-        RoundedRectangle(cornerRadius: 20)
-        .inset(by: 0.5)
-        .stroke(Color(red: 0.93, green: 0.94, blue: 0.95), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 20)
+                .inset(by: 0.5)
+                .stroke(Color(red: 0.93, green: 0.94, blue: 0.95), lineWidth: 1)
         )
     }
 }
@@ -94,7 +93,7 @@ public struct Banner: View {
 
 #Preview {
     let _ = BNFont.loadFonts()
-
+    
     ZStack {
         Banner(
             image: .feed_banner,

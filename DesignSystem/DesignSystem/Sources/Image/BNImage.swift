@@ -14,7 +14,7 @@ public extension BNImage {
         self = Image(asset.rawValue, bundle: .module)
     }
     
-    /// BNImage 전용 Style Modifier  - 정방향
+    /// BNImage 전용 Style Modifier  - 정방향, BNColor.Source
     func style(
         color: BNColor.Source,
         size: CGFloat,
@@ -22,6 +22,32 @@ public extension BNImage {
     ) -> some View {
         self.style(
             color: color,
+            size: BNImageSize(size),
+            contentMode: contentMode
+        )
+    }
+    
+    /// BNImage 전용 Style Modifier  - 정방향, Hex String
+    func style(
+        color: String,
+        size: CGFloat,
+        contentMode: ContentMode = .fit
+    ) -> some View {
+        self.style(
+            color: BNColor.Source.hex(color),
+            size: BNImageSize(size),
+            contentMode: contentMode
+        )
+    }
+    
+    /// BNImage 전용 Style Modifier  - 정방향, BNColorType
+    func style(
+        color: BNColorType,
+        size: CGFloat,
+        contentMode: ContentMode = .fit
+    ) -> some View {
+        self.style(
+            color: BNColor.Source.type(color),
             size: BNImageSize(size),
             contentMode: contentMode
         )

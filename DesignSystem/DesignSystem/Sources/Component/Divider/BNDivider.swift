@@ -16,14 +16,14 @@ public struct BNDivider: View {
     
     public var body: some View {
         Rectangle()
-            .fill(.bnType(.gray100))
+            .fill(.type(.gray100))
             .frame(height: size.height)
     }
 }
 
 #Preview {
     ZStack {
-        Color.bnType(.gray700)
+        Color.type(.gray700)
         VStack(spacing: 20) {
             BNDivider(size: .l)
             BNDivider(size: .s)

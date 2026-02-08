@@ -26,7 +26,7 @@ struct CategorySheetView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             BNText("카테고리")
-                .style(style: .s1sb, color: .type(.gray900))
+                .style(style: .s1sb, color: .gray900)
             
             ZStack {
                 ScrollView {
@@ -39,12 +39,12 @@ struct CategorySheetView: View {
                                     BNText(item)
                                         .style(
                                             style: item == selectedCategory ? .s3sb : .b3m,
-                                            color: .type(item == selectedCategory ? .gray900 : .gray700)
+                                            color: item == selectedCategory ? .gray900 : .gray700
                                         )
                                     Spacer()
                                     if item == selectedCategory {
                                         BNImage(.check)
-                                            .style(color: .type(.gray900), size: 20)
+                                            .style(color: .gray900, size: 20)
                                     }
                                 }
                                 .padding(.top, 10)
