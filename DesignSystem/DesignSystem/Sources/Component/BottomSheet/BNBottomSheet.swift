@@ -68,7 +68,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     private var dimView: some View {
         Color
             .type(.gray1000)
-            .opacity(0.5)
+            .opacity(0)
             .ignoresSafeArea()
             .onTapGesture {
                 guard isEnableDismiss else { return }
