@@ -9,12 +9,15 @@ import SwiftUI
 import DesignSystem
 
 struct MainView: View {
+    // TODO: navigationPath 연결 시 수정
+    @State private var navigationPath = NavigationPath()
+
     @State private var selectedTab: FeedTab = .voteFeed
     @State private var selectedFilter: FeedFilter = .all
     @State private var showBanner = true
-    @State private var navigationPath = NavigationPath()
+    @State private var voteFeedState: VoteFeedState = .error
+    @State private var myVoteState: MyVoteState = .empty
 
-    // 샘플 데이터 (나중에 ViewModel에서 가져올 예정)
     private let sampleFeeds: [VoteFeedData] = [
         VoteFeedData(
             id: "1",
@@ -60,66 +63,131 @@ struct MainView: View {
         )
     ]
 
+    private var shouldHideFilter: Bool {
+        switch selectedTab {
+        case .voteFeed:
+            return voteFeedState == .error
+        case .myVotes:
+            return myVoteState == .error || myVoteState == .empty
+        }
+    }
+
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            VStack(spacing: 0) {
-                FeedNavigationBar(
-                    onNotificationTap: {
-                        print("Notification tapped")
-                    },
-                    onProfileTap: {
-                        print("Profile tapped")
-                    }
-                )
-
-                FeedSegmentedControl(selectedTab: $selectedTab)
-
-                FeedFilterBar(selectedFilter: $selectedFilter)
-
-                ScrollView {
-                    VStack(spacing: 0) {
-                        // 배너
-                        if showBanner {
-                            Banner(
-                                image: .feed_banner,
-                                text: "고민되는 소비가 있나요?",
-                                onClose: {
-                                    withAnimation {
-                                        showBanner = false
-                                    }
-                                },
-                                onAction: {
-                                    // 투표 등록 화면으로 이동
-                                    navigationPath.append("VoteRegistration")
-                                }
-                            )
-                            .padding(.horizontal, 20)
-                            .padding(.bottom, 12)
+            ZStack {
+                VStack(spacing: 0) {
+                    NavigationBar(
+                        onNotificationTap: {
+                            print("Notification tapped")
+                        },
+                        onProfileTap: {
+                            print("Profile tapped")
                         }
+                    )
 
-                        // 피드 리스트
-                        LazyVStack(spacing: 0) {
-                            ForEach(sampleFeeds, id: \.id) { feed in
-                                VoteFeed(
-                                    data: feed,
-                                    onProductTap: {
-                                        print("Product tapped: \(feed.id)")
-                                        // 상품 상세로 이동
-                                    },
-                                    onVote: { optionId in
-                                        print("Voted \(optionId) on feed: \(feed.id)")
-                                        // 투표 API 호출
-                                    }
-                                )
-                                .padding(.horizontal, 20)
+                    FeedSegmentedControl(selectedTab: $selectedTab)
+
+                    if !shouldHideFilter {
+                        FeedFilterBar(selectedFilter: $selectedFilter)
+                    }
+
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            switch selectedTab {
+                            case .voteFeed:
+                                voteFeedContent
+                            case .myVotes:
+                                myVotesContent
                             }
                         }
                     }
                 }
-                .refreshable {
-                    /// TODO: 페이지네이션 구현
+
+                // TODO: FloatingButton init 상의해보고 수정
+//                FloatingButton(state: .open)
+            }
+            .navigationDestination(for: String.self) { destination in
+                switch destination {
+                case "VoteRegistration":
+                    Text("투표 등록 화면")
+                default:
+                    EmptyView()
                 }
             }
+        }
+    }
+
+    // MARK: - 투표 피드 탭
+    @ViewBuilder
+    private var voteFeedContent: some View {
+        switch voteFeedState {
+        case .loading:
+            ProgressView().padding(.top, 100)
+
+        case .success:
+            if showBanner {
+                Banner(
+                    image: .feed_banner,
+                    text: "고민되는 소비가 있나요?",
+                    onClose: {
+                        withAnimation { showBanner = false }
+                    },
+                    onAction: {
+                        navigationPath.append("VoteRegistration")
+                    }
+                )
+                .padding(.horizontal, 20)
+                .padding(.bottom, 12)
+            }
+
+            LazyVStack(spacing: 0) {
+                ForEach(sampleFeeds, id: \.id) { feed in
+                    VoteFeed(
+                        data: feed,
+                        onProductTap: { print("Product tapped: \(feed.id)") },
+                        onVote: { optionId in print("Voted \(optionId) on feed: \(feed.id)") }
+                    )
+                    .padding(.horizontal, 20)
+                }
+            }
+
+        case .error:
+            FeedErrorView {
+                voteFeedState = .loading
+            }
+            .padding(.top, 140)
+        }
+    }
+
+    @ViewBuilder
+    private var myVotesContent: some View {
+        switch myVoteState {
+        case .loading:
+            ProgressView()
+                .padding(.top, 100)
+
+        case .success:
+            // TODO: 내 투표 피드 리스트
+            LazyVStack(spacing: 0) {
+                ForEach(sampleFeeds, id: \.id) { feed in
+                    VoteFeed(
+                        data: feed,
+                        onProductTap: { print("Product tapped: \(feed.id)") },
+                        onVote: { optionId in print("Voted \(optionId) on feed: \(feed.id)") }
+                    )
+                    .padding(.horizontal, 20)
+                }
+            }
+
+        case .empty:
+            FeedEmptyView()
+                .padding(.top, 140)
+
+        case .error:
+            FeedErrorView {
+                myVoteState = .loading
+            }
+            .padding(.top, 140)
         }
     }
 }
@@ -134,47 +202,6 @@ enum FeedFilter: String, CaseIterable {
     case all = "전체"
     case ongoing = "진행중 투표"
     case closed = "마감된 투표"
-}
-
-// MARK: - Navigation Bar
-struct FeedNavigationBar: View {
-    let onNotificationTap: () -> Void
-    let onProfileTap: () -> Void
-
-    var body: some View {
-        HStack {
-            // 로고 이미지로 변경
-            BNImage(.logo)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 82)
-                .padding(.leading, 2)
-
-            Spacer()
-
-            HStack(spacing: 24) {
-                Button {
-                    onNotificationTap()
-                } label: {
-                    BNImage(.notification_fill)
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(BNColor(.type(.gray500)).color)
-                }
-
-                Button {
-                    onProfileTap()
-                } label: {
-                    BNImage(.my)
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(BNColor(.type(.gray500)).color)
-                }
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 20)
-    }
 }
 
 // MARK: - Segmented Control
@@ -196,14 +223,12 @@ struct FeedSegmentedControl: View {
                             }
                         }
                     )
-                    .fixedSize()  // 텍스트 크기만큼만 차지
+                    .fixedSize()
                 }
-
-                Spacer()  // 나머지 공간은 오른쪽 공백
+                Spacer()
             }
             .padding(.horizontal, 20)
 
-            // Divider
             Rectangle()
                 .fill(BNColor(.type(.gray100)).color)
                 .frame(height: 2)
@@ -225,7 +250,6 @@ private struct TabItem: View {
                 .font(BNFont.font(isSelected ? .t3b : .b4m))
                 .foregroundColor(BNColor(.type(.gray1000)).color)
 
-            // Underline - 텍스트 width + 좌우 4씩
             if isSelected {
                 Rectangle()
                     .fill(BNColor(.type(.gray1000)).color)
@@ -239,13 +263,6 @@ private struct TabItem: View {
             }
         }
         .onTapGesture(perform: onTap)
-    }
-}
-// MARK: - Preference Key
-private struct TabWidthPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
     }
 }
 
@@ -265,20 +282,6 @@ struct FeedFilterBar: View {
             Spacer()
         }
         .padding(20)
-    }
-}
-
-// MARK: - Content View
-struct FeedContentView: View {
-    let tab: FeedTab
-    let filter: FeedFilter
-
-    var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                // 피드 아이템들
-            }
-        }
     }
 }
 
