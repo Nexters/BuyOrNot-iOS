@@ -8,14 +8,18 @@
 import SwiftUI
 
 public struct BNText: View {
-    let text: String
+    private let text: Text
     
     public init(_ text: String) {
-        self.text = text
+        self.text = Text(text)
     }
     
-    public var body: Text {
-        Text(text)
+    public init(_ text: AttributedString) {
+        self.text = Text(text)
+    }
+    
+    public var body: some View {
+        text
     }
 }
 
