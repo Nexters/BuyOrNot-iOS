@@ -28,7 +28,10 @@ public enum DesignSystemAsset: Sendable {
     public static let red100 = DesignSystemColors(name: "red100")
   }
   public enum Color {
-  public static let black = DesignSystemColors(name: "black")
+  public static let apple = DesignSystemColors(name: "apple")
+    public static let black = DesignSystemColors(name: "black")
+    public static let google = DesignSystemColors(name: "google")
+    public static let kakao = DesignSystemColors(name: "kakao")
   }
   public enum Gray {
   public static let gray0 = DesignSystemColors(name: "gray0")
@@ -63,7 +66,10 @@ public enum DesignSystemAsset: Sendable {
     public static let won = DesignSystemImages(name: "won")
   }
   public enum Image {
-  public static let feedBanner = DesignSystemImages(name: "feed_banner")
+  public static let appleLogo = DesignSystemImages(name: "apple_logo")
+    public static let feedBanner = DesignSystemImages(name: "feed_banner")
+    public static let googleLogo = DesignSystemImages(name: "google_logo")
+    public static let kakaoLogo = DesignSystemImages(name: "kakao_logo")
     public static let loginBackground = DesignSystemImages(name: "login_background")
     public static let logo = DesignSystemImages(name: "logo")
   }

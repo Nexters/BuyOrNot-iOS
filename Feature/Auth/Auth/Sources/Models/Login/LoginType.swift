@@ -67,11 +67,11 @@ extension LoginType {
     var fontColor: Color {
         switch self {
         case .google:
-            BNColor.init(.type(.google)).color
+            BNColor.init(.type(.gray1000)).color
         case .apple:
-            BNColor.init(.type(.apple)).color
+            BNColor.init(.type(.gray0)).color
         case .kakao:
-            BNColor.init(.type(.kakao)).color
+            BNColor.init(.type(.gray1000)).color
         }
     }
     
