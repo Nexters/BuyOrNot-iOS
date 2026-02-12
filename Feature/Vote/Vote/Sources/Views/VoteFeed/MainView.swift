@@ -15,7 +15,7 @@ struct MainView: View {
     @State private var selectedTab: FeedTab = .voteFeed
     @State private var selectedFilter: FeedFilter = .all
     @State private var showBanner = true
-    @State private var voteFeedState: VoteFeedState = .error
+    @State private var voteFeedState: VoteFeedState = .success
     @State private var myVoteState: MyVoteState = .empty
 
     private let sampleFeeds: [VoteFeedData] = [
@@ -117,7 +117,6 @@ struct MainView: View {
         }
     }
 
-    // MARK: - 투표 피드 탭
     @ViewBuilder
     private var voteFeedContent: some View {
         switch voteFeedState {
@@ -167,7 +166,6 @@ struct MainView: View {
                 .padding(.top, 100)
 
         case .success:
-            // TODO: 내 투표 피드 리스트
             LazyVStack(spacing: 0) {
                 ForEach(sampleFeeds, id: \.id) { feed in
                     VoteFeed(
@@ -192,7 +190,6 @@ struct MainView: View {
     }
 }
 
-// MARK: - Tab & Filter Enums
 enum FeedTab: String, CaseIterable {
     case voteFeed = "투표 피드"
     case myVotes = "내 투표"
@@ -204,7 +201,6 @@ enum FeedFilter: String, CaseIterable {
     case closed = "마감된 투표"
 }
 
-// MARK: - Segmented Control
 struct FeedSegmentedControl: View {
     @Binding var selectedTab: FeedTab
     @Namespace private var namespace
@@ -237,7 +233,6 @@ struct FeedSegmentedControl: View {
     }
 }
 
-// MARK: - Tab Item
 private struct TabItem: View {
     let title: String
     let isSelected: Bool
@@ -266,7 +261,6 @@ private struct TabItem: View {
     }
 }
 
-// MARK: - Filter Bar
 struct FeedFilterBar: View {
     @Binding var selectedFilter: FeedFilter
 
@@ -285,7 +279,6 @@ struct FeedFilterBar: View {
     }
 }
 
-// MARK: - Preview
 #Preview {
     let _ = BNFont.loadFonts()
     MainView()
