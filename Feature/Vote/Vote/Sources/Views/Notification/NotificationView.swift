@@ -1,5 +1,5 @@
 //
-//  AlramView.swift
+//  NotificationView.swift
 //  Vote
 //
 //  Created by 이조은 on 2/12/26.
@@ -111,37 +111,34 @@ private struct NotificationPermissionBanner: View {
     let onTap: () -> Void
 
     var body: some View {
-        Button {
-            onTap()
-        } label: {
-            HStack(spacing: 8) {
-                BNImage(.notification_fill)
-                    .resizable()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(BNColor(.type(.gray600)).color)
+        HStack(spacing: 8) {
+            BNImage(.notification_fill)
+                .resizable()
+                .frame(width: 16, height: 16)
+                .foregroundColor(BNColor(.type(.gray600)).color)
 
-                Text("투표 종료 및 결과 소식을 받아보세요")
-                    .font(BNFont.font(.b5m))
-                    .foregroundColor(BNColor(.type(.gray700)).color)
+            Text("투표 종료 및 결과 소식을 받아보세요")
+                .font(BNFont.font(.b5m))
+                .foregroundColor(BNColor(.type(.gray700)).color)
 
-                Spacer()
+            Spacer()
 
-                Button {
-                    // TODO: 알림 허용 로직
-                } label: {
-                    Text("알림 켜기")
-                        .font(BNFont.font(.s5sb))
-                        .foregroundColor(BNColor(.type(.gray800)).color)
-                }
+            Button {
+                // TODO: 알림 허용 로직
+                onTap()
+            } label: {
+                Text("알림 켜기")
+                    .font(BNFont.font(.s5sb))
+                    .foregroundColor(BNColor(.type(.gray800)).color)
             }
-            .padding(.horizontal, 18)
-            .padding(.vertical, 12)
-            .background(BNColor(.type(.gray0)).color)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(BNColor(.type(.gray200)).color, lineWidth: 1)
-            )
         }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 12)
+        .background(BNColor(.type(.gray0)).color)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(BNColor(.type(.gray200)).color, lineWidth: 1)
+        )
     }
 }
 
