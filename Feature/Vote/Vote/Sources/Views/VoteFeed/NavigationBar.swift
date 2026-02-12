@@ -1,5 +1,5 @@
 //
-//  FeedNavigationBar.swift
+//  NavigationBar.swift
 //  Vote
 //
 //  Created by 이조은 on 2/11/26.
