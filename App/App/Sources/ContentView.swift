@@ -12,7 +12,7 @@ import Auth
 struct ContentView: View {
     @State private var flag = false
     var body: some View {
-        LoginView()
+        AppView()
     }
 }
 
