@@ -9,9 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Module.app.project(
-    dependencies: [
-        Module.Feature.auth.toDependency,
-        Module.Feature.vote.toDependency,
+    dependencies: Module.Feature.allCases.map(\.toDependency) + [
         .external(name: "Swinject"),
     ],
     infoPlist: .extendingDefault(

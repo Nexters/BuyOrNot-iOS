@@ -26,6 +26,9 @@ public enum Module: String, CaseIterable {
     
     /// 각 기능 모듈 (Feature 기반 분리)
     public enum Feature: String, CaseIterable {
+        /// 스플래쉬
+        case splash = "Splash"
+        
         /// 로그인
         case auth = "Auth"
 

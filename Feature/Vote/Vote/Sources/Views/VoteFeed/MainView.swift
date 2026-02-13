@@ -104,7 +104,7 @@ struct MainView: View {
                 }
 
                 // TODO: FloatingButton init 상의해보고 수정
-//                FloatingButton(state: .open)
+                FloatingButton(state: .open)
             }
             .navigationDestination(for: String.self) { destination in
                 switch destination {
