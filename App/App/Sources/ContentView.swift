@@ -7,16 +7,12 @@
 
 
 import SwiftUI
+import Auth
 
 struct ContentView: View {
+    @State private var flag = false
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Buy Or Not")
-        }
-        .ignoresSafeArea()
+        LoginView()
     }
 }
 

@@ -36,9 +36,9 @@ enum AccountSettingMenu: Hashable, CaseIterable, MenuTileItem {
     var textColor: Color {
         switch self {
         case .email, .logout:
-                .bnType(.gray900)
+                .type(.gray900)
         case  .deleteAccount:
-                .bnType(.red100)
+                .type(.red100)
         }
     }
 }

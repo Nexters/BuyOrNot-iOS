@@ -61,7 +61,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
     
     private var dimView: some View {
         Color
-            .bnType(.gray1000)
+            .type(.gray1000)
             .opacity(0.5)
             .ignoresSafeArea()
             .onTapGesture {
@@ -80,14 +80,14 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
                 if let title = config.title {
                     HStack {
                         BNText(title)
-                            .style(style: .s2sb, color: .type(.gray900))
+                            .style(style: .s2sb, color: .gray900)
                         Spacer()
                     }
                 }
                 if let message = config.message {
                     HStack {
                         BNText(message)
-                            .style(style: .p2m, color: .type(.gray700))
+                            .style(style: .p2m, color: .gray700)
                         Spacer()
                     }
                 }
@@ -98,7 +98,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
         .padding(.top, 26)
         .padding(.horizontal, 18)
         .padding(.bottom, 16)
-        .background(.bnType(.gray0))
+        .background(.gray0)
         .clipShape(
             RoundedRectangle(
                 cornerRadius: 24,

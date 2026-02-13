@@ -8,6 +8,11 @@
 public enum BNColorType: String {
     case black
     
+    /// SNS Login
+    case google
+    case apple
+    case kakao
+    
     /// Gray
     case gray0
     case gray50

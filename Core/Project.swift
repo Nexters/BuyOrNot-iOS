@@ -8,4 +8,8 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Module.core.project()
+let project = Module.core.project(
+    dependencies: [
+        .external(name: "Then"),
+    ]
+)

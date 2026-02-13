@@ -20,6 +20,6 @@ extension MenuTileItem {
     }
     
     var textColor: Color {
-        .bnType(.gray900)
+        .type(.gray900)
     }
 }
