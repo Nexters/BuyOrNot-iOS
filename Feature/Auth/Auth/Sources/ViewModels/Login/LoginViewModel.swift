@@ -11,9 +11,10 @@ import UIKit
 
 final class LoginViewModel: ObservableObject {
     private let auth = Auth()
-    private static var isKakaoSDKInitialized = false
 
     @Published var url: URL?
+    @Published var appleLoginPayload: AppleLoginPayload?
+    @Published var loginErrorMessage: String?
     
     var policyText: AttributedString {
         let serviceTermsURL = URL(string: Constants.serviceTermsURLString)
@@ -58,7 +59,8 @@ final class LoginViewModel: ObservableObject {
     
     /// 애플 로그인
     private func loginWithApple() {
-        
+        let appleAuth = AppleAuth()
+        appleAuth.requestLogin()
     }
     
     /// 카카오 로그인
