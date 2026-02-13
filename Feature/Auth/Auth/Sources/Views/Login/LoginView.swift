@@ -7,10 +7,14 @@
 
 import SwiftUI
 import DesignSystem
+import GoogleSignIn
+import GoogleSignIn
+import KakaoSDKAuth
+import KakaoSDKCommon
 
 public struct LoginView: View {
     @StateObject  var viewModel = LoginViewModel()
-
+    
     public init() {
         
     }
@@ -37,6 +41,9 @@ public struct LoginView: View {
                 BNWebView(url: url)
             }
         }
+        .onOpenURL(
+            perform: viewModel.handleAuthUrl
+        )
     }
 }
 
