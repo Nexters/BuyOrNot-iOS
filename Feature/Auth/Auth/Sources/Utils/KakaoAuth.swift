@@ -11,6 +11,7 @@ import KakaoSDKUser
 
 struct KakaoAuth {
     public func requestLogin() {
+        /// 카카오톡 사용 여부 확인
         if UserApi.isKakaoTalkLoginAvailable() {
             UserApi.shared.loginWithKakaoTalk { oauthToken, error in
                 guard let oauthToken else {
@@ -20,10 +21,12 @@ struct KakaoAuth {
                 handleKakaoLoginSuccess(oauthToken)
             }
         } else {
+            /// 카카오 웹 로그인
             loginWithKakaoAccount()
         }
     }
     
+    /// 카카오 웹 로그인
     private func loginWithKakaoAccount() {
         UserApi.shared.loginWithKakaoAccount { oauthToken, error in
             guard let oauthToken else {
@@ -39,5 +42,6 @@ struct KakaoAuth {
             "accessToken(\(oauthToken.accessToken.count))\n" +
             "refreshToken(\(oauthToken.refreshToken.count))"
         )
+        // TODO: accessToken 전달
     }
 }

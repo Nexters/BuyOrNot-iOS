@@ -28,12 +28,14 @@ struct GoogleAuth {
             withPresenting: presentingViewController
         ) { result, error in
             guard let result else { return }
-            
-            let idToken = result.user.idToken?.tokenString ?? ""
-            let accessToken = result.user.accessToken.tokenString
-            print("Google Login Success: idToken(\(idToken.count)) accessToken(\(accessToken.count))")
-            
-            // TODO: 서버 로그인 API와 연동 시 idToken/accessToken 전달
+            handleGoogleLoginSuccess(result)
         }
+    }
+    
+    private func handleGoogleLoginSuccess(_ result: GIDSignInResult) {
+        let idToken = result.user.idToken?.tokenString ?? ""
+        let accessToken = result.user.accessToken.tokenString
+        print("Google Login Success: idToken(\(idToken.count)) accessToken(\(accessToken.count))")
+        // TODO: idToken 전달
     }
 }
