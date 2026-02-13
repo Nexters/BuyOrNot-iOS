@@ -84,7 +84,7 @@ public struct VoteButton: View {
     private func buttonContent(textColor: Color) -> some View {
         HStack(spacing: Layout.spacing) {
                 Text(text)
-                    .font(BNFont.font(.s4sb))
+                    .font(.s4sb)
                     .foregroundColor(textColor)
 
                 Spacer(minLength: 0)

@@ -57,20 +57,20 @@ public struct BNChip: View {
     private var foregroundColor: Color {
         switch state {
         case .selected:
-            return BNColor(.type(.gray0)).color
+            return .type(.gray0)
         case .unselected, .hover:
-            return BNColor(.type(.gray700)).color
+            return .type(.gray700)
         }
     }
 
     private var backgroundColor: Color {
         switch state {
         case .selected:
-            return BNColor(.type(.gray900)).color
+            return .type(.gray900)
         case .unselected:
-            return BNColor(.type(.gray200)).color
+            return .type(.gray200)
         case .hover:
-            return BNColor(.type(.gray300)).color
+            return .type(.gray300)
         }
     }
 }

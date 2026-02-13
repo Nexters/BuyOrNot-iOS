@@ -8,14 +8,18 @@
 import SwiftUI
 
 public struct BNText: View {
-    let text: String
+    private let text: Text
     
     public init(_ text: String) {
-        self.text = text
+        self.text = Text(text)
     }
     
-    public var body: Text {
-        Text(text)
+    public init(_ text: AttributedString) {
+        self.text = Text(text)
+    }
+    
+    public var body: some View {
+        text
     }
 }
 
@@ -25,12 +29,12 @@ public struct BNText: View {
         BNText("Display1 Green200")
             .style(
                 style: .d1b,
-                color: .type(.green200)
+                color: .green200
             )
         BNText("Heading3 Red100")
             .style(
                 style: .h3b,
-                color: .type(.red100)
+                color: .red100
             )
         BNText("Body1 Color.yellow")
             .style(
@@ -40,12 +44,12 @@ public struct BNText: View {
         BNText("Body4 Gray600")
             .style(
                 style: .b4m,
-                color: .type(.gray600)
+                color: .gray600
             )
         BNText("Paragraph Medium2 Blue100")
             .style(
                 style: .p2m,
-                color: .type(.blue100)
+                color: .blue100
             )
     }
 }
