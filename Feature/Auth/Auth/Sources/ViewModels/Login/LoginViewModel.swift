@@ -7,8 +7,12 @@
 
 import SwiftUI
 import Core
+import UIKit
 
 final class LoginViewModel: ObservableObject {
+    private let auth = Auth()
+    private static var isKakaoSDKInitialized = false
+
     @Published var url: URL?
     
     var policyText: AttributedString {
@@ -46,15 +50,26 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
+    /// 구글 로그인
     private func loginWithGoogle() {
-        
+        let googleAuth = GoogleAuth()
+        googleAuth.requestLogin()
     }
     
+    /// 애플 로그인
     private func loginWithApple() {
         
     }
     
+    /// 카카오 로그인
     private func loginWithKakao() {
-        
+        let kakaoAuth = KakaoAuth()
+        kakaoAuth.requestLogin()
+    }
+    
+    /// 소셜 로그인 외부 URL 핸들링
+    @MainActor
+    func handleAuthUrl(_ url: URL) {
+        _ = auth.open(url: url)
     }
 }
