@@ -10,15 +10,15 @@ import SwiftUI
 // MARK: - Models
 /// TODO: 백엔드 API 응답 명세에 따라 구조 이동 및 변경 필요
 public struct VoteFeedData {
-    let id: String
-    let userName: String
-    let userProfileImageURL: String
-    let category: String
-    let timeAgo: String
-    let content: String
-    let productImageURL: String
-    let price: String
-    let voteOptions: [VoteGroup.VoteOption]
+    public let id: String
+    public let userName: String
+    public let userProfileImageURL: String
+    public let category: String
+    public let timeAgo: String
+    public let content: String
+    public let productImageURL: String
+    public let price: String
+    public let voteOptions: [VoteGroup.VoteOption]
 
     public init(
         id: String,
