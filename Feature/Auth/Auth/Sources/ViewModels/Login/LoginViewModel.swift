@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import Core
 
 final class LoginViewModel: ObservableObject {
+    @Published var url: URL?
+    
     var policyText: AttributedString {
-        let serviceTermsURL = URL(string: "https://littlemoom.notion.site/buy-or-not-service-term?source=copy_link")
-        let privacyPolicyURL = URL(string: "https://littlemoom.notion.site/buy-or-not-privacy-term?source=copy_link")
+        let serviceTermsURL = URL(string: Constants.serviceTermsURLString)
+        let privacyPolicyURL = URL(string: Constants.privacyPolicyURLString)
         var text = AttributedString(
             "가입을 진행하시면 서비스약관 및 개인정보처리방침에\n동의 하시는 것으로 간주합니다."
         )
