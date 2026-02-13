@@ -13,7 +13,7 @@ public struct Auth {
     private struct Constants {
         static let googleClientID: String = "CLIENT_ID"
         static let kakaoNativeAppKey: String = "KAKAO_NATIVE_APP_KEY"
-        static let appleClientID: String = "TODO"
+        static let appleClientID: String = "APPLE_CLIENT_ID"
     }
     
     public init() {
