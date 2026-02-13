@@ -8,15 +8,26 @@
 import SwiftUI
 import DesignSystem
 
-struct MainView: View {
-    // TODO: navigationPath 연결 시 수정
-    @State private var navigationPath = NavigationPath()
+public struct HomeView: View {
+    private let onNotificationTap: () -> Void
+    private let onProfileTap: () -> Void
+    private let onCreateVoteTap: () -> Void
 
     @State private var selectedTab: FeedTab = .voteFeed
     @State private var selectedFilter: FeedFilter = .all
     @State private var showBanner = true
     @State private var voteFeedState: VoteFeedState = .success
     @State private var myVoteState: MyVoteState = .empty
+
+    public init(
+        onNotificationTap: @escaping () -> Void,
+        onProfileTap: @escaping () -> Void,
+        onCreateVoteTap: @escaping () -> Void
+    ) {
+        self.onNotificationTap = onNotificationTap
+        self.onProfileTap = onProfileTap
+        self.onCreateVoteTap = onCreateVoteTap
+    }
 
     private let sampleFeeds: [VoteFeedData] = [
         VoteFeedData(
@@ -72,48 +83,33 @@ struct MainView: View {
         }
     }
 
-    var body: some View {
-        NavigationStack(path: $navigationPath) {
-            ZStack {
-                VStack(spacing: 0) {
-                    NavigationBar(
-                        onNotificationTap: {
-                            print("Notification tapped")
-                        },
-                        onProfileTap: {
-                            print("Profile tapped")
-                        }
-                    )
+    public var body: some View {
+        ZStack {
+            VStack(spacing: 0) {
+                NavigationBar(
+                    onNotificationTap: onNotificationTap,
+                    onProfileTap: onProfileTap
+                )
 
-                    FeedSegmentedControl(selectedTab: $selectedTab)
+                FeedSegmentedControl(selectedTab: $selectedTab)
 
-                    if !shouldHideFilter {
-                        FeedFilterBar(selectedFilter: $selectedFilter)
-                    }
+                if !shouldHideFilter {
+                    FeedFilterBar(selectedFilter: $selectedFilter)
+                }
 
-                    ScrollView {
-                        VStack(spacing: 0) {
-                            switch selectedTab {
-                            case .voteFeed:
-                                voteFeedContent
-                            case .myVotes:
-                                myVotesContent
-                            }
+                ScrollView {
+                    VStack(spacing: 0) {
+                        switch selectedTab {
+                        case .voteFeed:
+                            voteFeedContent
+                        case .myVotes:
+                            myVotesContent
                         }
                     }
                 }
+            }
 
-                // TODO: FloatingButton init 상의해보고 수정
-//                FloatingButton(state: .open)
-            }
-            .navigationDestination(for: String.self) { destination in
-                switch destination {
-                case "VoteRegistration":
-                    Text("투표 등록 화면")
-                default:
-                    EmptyView()
-                }
-            }
+            FloatingButton(state: .open)
         }
     }
 
@@ -132,7 +128,7 @@ struct MainView: View {
                         withAnimation { showBanner = false }
                     },
                     onAction: {
-                        navigationPath.append("VoteRegistration")
+                        onCreateVoteTap()
                     }
                 )
                 .padding(.horizontal, 20)
@@ -281,5 +277,9 @@ struct FeedFilterBar: View {
 
 #Preview {
     let _ = BNFont.loadFonts()
-    MainView()
+    HomeView(
+        onNotificationTap: {},
+        onProfileTap: {},
+        onCreateVoteTap: {}
+    )
 }
