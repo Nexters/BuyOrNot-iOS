@@ -10,7 +10,7 @@ import SwiftUI
 public struct FloatingButton: View {
     @State private var state: FloatingButtonState = .close
     
-    init(state: FloatingButtonState) {
+    public init(state: FloatingButtonState) {
         self.state = state
     }
     
