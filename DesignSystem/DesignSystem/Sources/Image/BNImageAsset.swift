@@ -9,6 +9,9 @@ public enum BNImageAsset: String {
     case logo = "logo"
     case login_background = "login_background"
     case feed_banner = "feed_banner"
+    case empty_image = "empty_image"
+    case error_image = "error_image"
+    case notification_empty_image = "notification_empty_image"
     
     /// SNS Login Logo
     case google_logo
