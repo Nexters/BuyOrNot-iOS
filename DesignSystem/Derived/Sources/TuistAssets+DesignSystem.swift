@@ -67,11 +67,14 @@ public enum DesignSystemAsset: Sendable {
   }
   public enum Image {
   public static let appleLogo = DesignSystemImages(name: "apple_logo")
+    public static let emptyImage = DesignSystemImages(name: "empty_image")
+    public static let errorImage = DesignSystemImages(name: "error_image")
     public static let feedBanner = DesignSystemImages(name: "feed_banner")
     public static let googleLogo = DesignSystemImages(name: "google_logo")
     public static let kakaoLogo = DesignSystemImages(name: "kakao_logo")
     public static let loginBackground = DesignSystemImages(name: "login_background")
     public static let logo = DesignSystemImages(name: "logo")
+    public static let notificationEmptyImage = DesignSystemImages(name: "notification_empty_image")
   }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name
