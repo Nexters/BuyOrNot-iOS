@@ -21,12 +21,15 @@ public final class BNSnackBarManager {
     public var barState: BNSnackBarState = .inactive
     
     public func addItem(_ item: BNSnackBarItem) {
-        switch barState {
-        case .active:
-            itemQueue.enqueue(item)
-        case .inactive:
-            currentItem = item
-            show()
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            switch barState {
+            case .active:
+                itemQueue.enqueue(item)
+            case .inactive:
+                currentItem = item
+                show()
+            }
         }
     }
 
@@ -35,13 +38,13 @@ public final class BNSnackBarManager {
         Task { @MainActor [weak self] in
             guard let self else { return }
             try? await Task.sleep(nanoseconds: 5 * .second)
-            self.barState = .inactive
+            barState = .inactive
             try? await Task.sleep(nanoseconds: 300 * .millisecond)
-            self.currentItem = .empty
+            currentItem = .empty
             try? await Task.sleep(nanoseconds: 100 * .millisecond)
-            if let item = self.itemQueue.dequeue() {
-                self.currentItem = item
-                self.show()
+            if let item = itemQueue.dequeue() {
+                currentItem = item
+                show()
             }
         }
     }

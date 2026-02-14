@@ -1,5 +1,5 @@
 //
-//  TokenRefreshRequest.swift
+//  RefreshTokenRequest.swift
 //  Service
 //
 //  Created by 문종식 on 2/14/26.

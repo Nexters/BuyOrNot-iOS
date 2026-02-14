@@ -5,7 +5,7 @@
 //  Created by 문종식 on 2/14/26.
 //
 
-enum SocialAccount {
+public enum SocialAccount {
     case kakao
     case google
     case apple

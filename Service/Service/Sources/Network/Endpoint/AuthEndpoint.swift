@@ -30,7 +30,7 @@ enum AuthEndpoint: Endpoint {
     }
     
     var method: HTTPMethod {
-        .get
+        .post
     }
     
     var body: (any Encodable)? {

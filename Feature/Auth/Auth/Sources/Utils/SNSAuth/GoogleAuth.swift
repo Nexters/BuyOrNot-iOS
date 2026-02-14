@@ -37,7 +37,6 @@ struct GoogleAuth {
         GIDSignIn.sharedInstance.signIn(
             withPresenting: presentingViewController
         ) { result, error in
-            guard let result else { return }
             completeHandler(result)
         }
     }
