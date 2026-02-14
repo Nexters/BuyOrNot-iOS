@@ -6,15 +6,15 @@
 //
 
 public struct User {
-    let id: Int
-    let nickname: String
-    let profileImage: String
-    let socialAccount: SocialAccount?
-    let email: String
+    public let id: Int
+    public let nickname: String
+    public let profileImage: String
+    public let socialAccount: SocialAccount?
+    public let email: String
     
-    let accessToken: String
-    let refreshToken: String
-    let tokenType: String
+    public let accessToken: String
+    public let refreshToken: String
+    public let tokenType: String
     
     public init(
         id: Int,
