@@ -14,5 +14,9 @@ extension DIContainer {
         container.register(AuthRepository.self) { _ in
             AuthRepositoryImpl()
         }
+        
+        container.register(LocalRepository.self) { _ in
+            LocalRepositoryImpl()
+        }
     }
 }

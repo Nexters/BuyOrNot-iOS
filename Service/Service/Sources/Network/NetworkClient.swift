@@ -13,7 +13,6 @@ protocol NetworkClientProtocol {
 }
 
 final class NetworkClient: NetworkClientProtocol {
-
     public static let shared = NetworkClient()
 
     private let session: URLSession

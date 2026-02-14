@@ -47,7 +47,14 @@ public final class LoginViewModel: ObservableObject {
             }
             text[range].underlineStyle = .single
         }
-        
+        text.foregroundColor = BNColor(.type(.gray600)).color
+        return text
+    }
+    
+    var guestLoginText: AttributedString {
+        var text = AttributedString("비회원으로 시작하기")
+        text.underlineStyle = .single
+        text.foregroundColor = BNColor(.type(.gray700)).color
         return text
     }
     
