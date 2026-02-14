@@ -9,7 +9,6 @@ import Core
 import SwiftUI
 
 @Observable
-@MainActor
 public final class BNSnackBarManager {
     public init() {
         
@@ -30,7 +29,7 @@ public final class BNSnackBarManager {
             show()
         }
     }
-    
+
     public func show() {
         barState = .active
         Task { @MainActor [weak self] in

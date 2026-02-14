@@ -10,15 +10,17 @@ import UIKit
 
 import DesignSystem
 import Core
+import Domain
 
 import GoogleSignIn
 import KakaoSDKAuth
 import KakaoSDKCommon
 
-@MainActor
 public final class LoginViewModel: ObservableObject {
-    public init() {
-        
+    let repository: AuthRepository
+    
+    public init(repository: AuthRepository) {
+        self.repository = repository
     }
 
     @Published var url: URL?
@@ -100,14 +102,15 @@ public final class LoginViewModel: ObservableObject {
     }
     
     /// 소셜 로그인 외부 URL 핸들링
-    @MainActor
     func handleAuthUrl(_ url: URL) {
-        if GIDSignIn.sharedInstance.handle(url) {
-            return
-        }
-        
-        if AuthApi.isKakaoTalkLoginUrl(url) {
-            _ = AuthController.handleOpenUrl(url: url)
+        Task { @MainActor in
+            if GIDSignIn.sharedInstance.handle(url) {
+                return
+            }
+            
+            if AuthApi.isKakaoTalkLoginUrl(url) {
+                _ = AuthController.handleOpenUrl(url: url)
+            }
         }
     }
     

@@ -6,3 +6,23 @@
 //
 
 import Swinject
+import SwiftUI
+
+final class DIContainer: ObservableObject {
+    private let container = Container()
+    
+    init() {
+        registerRepositories(container)
+        registerUseCases(container)
+        registerViewModels(container)
+    }
+    
+    func resolve<T>() -> T {
+        container.resolve()
+    }
+    
+    func resetLoginScope() {
+        container.resetObjectScope(.login)
+    }
+}
+

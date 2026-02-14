@@ -10,8 +10,12 @@ import SwiftUI
 import Auth
 
 struct ContentView: View {
+    @StateObject var container = DIContainer()
     var body: some View {
-        Text("Hello!")
+        AppView()
+            .environmentObject(
+                container
+            )
     }
 }
 

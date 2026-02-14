@@ -11,28 +11,10 @@ import DesignSystem
 extension LoginView {
     @ViewBuilder
     func loginImage() -> some View {
-        ZStack {
-            BNImage(.login_background)
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 40)
-            VStack {
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color.type(.gray0),
-                        Color.type(.gray0).opacity(0)
-                    ]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .layoutPriority(1)
-                
-                Spacer()
-                    .layoutPriority(1)
-            }
-        }
-        .offset(y: -40)
+        BNImage(.login_background)
+            .resizable()
+            .scaledToFit()
+//                .frame(maxWidth: .infinity)
     }
     
     @ViewBuilder
