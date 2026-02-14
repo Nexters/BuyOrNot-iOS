@@ -18,7 +18,7 @@ struct RootView: View {
             HomeView(
                 onNotificationTap: { router.navigate(to: .notification) },
                 onProfileTap: { router.navigate(to: .myPage) },
-                onCreateVoteTap: { router.navigate(to: .createVote) }
+                onCreateVoteTap: { router.showCreateVote = true }
             )
             .navigationDestination(for: AppDestination.self) { destination in
                 switch destination {
@@ -26,10 +26,13 @@ struct RootView: View {
                     NotificationView()
                 case .myPage:
                     MyPageView()
-                case .createVote:
-                    CreateVoteView()
                 }
             }
+        }
+        .sheet(isPresented: $router.showCreateVote) {
+            CreateVoteView()
+                .presentationDetents([.large])
+                .presentationCornerRadius(18)
         }
         .environment(router)
     }
