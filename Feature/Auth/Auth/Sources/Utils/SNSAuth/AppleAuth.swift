@@ -13,8 +13,8 @@ import UIKit
 struct AppleAuth {
     static private var delegate: AppleLoginDelegate?
     
-    static func clearDelegate() {
-        delegate = nil
+    func clearDelegate() {
+        Self.delegate = nil
     }
     
     func requestLogin(

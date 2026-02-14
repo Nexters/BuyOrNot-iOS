@@ -11,15 +11,11 @@ public class AuthRepositoryImpl: AuthRepository {
     private let apiClient: NetworkClient = .shared
     private let mapper = AuthMapper()
     
-    private func request<T: Decodable>(
-        _ endpoint: AuthEndpoint
-    ) async throws -> T {
+    private func request<T: Decodable>(_ endpoint: AuthEndpoint) async throws -> T {
         try await apiClient.request(endpoint)
     }
     
-    public func loginWithApple(
-        authorizationCode: String
-    ) async throws -> User {
+    public func loginWithApple(authorizationCode: String) async throws -> User {
         let body = AppleAuthRequest(
             authorizationCode: authorizationCode
         )
@@ -29,9 +25,7 @@ public class AuthRepositoryImpl: AuthRepository {
         return mapper.toDomain(response)
     }
     
-    public func loginWithGoogle(
-        idToken: String
-    ) async throws -> User {
+    public func loginWithGoogle(idToken: String) async throws -> User {
         let body = GoogleAuthRequest(
             idToken: idToken
         )
@@ -41,9 +35,7 @@ public class AuthRepositoryImpl: AuthRepository {
         return mapper.toDomain(response)
     }
     
-    public func loginWithKakao(
-        accessToken: String
-    ) async throws -> User {
+    public func loginWithKakao(accessToken: String) async throws -> User {
         let body = KakaoAuthRequest(
             accessToken: accessToken
         )
@@ -53,9 +45,7 @@ public class AuthRepositoryImpl: AuthRepository {
         return mapper.toDomain(response)
     }
     
-    public func refreshToken(
-        refreshToken: String
-    ) async throws -> User {
+    public func refreshToken(refreshToken: String) async throws -> User {
         let body = RefreshTokenRequest(
             refreshToken: refreshToken
         )
@@ -65,9 +55,7 @@ public class AuthRepositoryImpl: AuthRepository {
         return mapper.toDomain(response)
     }
     
-    public func logout(
-        refreshToken: String
-    ) async throws {
+    public func logout(refreshToken: String) async throws {
         let body = LogoutRequest(
             refreshToken: refreshToken
         )

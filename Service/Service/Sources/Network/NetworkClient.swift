@@ -113,6 +113,7 @@ final class NetworkClient: NetworkClientProtocol {
         APIConstants.defaultHeaders.forEach {
             request.setValue($0.value, forHTTPHeaderField: $0.key)
         }
+        
         endpoint.headers?.forEach {
             request.setValue($0.value, forHTTPHeaderField: $0.key)
         }

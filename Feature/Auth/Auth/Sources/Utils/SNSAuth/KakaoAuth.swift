@@ -8,11 +8,26 @@
 import KakaoSDKAuth
 import KakaoSDKCommon
 import KakaoSDKUser
+import Foundation
 
 struct KakaoAuth {
+    private var appKey: String? {
+        let key: String = "KAKAO_NATIVE_APP_KEY"
+        let bundleObject = Bundle.main.object(
+            forInfoDictionaryKey: key
+        )
+        return bundleObject as? String
+    }
+    
     public func requestLogin(
         _ completeHandler: @escaping (OAuthToken?) -> Void
     ) {
+        guard let appKey else{
+            completeHandler(nil)
+            return
+        }
+        KakaoSDK.initSDK(appKey: appKey)
+        
         /// 카카오톡 사용 여부 확인
         if UserApi.isKakaoTalkLoginAvailable() {
             UserApi.shared.loginWithKakaoTalk { oauthToken, error in

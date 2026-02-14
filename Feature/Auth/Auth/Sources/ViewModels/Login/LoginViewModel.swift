@@ -17,8 +17,9 @@ import KakaoSDKCommon
 
 @MainActor
 public final class LoginViewModel: ObservableObject {
-    private let auth = Auth()
-    private let appleAuth = AppleAuth()
+    public init() {
+        
+    }
 
     @Published var url: URL?
     @Published var loginErrorMessage: String?
@@ -73,9 +74,10 @@ public final class LoginViewModel: ObservableObject {
     
     /// 애플 로그인
     private func loginWithApple() {
+        let appleAuth = AppleAuth()
         appleAuth.requestLogin { [weak self] authorizationCode in
             defer {
-                AppleAuth.clearDelegate()
+                appleAuth.clearDelegate()
             }
             guard let authorizationCode else {
                 self?.showErrorSnackBar()
