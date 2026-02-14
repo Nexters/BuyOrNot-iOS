@@ -11,6 +11,10 @@ import SwiftUI
 @Observable
 @MainActor
 public final class BNSnackBarManager {
+    public init() {
+        
+    }
+    
     let itemQueue = BNQueue<BNSnackBarItem>()
     
     public var currentItem: BNSnackBarItem = .empty

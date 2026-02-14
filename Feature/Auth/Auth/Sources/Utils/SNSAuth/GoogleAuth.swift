@@ -11,13 +11,17 @@ import Core
 struct GoogleAuth {
     private let auth = Auth()
     
-    public func requestLogin() {
+    public func requestLogin(
+        _ completeHandler: @escaping (GIDSignInResult?) -> Void
+    ) {
         guard let clientID = auth.getAPIKey(with: .google),
               !clientID.isEmpty else {
+            completeHandler(nil)
             return
         }
         
         guard let presentingViewController = Utils.topViewController else {
+            completeHandler(nil)
             return
         }
         
@@ -28,14 +32,7 @@ struct GoogleAuth {
             withPresenting: presentingViewController
         ) { result, error in
             guard let result else { return }
-            handleGoogleLoginSuccess(result)
+            completeHandler(result)
         }
-    }
-    
-    private func handleGoogleLoginSuccess(_ result: GIDSignInResult) {
-        let idToken = result.user.idToken?.tokenString ?? ""
-        let accessToken = result.user.accessToken.tokenString
-        print("Google Login Success: idToken(\(idToken.count)) accessToken(\(accessToken.count))")
-        // TODO: idToken 전달
     }
 }

@@ -13,20 +13,31 @@ import KakaoSDKAuth
 import KakaoSDKCommon
 
 public struct LoginView: View {
-    @StateObject  var viewModel = LoginViewModel()
+    @StateObject var viewModel = LoginViewModel()
+    
     
     public init() {
         
     }
     
     public var body: some View {
-        VStack(spacing: 0) {
-            loginImage()
-            loginTitle()
-            loginButtonList()
-            termText()
+        ZStack {
+            VStack(spacing: 0) {
+                loginImage()
+                loginTitle()
+                loginButtonList()
+                termText()
+            }
+            .ignoresSafeArea()
+            
+            VStack {
+                Spacer()
+                BNSnackBar(
+                    item: viewModel.snackBar.currentItem,
+                    state: $viewModel.snackBar.barState
+                )
+            }
         }
-        .ignoresSafeArea()
         .sheet(
             isPresented: Binding(
                 get: { viewModel.url != nil },
