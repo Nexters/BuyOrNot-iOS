@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Auth
+import Splash
 
 struct AppView: View {
     @State private var launchState: LaunchState = .main
@@ -14,8 +15,7 @@ struct AppView: View {
     var body: some View {
         switch launchState {
         case .splash:
-            // TODO: 추후 SplashView()로 변경
-            LoginView()
+            SplashView()
         case .login:
             LoginView()
         case .main:
