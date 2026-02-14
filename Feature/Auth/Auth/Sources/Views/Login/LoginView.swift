@@ -26,6 +26,7 @@ public struct LoginView: View {
                 loginImage()
                 loginTitle()
                 loginButtonList()
+                guestLoginButton()
                 termText()
             }
             .ignoresSafeArea()

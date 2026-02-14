@@ -8,11 +8,12 @@
 import Domain
 
 public class AuthRepositoryImpl: AuthRepository {
-    private let apiClient: NetworkClient = .shared
-    private let mapper = AuthMapper()
+    private let apiClient: NetworkClient
+    private let mapper: AuthMapper
     
     public init() {
-        
+        self.apiClient = .shared
+        self.mapper = AuthMapper()
     }
     
     private func request<T: Decodable>(_ endpoint: AuthEndpoint) async throws -> T {

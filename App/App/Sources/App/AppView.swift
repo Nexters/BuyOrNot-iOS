@@ -10,7 +10,7 @@ import Auth
 import Splash
 
 struct AppView: View {
-    @State private var launchState: LaunchState = .main
+    @State private var launchState: LaunchState = .login
     @EnvironmentObject var container: DIContainer
     
     var body: some View {
