@@ -20,28 +20,4 @@ let project = Module.Feature.auth.project(
         .external(name: "KakaoSDKUser"),
         .external(name: "FirebaseMessaging"),
     ],
-//    infoPlist: .extendingDefault(
-//        with: [
-//            "CLIENT_ID":
-//                "$(CLIENT_ID)",
-//            "REVERSED_CLIENT_ID":
-//                "$(REVERSED_CLIENT_ID)",
-//            "BUNDLE_ID":
-//                "$(BUNDLE_ID)",
-//            "KAKAO_NATIVE_APP_KEY":
-//                "$(KAKAO_NATIVE_APP_KEY)",
-//        ]
-//    ),
-    settings: .settings(
-        configurations: [
-            .debug(
-                name: .debug,
-                xcconfig: .relativeToManifest("Config/Debug.xcconfig")
-            ),
-            .release(
-                name: .release,
-                xcconfig: .relativeToManifest("Config/Release.xcconfig")
-            ),
-        ]
-    ),
 )

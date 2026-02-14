@@ -18,19 +18,19 @@ public protocol Endpoint {
 
 // 기본값 제공
 public extension Endpoint {
-    var baseURL: String {
-        return APIConstants.baseURL
+    var baseURL: String? {
+        APIConstants.baseURL
     }
 
-    var headers: [String: String]? {
-        return ["Content-Type": "application/json"]
+    var headers: [String: String] {
+        ["Content-Type": "application/json"]
     }
 
     var queryParameters: [String: Any]? {
-        return nil
+        nil
     }
 
     var body: Encodable? {
-        return nil
+        nil
     }
 }
