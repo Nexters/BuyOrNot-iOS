@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>BUNDLE_ID</key>
-	<string>$(BUNDLE_ID)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -20,11 +18,5 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>CLIENT_ID</key>
-	<string>$(CLIENT_ID)</string>
-	<key>KAKAO_NATIVE_APP_KEY</key>
-	<string>$(KAKAO_NATIVE_APP_KEY)</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>$(REVERSED_CLIENT_ID)</string>
 </dict>
 </plist>
