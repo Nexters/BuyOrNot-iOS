@@ -7,12 +7,12 @@
 
 import Foundation
 
-public protocol NetworkClientProtocol {
+protocol NetworkClientProtocol {
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T
     func request(_ endpoint: Endpoint) async throws -> Void
 }
 
-public final class NetworkClient: NetworkClientProtocol {
+final class NetworkClient: NetworkClientProtocol {
 
     public static let shared = NetworkClient()
 
@@ -79,10 +79,16 @@ public final class NetworkClient: NetworkClientProtocol {
     // MARK: - Private Methods
 
     private func buildRequest(from endpoint: Endpoint) throws -> URLRequest {
-
-        guard var urlComponents = URLComponents(string: endpoint.baseURL + endpoint.path) else {
+        guard let baseURL = endpoint.baseURL else {
             #if DEBUG
-            print("🚨 Invalid URL: \(endpoint.baseURL + endpoint.path)")
+            print("🚨 Invalid Base URL: baseURL is null")
+            #endif
+            throw NetworkError.invalidBaseURL
+        }
+        
+        guard var urlComponents = URLComponents(string: baseURL + endpoint.path) else {
+            #if DEBUG
+            print("🚨 Invalid URL: \(baseURL + endpoint.path)")
             #endif
             throw NetworkError.invalidURL
         }

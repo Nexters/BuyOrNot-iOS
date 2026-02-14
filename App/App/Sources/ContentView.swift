@@ -11,8 +11,7 @@ import Auth
 
 struct ContentView: View {
     var body: some View {
-//        Text("Hello!")
-        LoginView()
+        Text("Hello!")
     }
 }
 

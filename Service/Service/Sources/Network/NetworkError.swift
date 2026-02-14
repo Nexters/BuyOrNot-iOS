@@ -9,6 +9,7 @@ import Foundation
 
 public enum NetworkError: Error {
     case invalidURL
+    case invalidBaseURL
     case noData
     case decodingFailed(Error)
     case encodingFailed
@@ -23,6 +24,8 @@ public enum NetworkError: Error {
         switch self {
         case .invalidURL:
             return "잘못된 URL입니다."
+        case .invalidBaseURL:
+            return "잘못된 BaseURL입니다."
         case .noData:
             return "데이터가 없습니다."
         case .decodingFailed(let error):

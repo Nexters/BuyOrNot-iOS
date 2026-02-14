@@ -16,7 +16,7 @@ import KakaoSDKAuth
 import KakaoSDKCommon
 
 @MainActor
-final class LoginViewModel: ObservableObject {
+public final class LoginViewModel: ObservableObject {
     private let auth = Auth()
     private let appleAuth = AppleAuth()
 
