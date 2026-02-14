@@ -8,7 +8,9 @@
 import Foundation
 
 public enum APIConstants {
-    public static let baseURL = Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String
+    public static var baseURL: String? {
+        Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String
+    }
 
     public static var defaultHeaders: [String: String] {
         return [

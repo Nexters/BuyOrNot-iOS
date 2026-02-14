@@ -19,5 +19,5 @@ let project = Module.Feature.auth.project(
         .external(name: "KakaoSDKAuth"),
         .external(name: "KakaoSDKUser"),
         .external(name: "FirebaseMessaging"),
-    ]
+    ],
 )

@@ -6,11 +6,30 @@
 //
 
 import SwiftUI
+import UIKit
 
-final class LoginViewModel: ObservableObject {
+import DesignSystem
+import Core
+import Domain
+
+import GoogleSignIn
+import KakaoSDKAuth
+import KakaoSDKCommon
+
+public final class LoginViewModel: ObservableObject {
+    let repository: AuthRepository
+    
+    public init(repository: AuthRepository) {
+        self.repository = repository
+    }
+
+    @Published var url: URL?
+    @Published var loginErrorMessage: String?
+    @Published var snackBar = BNSnackBarManager()
+    
     var policyText: AttributedString {
-        let serviceTermsURL = URL(string: "https://littlemoom.notion.site/buy-or-not-service-term?source=copy_link")
-        let privacyPolicyURL = URL(string: "https://littlemoom.notion.site/buy-or-not-privacy-term?source=copy_link")
+        let serviceTermsURL = URL(string: Constants.serviceTermsURLString)
+        let privacyPolicyURL = URL(string: Constants.privacyPolicyURLString)
         var text = AttributedString(
             "가입을 진행하시면 서비스약관 및 개인정보처리방침에\n동의 하시는 것으로 간주합니다."
         )
@@ -43,15 +62,64 @@ final class LoginViewModel: ObservableObject {
         }
     }
     
+    /// 구글 로그인
     private func loginWithGoogle() {
-        
+        let googleAuth = GoogleAuth()
+        googleAuth.requestLogin { [weak self] gidSignInResult in
+            guard let gidSignInResult else {
+                self?.showErrorSnackBar()
+                return
+            }
+            print(gidSignInResult)
+        }
     }
     
+    /// 애플 로그인
     private func loginWithApple() {
-        
+        let appleAuth = AppleAuth()
+        appleAuth.requestLogin { [weak self] authorizationCode in
+            defer {
+                appleAuth.clearDelegate()
+            }
+            guard let authorizationCode else {
+                self?.showErrorSnackBar()
+                return
+            }
+            print(authorizationCode)
+        }
     }
     
+    /// 카카오 로그인
     private func loginWithKakao() {
-        
+        let kakaoAuth = KakaoAuth()
+        kakaoAuth.requestLogin { [weak self] oauthToken in
+            guard let oauthToken else {
+                self?.showErrorSnackBar()
+                return
+            }
+            print(oauthToken)
+        }
+    }
+    
+    /// 소셜 로그인 외부 URL 핸들링
+    func handleAuthUrl(_ url: URL) {
+        Task { @MainActor in
+            if GIDSignIn.sharedInstance.handle(url) {
+                return
+            }
+            
+            if AuthApi.isKakaoTalkLoginUrl(url) {
+                _ = AuthController.handleOpenUrl(url: url)
+            }
+        }
+    }
+    
+    private func showErrorSnackBar() {
+        let item = BNSnackBarItem(
+            text: "오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+            icon: .close,
+            color: .type(.red100),
+        )
+        snackBar.addItem(item)
     }
 }

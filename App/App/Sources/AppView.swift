@@ -11,13 +11,16 @@ import Splash
 
 struct AppView: View {
     @State private var launchState: LaunchState = .main
-
+    @EnvironmentObject var container: DIContainer
+    
     var body: some View {
         switch launchState {
         case .splash:
             SplashView()
         case .login:
-            LoginView()
+            LoginView(
+                viewModel: container.resolve()
+            )
         case .main:
             RootView()
         }
