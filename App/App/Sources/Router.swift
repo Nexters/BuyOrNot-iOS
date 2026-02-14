@@ -10,12 +10,12 @@ import SwiftUI
 enum AppDestination: Hashable {
     case notification
     case myPage
-    case createVote
 }
 
 @Observable
 class Router {
     var path: [AppDestination] = []
+    var showCreateVote: Bool = false
 
     func navigate(to destination: AppDestination) {
         path.append(destination)
