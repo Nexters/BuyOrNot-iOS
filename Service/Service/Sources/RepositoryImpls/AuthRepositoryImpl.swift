@@ -11,6 +11,10 @@ public class AuthRepositoryImpl: AuthRepository {
     private let apiClient: NetworkClient = .shared
     private let mapper = AuthMapper()
     
+    public init() {
+        
+    }
+    
     private func request<T: Decodable>(_ endpoint: AuthEndpoint) async throws -> T {
         try await apiClient.request(endpoint)
     }

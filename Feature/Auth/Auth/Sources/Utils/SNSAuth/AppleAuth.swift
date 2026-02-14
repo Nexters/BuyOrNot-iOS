@@ -9,7 +9,6 @@ import AuthenticationServices
 import Core
 import UIKit
 
-@MainActor
 struct AppleAuth {
     static private var delegate: AppleLoginDelegate?
     

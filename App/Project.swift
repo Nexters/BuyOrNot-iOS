@@ -12,6 +12,7 @@ let project = Module.app.project(
     dependencies: [
         Module.Feature.auth.toDependency,
         Module.Feature.vote.toDependency,
+        Module.service.toDependency,
         .external(name: "Swinject"),
         .external(name: "KakaoSDKAuth"),
     ],
