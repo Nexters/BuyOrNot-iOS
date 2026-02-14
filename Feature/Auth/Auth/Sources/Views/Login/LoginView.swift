@@ -13,11 +13,10 @@ import KakaoSDKAuth
 import KakaoSDKCommon
 
 public struct LoginView: View {
-    @StateObject var viewModel = LoginViewModel()
+    @StateObject var viewModel: LoginViewModel
     
-    
-    public init() {
-        
+    public init(viewModel: LoginViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     public var body: some View {
@@ -61,8 +60,10 @@ public struct LoginView: View {
 
 
 #Preview {
-    LoginView()
-        .onAppear {
-            BNFont.loadFonts()
-        }
+    LoginView(
+        viewModel: LoginViewModel()
+    )
+    .onAppear {
+        BNFont.loadFonts()
+    }
 }
