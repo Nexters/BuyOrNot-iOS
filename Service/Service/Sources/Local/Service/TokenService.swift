@@ -9,6 +9,7 @@ final class TokenService {
     private enum Key {
         static let refreshToken = "AUTH_REFRESH_TOKEN"
         static let accessToken = "AUTH_ACCESS_TOKEN"
+        static let tokenType = "AUTH_TOKEN_TYPE"
     }
     
     private let store: UserDefaultsStore
@@ -41,5 +42,18 @@ final class TokenService {
     
     func removeAccessToken() {
         store.removeValue(forKey: Key.accessToken)
+    }
+    
+    // MARK: - Token Type
+    func saveTokenType(_ token: String) {
+        store.set(token, forKey: Key.tokenType)
+    }
+    
+    func getTokenType() -> String? {
+        store.get(String.self, forKey: Key.tokenType)
+    }
+    
+    func removeTokenType() {
+        store.removeValue(forKey: Key.tokenType)
     }
 }

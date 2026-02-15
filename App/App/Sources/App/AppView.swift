@@ -10,23 +10,35 @@ import Auth
 import Splash
 
 struct AppView: View {
-    @State private var launchState: LaunchState = .login
     @EnvironmentObject var container: DIContainer
+    @StateObject var viewModel: AppViewModel
+    
+    init(viewModel: AppViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
-        switch launchState {
-        case .splash:
-            SplashView()
-        case .login:
-            LoginView(
-                viewModel: container.resolve()
-            )
-        case .main:
-            RootView()
+        Group {
+            switch viewModel.launchState {
+            case .splash:
+                SplashView()
+            case .login:
+                LoginView(
+                    viewModel: container.resolve()
+                )
+            case .main:
+                RootView()
+            }
+        }
+        .onAppear {
+            Task {
+                await viewModel.onAppear()
+            }
         }
     }
+    
 }
 
-#Preview {
-    AppView()
-}
+//#Preview {
+//    AppView()
+//}

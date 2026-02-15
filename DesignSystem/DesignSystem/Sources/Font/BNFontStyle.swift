@@ -61,58 +61,65 @@ public enum BNFontStyle: String, CaseIterable {
 }
 
 extension BNFontStyle {
-    var config: (weight: BNFontWeight, size: CGFloat, lineHeight: CGFloat) {
+    var config: (weight: BNFontWeight, size: CGFloat, lineHeightRatio: CGFloat) {
         switch self {
             /// Display
-        case .d1b: (.bold, 36, 36 * 1.5)
-        case .d2b: (.bold, 32, 32 * 1.45)
+        case .d1b: (.bold, 36, 1.5)
+        case .d2b: (.bold, 32, 1.45)
             
             /// Heading
-        case .h1b: (.bold, 28, 28 * 1.4)
-        case .h2b: (.bold, 24, 24 * 1.4)
-        case .h3b: (.bold, 22, 22 * 1.4)
-        case .h4b: (.bold, 20, 20 * 1.35)
-        case .h1sb: (.semibold, 24, 24 * 1.4)
+        case .h1b: (.bold, 28, 1.4)
+        case .h2b: (.bold, 24, 1.4)
+        case .h3b: (.bold, 22, 1.4)
+        case .h4b: (.bold, 20, 1.35)
+        case .h1sb: (.semibold, 24, 1.4)
             
             /// Title
-        case .t1b: (.bold, 18, 18 * 1.25)
-        case .t2b: (.bold, 16, 16 * 1.25)
-        case .t3b: (.bold, 15, 15 * 1.25)
-        case .t4b: (.bold, 14, 14 * 1.25)
+        case .t1b: (.bold, 18, 1.25)
+        case .t2b: (.bold, 16, 1.25)
+        case .t3b: (.bold, 15, 1.25)
+        case .t4b: (.bold, 14, 1.25)
             
             /// SubTitle
-        case .s1sb: (.semibold, 18, 18 * 1.2)
-        case .s2sb: (.semibold, 16, 16 * 1.25)
-        case .s3sb: (.semibold, 15, 15 * 1.2)
-        case .s4sb: (.semibold, 14, 14 * 1.25)
-        case .s5sb: (.semibold, 13, 13 * 1.25)
+        case .s1sb: (.semibold, 18, 1.2)
+        case .s2sb: (.semibold, 16, 1.25)
+        case .s3sb: (.semibold, 15, 1.2)
+        case .s4sb: (.semibold, 14, 1.25)
+        case .s5sb: (.semibold, 13, 1.25)
             
             /// Body
-        case .b1m: (.medium, 18, 18 * 1.25)
-        case .b2m: (.medium, 16, 16 * 1.25)
-        case .b3m: (.medium, 15, 15 * 1.25)
-        case .b4m: (.medium, 14, 14 * 1.25)
-        case .b5m: (.medium, 13, 13 * 1.25)
-        case .b6m: (.medium, 12, 12 * 1.25)
-        case .b7m: (.medium, 11, 11 * 1.25)
+        case .b1m: (.medium, 18, 1.25)
+        case .b2m: (.medium, 16, 1.25)
+        case .b3m: (.medium, 15, 1.25)
+        case .b4m: (.medium, 14, 1.25)
+        case .b5m: (.medium, 13, 1.25)
+        case .b6m: (.medium, 12, 1.25)
+        case .b7m: (.medium, 11, 1.25)
             
             /// Caption
-        case .c1m: (.medium, 12, 12 * 1.4)
-        case .c2m: (.medium, 11, 11 * 1.4)
-        case .c3m: (.medium, 10, 10 * 1.4)
-        case .c1r: (.regular, 12, 12 * 1.4)
-        case .c2r: (.regular, 11, 11 * 1.4)
-        case .c3r: (.regular, 10, 10 * 1.4)
+        case .c1m: (.medium, 12, 1.4)
+        case .c2m: (.medium, 11, 1.4)
+        case .c3m: (.medium, 10, 1.4)
+        case .c1r: (.regular, 12, 1.4)
+        case .c2r: (.regular, 11, 1.4)
+        case .c3r: (.regular, 10, 1.4)
             
             /// Paragraph
-        case .p1m: (.medium, 16, 16 * 1.4)
-        case .p2m: (.medium, 15, 15 * 1.4)
-        case .p3m: (.medium, 14, 14 * 1.4)
-        case .p4m: (.medium, 13, 13 * 1.4)
-        case .p1r: (.regular, 16, 16 * 1.4)
-        case .p2r: (.regular, 15, 15 * 1.4)
-        case .p3r: (.regular, 14, 14 * 1.4)
-        case .p4r: (.regular, 13, 13 * 1.4)
+        case .p1m: (.medium, 16, 1.4)
+        case .p2m: (.medium, 15, 1.4)
+        case .p3m: (.medium, 14, 1.4)
+        case .p4m: (.medium, 13, 1.4)
+        case .p1r: (.regular, 16, 1.4)
+        case .p2r: (.regular, 15, 1.4)
+        case .p3r: (.regular, 14, 1.4)
+        case .p4r: (.regular, 13, 1.4)
         }
+    }
+    
+    var lineSpacing: CGFloat {
+        let adjusted = config.size * config.lineHeightRatio
+        let lineSpacing = round(adjusted) - config.size
+        print("\(self) \(config.size) \(round(lineSpacing))")
+        return round(lineSpacing)
     }
 }

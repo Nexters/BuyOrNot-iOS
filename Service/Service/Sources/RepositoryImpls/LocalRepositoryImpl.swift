@@ -9,29 +9,28 @@ import Domain
 
 public final class LocalRepositoryImpl: LocalRepository {
     private let tokenService: TokenService
-    private let mapper: TokenMapper
     
     public init() {
         self.tokenService = TokenService()
-        self.mapper = TokenMapper()
     }
     
     public func saveToken(_ token: Token) {
         tokenService.saveRefreshToken(token.refreshToken)
         tokenService.saveAccessToken(token.accessToken)
+        tokenService.saveTokenType(token.tokenType)
     }
     
     public func getToken() -> Token {
-        let refreshToken = tokenService.getRefreshToken() ?? ""
-        let accessToken = tokenService.getAccessToken() ?? ""
-        return Token(
-            refreshToken: refreshToken,
-            accessToken: accessToken
+        Token(
+            refreshToken: tokenService.getRefreshToken() ?? "",
+            accessToken: tokenService.getAccessToken() ?? "",
+            tokenType: tokenService.getTokenType() ?? ""
         )
     }
     
     public func removeToken() {
         tokenService.removeRefreshToken()
         tokenService.removeAccessToken()
+        tokenService.removeTokenType()
     }
 }
