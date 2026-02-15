@@ -6,9 +6,9 @@
 //
 
 public protocol AuthRepository {
-    func loginWithApple(authorizationCode: String) async throws -> User
-    func loginWithGoogle(idToken: String) async throws -> User
-    func loginWithKakao(accessToken: String) async throws -> User
-    func refreshToken(refreshToken: String) async throws -> User
+    func loginWithApple(authorizationCode: String) async throws -> Token
+    func loginWithGoogle(idToken: String) async throws -> Token
+    func loginWithKakao(accessToken: String) async throws -> Token
+    func refreshToken(refreshToken: String) async throws -> Token
     func logout(refreshToken: String) async throws
 }

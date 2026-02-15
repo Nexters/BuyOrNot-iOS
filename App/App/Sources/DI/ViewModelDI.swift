@@ -17,5 +17,14 @@ extension DIContainer {
                 repository: repository
             )
         }
+        
+        container.register(AppViewModel.self) { resolver in
+            let authRepository: AuthRepository = resolver.resolve()
+            let localRepository: LocalRepository = resolver.resolve()
+            return AppViewModel(
+                authRepository: authRepository,
+                localRepository: localRepository
+            )
+        }
     }
 }
