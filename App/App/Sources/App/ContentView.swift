@@ -11,6 +11,7 @@ import Auth
 
 struct ContentView: View {
     @StateObject var container = DIContainer()
+    
     var body: some View {
         AppView(
             viewModel: container.resolve()

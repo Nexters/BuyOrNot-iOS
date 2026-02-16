@@ -18,5 +18,13 @@ extension DIContainer {
         container.register(LocalRepository.self) { _ in
             LocalRepositoryImpl()
         }
+        
+        container.register(UserRepository.self) { _ in
+            UserRepositoryImpl()
+        }
+        
+        container.register(FeedRepository.self) { _ in
+            FeedRepositoryImpl()
+        }
     }
 }

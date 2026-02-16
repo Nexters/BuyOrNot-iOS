@@ -9,6 +9,6 @@ struct UserResponse: Decodable {
     let id: Int
     let nickname: String
     let profileImage: String
-    let socialAccount: String
-    let email: String
+    let socialAccount: String?
+    let email: String?
 }
