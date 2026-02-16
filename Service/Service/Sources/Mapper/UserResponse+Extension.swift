@@ -13,8 +13,8 @@ extension UserResponse {
             id: self.id,
             nickname: self.nickname,
             profileImage: self.profileImage,
-            socialAccount: self.socialAccount,
-            email: self.email,
+            socialAccount: self.socialAccount ?? "",
+            email: self.email ?? "",
         )
     }
 }

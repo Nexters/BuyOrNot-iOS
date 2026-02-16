@@ -10,7 +10,8 @@ import ProjectDescriptionHelpers
 
 let project = Module.designSystem.project(
     dependencies: [
-        Module.core.toDependency
+        Module.core.toDependency,
+        .external(name: "Lottie"),
     ],
     infoPlist: .extendingDefault(
         with: [

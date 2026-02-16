@@ -17,8 +17,10 @@ final class MyPageViewModel: ObservableObject {
         switch menu {
         case .accountInfo:
             /// TODO: 작업 예정
+            break
         case .terms:
             /// TODO: 작업 예정
+            break
         case .feedback:
             openFeedbackUrl()
         }

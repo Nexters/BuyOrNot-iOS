@@ -39,6 +39,6 @@ struct AppView: View {
     
 }
 
-//#Preview {
-//    AppView()
-//}
+#Preview {
+    SplashView()
+}
