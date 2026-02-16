@@ -18,6 +18,7 @@ final class PolicyViewModel: ObservableObject {
         case .service:
                 .serviceTermsURL
         }
+        openWebView(type: urlType)
     }
     
     private func openWebView(

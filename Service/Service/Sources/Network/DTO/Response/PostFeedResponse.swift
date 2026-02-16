@@ -6,5 +6,5 @@
 //
 
 struct PostFeedResponse: Decodable {
-    public let feedId: Int
+    let feedId: Int
 }

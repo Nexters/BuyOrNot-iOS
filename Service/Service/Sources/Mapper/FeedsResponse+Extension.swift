@@ -30,10 +30,31 @@ extension FeedsResponse {
                 nickname: self.author.nickname,
                 profileImage: self.author.profileImage
             ),
-            createdAt: Calendar.current.dateComponents(
-                [.year, .month, .day, .hour, .minute, .second],
+            createdAt: toDateComponents(
                 from: self.createdAt
             )
         )
+    }
+    
+    private func toDateComponents(from createdAt: String) -> DateComponents {
+        guard let date = parseISO8601Date(createdAt) else {
+            return DateComponents()
+        }
+        
+        return Calendar.current.dateComponents(
+            [.year, .month, .day, .hour, .minute, .second],
+            from: date
+        )
+    }
+    
+    private func parseISO8601Date(_ value: String) -> Date? {
+        return getISO8601Formatter([.withInternetDateTime, .withFractionalSeconds]).date(from: value) ??
+        getISO8601Formatter([.withInternetDateTime]).date(from: value)
+    }
+    
+    private func getISO8601Formatter(_ formatOptions: ISO8601DateFormatter.Options) -> ISO8601DateFormatter {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = formatOptions
+        return formatter
     }
 }

@@ -115,11 +115,4 @@ extension BNFontStyle {
         case .p4r: (.regular, 13, 1.4)
         }
     }
-    
-    var lineSpacing: CGFloat {
-        let adjusted = config.size * config.lineHeightRatio
-        let lineSpacing = round(adjusted) - config.size
-        print("\(self) \(config.size) \(round(lineSpacing))")
-        return round(lineSpacing)
-    }
 }
