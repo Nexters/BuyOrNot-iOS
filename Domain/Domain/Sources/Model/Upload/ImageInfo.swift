@@ -6,9 +6,9 @@
 //
 
 public struct ImageInfo {
-    let uploadUrl: String
-    let s3ObjectKey: String
-    let viewUrl: String
+    public let uploadUrl: String
+    public let s3ObjectKey: String
+    public let viewUrl: String
     
     public init(uploadUrl: String, s3ObjectKey: String, viewUrl: String) {
         self.uploadUrl = uploadUrl

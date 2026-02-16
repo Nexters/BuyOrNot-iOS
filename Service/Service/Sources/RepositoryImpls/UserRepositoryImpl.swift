@@ -8,10 +8,10 @@
 import Domain
 
 public class UserRepositoryImpl: UserRepository {
-    private let apiClient: NetworkClient
+    private let apiClient: NetworkClientProtocol
     
     public init() {
-        self.apiClient = .shared
+        self.apiClient = NetworkClient.shared
     }
     
     private func request<T: Decodable>(_ endpoint: UserEndpoint) async throws -> T {
