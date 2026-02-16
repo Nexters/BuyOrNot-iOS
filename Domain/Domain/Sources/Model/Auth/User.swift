@@ -12,19 +12,12 @@ public struct User {
     public let socialAccount: SocialAccount?
     public let email: String
     
-    public let accessToken: String
-    public let refreshToken: String
-    public let tokenType: String
-    
     public init(
         id: Int,
         nickname: String,
         profileImage: String,
         socialAccount: String,
-        email: String,
-        accessToken: String,
-        refreshToken: String,
-        tokenType: String
+        email: String
     ) {
         self.id = id
         self.nickname = nickname
@@ -33,8 +26,5 @@ public struct User {
             rawValue: socialAccount
         )
         self.email = email
-        self.accessToken = accessToken
-        self.refreshToken = refreshToken
-        self.tokenType = tokenType
     }
 }

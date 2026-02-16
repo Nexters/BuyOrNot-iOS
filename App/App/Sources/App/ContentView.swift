@@ -11,11 +11,14 @@ import Auth
 
 struct ContentView: View {
     @StateObject var container = DIContainer()
+    
     var body: some View {
-        AppView()
-            .environmentObject(
-                container
-            )
+        AppView(
+            viewModel: container.resolve()
+        )
+        .environmentObject(
+            container
+        )
     }
 }
 

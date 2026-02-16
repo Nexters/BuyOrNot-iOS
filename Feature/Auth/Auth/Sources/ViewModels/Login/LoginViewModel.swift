@@ -28,8 +28,8 @@ public final class LoginViewModel: ObservableObject {
     @Published var snackBar = BNSnackBarManager()
     
     var policyText: AttributedString {
-        let serviceTermsURL = URL(string: Constants.serviceTermsURLString)
-        let privacyPolicyURL = URL(string: Constants.privacyPolicyURLString)
+        let serviceTermsURL = URL(string: Constants.getValue(with: .serviceTermsURL))
+        let privacyPolicyURL = URL(string: Constants.getValue(with: .privacyPolicyURL))
         var text = AttributedString(
             "가입을 진행하시면 서비스약관 및 개인정보처리방침에\n동의 하시는 것으로 간주합니다."
         )
@@ -47,7 +47,14 @@ public final class LoginViewModel: ObservableObject {
             }
             text[range].underlineStyle = .single
         }
-        
+        text.foregroundColor = BNColor(.type(.gray600)).color
+        return text
+    }
+    
+    var guestLoginText: AttributedString {
+        var text = AttributedString("비회원으로 시작하기")
+        text.underlineStyle = .single
+        text.foregroundColor = BNColor(.type(.gray700)).color
         return text
     }
     

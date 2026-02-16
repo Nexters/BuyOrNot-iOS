@@ -13,28 +13,43 @@ protocol NetworkClientProtocol {
 }
 
 final class NetworkClient: NetworkClientProtocol {
-
     public static let shared = NetworkClient()
 
     private let session: URLSession
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
+    private let tokenService: TokenService
 
     public init(
         session: URLSession = .shared,
         decoder: JSONDecoder = JSONDecoder(),
-        encoder: JSONEncoder = JSONEncoder()
+        encoder: JSONEncoder = JSONEncoder(),
+        tokenService: TokenService = TokenService()
     ) {
         self.session = session
         self.decoder = decoder
         self.encoder = encoder
+        self.tokenService = tokenService
     }
 
     public func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
-        let request = try buildRequest(from: endpoint)
+        try await request(endpoint, didRetryAfterRefresh: false)
+    }
+
+    public func request(_ endpoint: Endpoint) async throws -> Void {
+        try await request(endpoint, didRetryAfterRefresh: false)
+    }
+
+    // MARK: - Private Methods
+
+    private func request<T: Decodable>(
+        _ endpoint: Endpoint,
+        didRetryAfterRefresh: Bool
+    ) async throws -> T {
+        let urlRequest = try buildRequest(from: endpoint)
 
         do {
-            let (data, response) = try await session.data(for: request)
+            let (data, response) = try await session.data(for: urlRequest)
 
             try validateResponse(response, data: data)
 
@@ -50,6 +65,11 @@ final class NetworkClient: NetworkClientProtocol {
                 throw NetworkError.decodingFailed(error)
             }
         } catch let error as NetworkError {
+            if case .unauthorized = error,
+               shouldRetryAfterRefresh(for: endpoint, didRetryAfterRefresh: didRetryAfterRefresh) {
+                try await refreshAccessToken()
+                return try await request(endpoint, didRetryAfterRefresh: true)
+            }
             throw error
         } catch {
             #if DEBUG
@@ -59,14 +79,23 @@ final class NetworkClient: NetworkClientProtocol {
         }
     }
 
-    public func request(_ endpoint: Endpoint) async throws -> Void {
-        let request = try buildRequest(from: endpoint)
+    private func request(
+        _ endpoint: Endpoint,
+        didRetryAfterRefresh: Bool
+    ) async throws {
+        let urlRequest = try buildRequest(from: endpoint)
 
         do {
-            let (data, response) = try await session.data(for: request)
+            let (data, response) = try await session.data(for: urlRequest)
 
             try validateResponse(response, data: data)
         } catch let error as NetworkError {
+            if case .unauthorized = error,
+               shouldRetryAfterRefresh(for: endpoint, didRetryAfterRefresh: didRetryAfterRefresh) {
+                try await refreshAccessToken()
+                try await request(endpoint, didRetryAfterRefresh: true)
+                return
+            }
             throw error
         } catch {
             #if DEBUG
@@ -76,7 +105,33 @@ final class NetworkClient: NetworkClientProtocol {
         }
     }
 
-    // MARK: - Private Methods
+    private func shouldRetryAfterRefresh(for endpoint: Endpoint, didRetryAfterRefresh: Bool) -> Bool {
+        !didRetryAfterRefresh && !isRefreshEndpoint(endpoint)
+    }
+
+    private func isRefreshEndpoint(_ endpoint: Endpoint) -> Bool {
+        guard let authEndpoint = endpoint as? AuthEndpoint else {
+            return false
+        }
+        if case .postRefreshToken = authEndpoint {
+            return true
+        }
+        return false
+    }
+
+    private func refreshAccessToken() async throws {
+        let refreshToken = tokenService.getRefreshToken() ?? ""
+        let endpoint = AuthEndpoint.postRefreshToken(
+            RefreshTokenRequest(refreshToken: refreshToken)
+        )
+        let response: TokenResponse = try await request(
+            endpoint,
+            didRetryAfterRefresh: false
+        )
+        tokenService.saveRefreshToken(response.refreshToken)
+        tokenService.saveAccessToken(response.accessToken)
+        tokenService.saveTokenType(response.tokenType)
+    }
 
     private func buildRequest(from endpoint: Endpoint) throws -> URLRequest {
         guard let baseURL = endpoint.baseURL else {
@@ -117,6 +172,9 @@ final class NetworkClient: NetworkClientProtocol {
         endpoint.headers?.forEach {
             request.setValue($0.value, forHTTPHeaderField: $0.key)
         }
+        
+        let accessToken = tokenService.getAccessToken() ?? ""
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
         if let body = endpoint.body {
             do {
