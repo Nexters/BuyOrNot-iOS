@@ -14,7 +14,6 @@ extension LoginView {
         BNImage(.login_background)
             .resizable()
             .scaledToFit()
-//                .frame(maxWidth: .infinity)
     }
     
     @ViewBuilder
@@ -78,21 +77,28 @@ extension LoginView {
     }
     
     @ViewBuilder
-    func termText() -> some View {
-        var termText: AttributedString {
-            viewModel.policyText.with { attributedString in
-                attributedString.foregroundColor = BNColor(.type(.gray600)).color
-            }
+    func guestLoginButton() -> some View {
+        Button {
+            
+        } label: {
+            BNText("비회원으로 시작하기")
+                .style(style: .c2m, color: .gray700)
+                .underline(color: .type(.gray700))
+                .multilineTextAlignment(.center)
         }
-        
-        BNText(termText)
+        .padding(.top, 18)
+        .padding(.bottom, 26)
+    }
+    
+    @ViewBuilder
+    func termText() -> some View {
+        BNText(viewModel.policyText)
             .style(style: .c2m, color: .gray600)
             .multilineTextAlignment(.center)
             .environment(\.openURL, OpenURLAction { url in
                 viewModel.url = url
                 return .handled
             })
-            .padding(.top, 30)
             .padding(.bottom, 40)
     }
 }

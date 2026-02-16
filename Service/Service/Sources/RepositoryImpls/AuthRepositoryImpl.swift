@@ -8,55 +8,54 @@
 import Domain
 
 public class AuthRepositoryImpl: AuthRepository {
-    private let apiClient: NetworkClient = .shared
-    private let mapper = AuthMapper()
+    private let apiClient: NetworkClientProtocol
     
     public init() {
-        
+        self.apiClient = NetworkClient.shared
     }
     
     private func request<T: Decodable>(_ endpoint: AuthEndpoint) async throws -> T {
         try await apiClient.request(endpoint)
     }
     
-    public func loginWithApple(authorizationCode: String) async throws -> User {
+    public func loginWithApple(authorizationCode: String) async throws -> Token {
         let body = AppleAuthRequest(
             authorizationCode: authorizationCode
         )
         let response: TokenResponse = try await request(
-            .appleLogin(body)
+            .postAppleLogin(body)
         )
-        return mapper.toDomain(response)
+        return response.toToken()
     }
     
-    public func loginWithGoogle(idToken: String) async throws -> User {
+    public func loginWithGoogle(idToken: String) async throws -> Token {
         let body = GoogleAuthRequest(
             idToken: idToken
         )
         let response: TokenResponse = try await request(
-            .googleLogin(body)
+            .postGoogleLogin(body)
         )
-        return mapper.toDomain(response)
+        return response.toToken()
     }
     
-    public func loginWithKakao(accessToken: String) async throws -> User {
+    public func loginWithKakao(accessToken: String) async throws -> Token {
         let body = KakaoAuthRequest(
             accessToken: accessToken
         )
         let response: TokenResponse = try await request(
-            .kakaoLogin(body)
+            .postKakaoLogin(body)
         )
-        return mapper.toDomain(response)
+        return response.toToken()
     }
     
-    public func refreshToken(refreshToken: String) async throws -> User {
+    public func refreshToken(refreshToken: String) async throws -> Token {
         let body = RefreshTokenRequest(
             refreshToken: refreshToken
         )
         let response: TokenResponse = try await request(
-            .refreshToken(body)
+            .postRefreshToken(body)
         )
-        return mapper.toDomain(response)
+        return response.toToken()
     }
     
     public func logout(refreshToken: String) async throws {
@@ -64,7 +63,7 @@ public class AuthRepositoryImpl: AuthRepository {
             refreshToken: refreshToken
         )
         try await apiClient.request(
-            AuthEndpoint.logout(body)
+            AuthEndpoint.postLogout(body)
         )
     }
 }

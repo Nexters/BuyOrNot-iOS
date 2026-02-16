@@ -6,9 +6,28 @@
 //
 
 import SwiftUI
+import Core
 
 final class PolicyViewModel: ObservableObject {
+    @Published var url: URL?
+    
     func didTapMenu(_ menu: PolicyMenu) {
-        /// TODO: 작업 예정
+        let urlType: Constants.ConstantsKey = switch menu {
+        case .privacy:
+                .privacyPolicyURL
+        case .service:
+                .serviceTermsURL
+        }
+        openWebView(type: urlType)
+    }
+    
+    private func openWebView(
+        type: Constants.ConstantsKey
+    ) {
+        let urlString = Constants.getValue(with: type)
+        guard let url = URL(string: urlString) else {
+            return
+        }
+        self.url = url
     }
 }

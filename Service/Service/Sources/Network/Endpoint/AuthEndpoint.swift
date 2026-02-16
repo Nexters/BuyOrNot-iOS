@@ -6,24 +6,24 @@
 //
 
 enum AuthEndpoint: Endpoint {
-    case kakaoLogin(KakaoAuthRequest)
-    case googleLogin(GoogleAuthRequest)
-    case appleLogin(AppleAuthRequest)
-    case refreshToken(RefreshTokenRequest)
-    case logout(LogoutRequest)
+    case postKakaoLogin(KakaoAuthRequest)
+    case postGoogleLogin(GoogleAuthRequest)
+    case postAppleLogin(AppleAuthRequest)
+    case postRefreshToken(RefreshTokenRequest)
+    case postLogout(LogoutRequest)
     
     var path: String {
         let prefix = "/auth"
         let path = switch self {
-        case .kakaoLogin:
+        case .postKakaoLogin:
             "/kakao/login"
-        case .googleLogin:
+        case .postGoogleLogin:
             "/google/login"
-        case .appleLogin:
+        case .postAppleLogin:
             "/apple/login"
-        case .refreshToken:
+        case .postRefreshToken:
             "/refresh"
-        case .logout:
+        case .postLogout:
             "/logout"
         }
         return prefix + path
@@ -35,15 +35,15 @@ enum AuthEndpoint: Endpoint {
     
     var body: (any Encodable)? {
         switch self {
-        case .kakaoLogin(let kakaoAuthRequest):
+        case .postKakaoLogin(let kakaoAuthRequest):
             kakaoAuthRequest
-        case .googleLogin(let googleAuthRequest):
+        case .postGoogleLogin(let googleAuthRequest):
             googleAuthRequest
-        case .appleLogin(let appleAuthRequest):
+        case .postAppleLogin(let appleAuthRequest):
             appleAuthRequest
-        case .refreshToken(let tokenRefreshRequest):
+        case .postRefreshToken(let tokenRefreshRequest):
             tokenRefreshRequest
-        case .logout(let logoutRequest):
+        case .postLogout(let logoutRequest):
             logoutRequest
         }
     }

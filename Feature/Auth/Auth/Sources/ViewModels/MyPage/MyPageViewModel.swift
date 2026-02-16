@@ -6,12 +6,31 @@
 //
 
 import SwiftUI
+import Core
 
 final class MyPageViewModel: ObservableObject {
     @Published var name: String = "이름입니다최대열자임"
     @Published var appVersion: String = "0.0.1"
+    @Published var url: URL?
     
     func didTapMenu(_ menu: MyPageMenu) {
-        /// TODO: 작업 예정
+        switch menu {
+        case .accountInfo:
+            /// TODO: 작업 예정
+            break
+        case .terms:
+            /// TODO: 작업 예정
+            break
+        case .feedback:
+            openFeedbackUrl()
+        }
+    }
+    
+    private func openFeedbackUrl() {
+        let urlString = Constants.getValue(with: .userFeedbackURL)
+        guard let url = URL(string: urlString) else {
+            return
+        }
+        self.url = url
     }
 }
