@@ -10,7 +10,7 @@ import Foundation
 public struct Constants {
     public enum ConstantsKey: String {
         case serviceTermsURL = "SERVICE_TERMS_URL"
-        case privacyPolicyURL = "PRIACY_POLICY_URL"
+        case privacyPolicyURL = "PRIVACY_POLICY_URL"
         case userFeedbackURL = "USER_FEEDBACK_URL"
     }
     

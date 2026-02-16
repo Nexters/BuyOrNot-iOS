@@ -19,5 +19,5 @@ struct FeedsResponse: Decodable {
     public let imageWidth: Int
     public let imageHeight: Int
     public let author: UserResponse
-    public let createdAt: Date
+    public let createdAt: String
 }
