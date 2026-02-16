@@ -9,10 +9,20 @@ import Domain
 import Foundation
 
 public class UploadsRepositoryImpl: UploadsRepository {
-    private let apiClient: NetworkClient
+    private let apiClient: NetworkClientProtocol
+    private let uploadClient: PresignedUploadClientProtocol
     
     public init() {
-        self.apiClient = .shared
+        self.apiClient = NetworkClient.shared
+        self.uploadClient = PresignedUploadClient.shared
+    }
+
+    init(
+        apiClient: NetworkClientProtocol,
+        uploadClient: PresignedUploadClientProtocol
+    ) {
+        self.apiClient = apiClient
+        self.uploadClient = uploadClient
     }
     
     private func request<T: Decodable>(_ endpoint: UploadEndpoint) async throws -> T {
@@ -24,7 +34,13 @@ public class UploadsRepositoryImpl: UploadsRepository {
             fileName: fileName,
             contentType: contentType
         )
-        /// TODO
+
+        try await uploadClient.upload(
+            data: data,
+            to: urlResponse.uploadUrl,
+            contentType: contentType
+        )
+
         return urlResponse.toDomain()
     }
     

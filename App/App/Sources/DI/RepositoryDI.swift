@@ -26,5 +26,9 @@ extension DIContainer {
         container.register(FeedRepository.self) { _ in
             FeedRepositoryImpl()
         }
+
+        container.register(UploadsRepository.self) { _ in
+            UploadsRepositoryImpl()
+        }
     }
 }

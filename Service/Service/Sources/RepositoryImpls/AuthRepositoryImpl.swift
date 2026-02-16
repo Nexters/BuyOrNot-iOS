@@ -8,10 +8,10 @@
 import Domain
 
 public class AuthRepositoryImpl: AuthRepository {
-    private let apiClient: NetworkClient
+    private let apiClient: NetworkClientProtocol
     
     public init() {
-        self.apiClient = .shared
+        self.apiClient = NetworkClient.shared
     }
     
     private func request<T: Decodable>(_ endpoint: AuthEndpoint) async throws -> T {
