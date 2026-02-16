@@ -23,6 +23,20 @@ public struct PolicyView: View {
             .basedOnSize,
             axes: .vertical
         )
+        .sheet(
+            isPresented: Binding(
+                get: { viewModel.url != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        viewModel.url = nil
+                    }
+                }
+            )
+        ) {
+            if let url = viewModel.url {
+                BNWebView(url: url)
+            }
+        }
     }
     
     @ViewBuilder

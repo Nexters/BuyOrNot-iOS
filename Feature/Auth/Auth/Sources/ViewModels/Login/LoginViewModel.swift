@@ -28,8 +28,8 @@ public final class LoginViewModel: ObservableObject {
     @Published var snackBar = BNSnackBarManager()
     
     var policyText: AttributedString {
-        let serviceTermsURL = URL(string: Constants.serviceTermsURLString)
-        let privacyPolicyURL = URL(string: Constants.privacyPolicyURLString)
+        let serviceTermsURL = URL(string: Constants.getValue(with: .serviceTermsURL))
+        let privacyPolicyURL = URL(string: Constants.getValue(with: .privacyPolicyURL))
         var text = AttributedString(
             "가입을 진행하시면 서비스약관 및 개인정보처리방침에\n동의 하시는 것으로 간주합니다."
         )
