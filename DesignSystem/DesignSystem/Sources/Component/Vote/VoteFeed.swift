@@ -65,10 +65,6 @@ public struct VoteFeed: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            Divider()
-                .foregroundStyle(BNColor(.type(.gray200)).color)
-                .frame(height: 2)
-
             VStack(spacing: 0) {
                 FeedHeader(
                     userProfileImageURL: data.userProfileImageURL,
@@ -95,6 +91,7 @@ public struct VoteFeed: View {
                 .padding(.top, 14)
                 .padding(.bottom, 20)
             }
+            BNDivider(size: .s)
         }
     }
 }
@@ -222,11 +219,12 @@ private struct ProductImageCard: View {
                     LinearGradient(
                         stops: [
                             Gradient.Stop(color: .black.opacity(0), location: 0.00),
-                            Gradient.Stop(color: Color(red: 0.1, green: 0.1, blue: 0.1).opacity(0.6), location: 1.00),
+                            Gradient.Stop(color: Color(red: 0.1, green: 0.1, blue: 0.1), location: 1.00),
                         ],
                         startPoint: UnitPoint(x: 0.5, y: 0.61),
-                        endPoint: UnitPoint(x: 0.5, y: 1.0)
+                        endPoint: UnitPoint(x: 0.5, y: 1.12)
                     )
+                    .opacity(0.36)
                 )
                 .frame(width: size, height: size)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -236,12 +234,6 @@ private struct ProductImageCard: View {
                     .foregroundColor(BNColor(.type(.gray0)).color)
                     .padding(.leading, 14)
                     .padding(.bottom, 16)
-                    .shadow(
-                        color: BNColor(.type(.gray1000)).color.opacity(0.4),
-                        radius: 4,
-                        x: 0,
-                        y: 4
-                    )
 
                 VStack {
                     HStack {
@@ -288,7 +280,6 @@ private struct ProductImageCard: View {
         ]
     )
 
-    // NavigationStack으로 감싸야 push 동작함
     NavigationStack {
         VoteFeed(
             data: sampleData,

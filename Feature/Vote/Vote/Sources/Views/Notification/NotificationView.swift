@@ -36,22 +36,24 @@ public struct NotificationView: View {
         VStack(spacing: 0) {
             NotificationNavigationBar(onBackTap: { dismiss() })
 
-            NotificationFilterBar(selectedFilter: $selectedFilter)
-                .padding(.top, 20)
+            ScrollView {
+                VStack(spacing: 0) {
+                    NotificationFilterBar(selectedFilter: $selectedFilter)
+                        .padding(.top, 20)
 
-            NotificationPermissionBanner(onTap: { })
-                .padding(.top, 16)
-                .padding(.horizontal, 20)
+                    NotificationPermissionBanner(onTap: { })
+                        .padding(.top, 16)
+                        .padding(.horizontal, 20)
 
-            if notifications.isEmpty {
-                AlarmEmptyView()
-                    .padding(.top, 120)
-            } else {
-                NotificationListView(notifications: notifications)
-                    .padding(.top, 10)
+                    if notifications.isEmpty {
+                        AlarmEmptyView()
+                            .padding(.top, 120)
+                    } else {
+                        NotificationListContent(notifications: notifications)
+                            .padding(.top, 10)
+                    }
+                }
             }
-
-            Spacer()
         }
         .background(BNColor(.type(.gray0)).color)
         .navigationBarHidden(true)
@@ -142,24 +144,22 @@ private struct NotificationPermissionBanner: View {
     }
 }
 
-private struct NotificationListView: View {
+private struct NotificationListContent: View {
     let notifications: [NotificationItem]
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(notifications.indices, id: \.self) { index in
-                    let item = notifications[index]
+        LazyVStack(spacing: 0) {
+            ForEach(notifications.indices, id: \.self) { index in
+                let item = notifications[index]
 
-                    NotificationCell(item: item)
-                }
-
-                Text("30일 전 알림까지 보여줘요")
-                    .font(BNFont.font(.b5m))
-                    .foregroundColor(BNColor(.type(.gray600)).color)
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 20)
+                NotificationCell(item: item)
             }
+
+            Text("30일 전 알림까지 보여줘요")
+                .font(BNFont.font(.b5m))
+                .foregroundColor(BNColor(.type(.gray600)).color)
+                .frame(maxWidth: .infinity)
+                .padding(.top, 20)
         }
     }
 }
