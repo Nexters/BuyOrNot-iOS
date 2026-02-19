@@ -18,6 +18,7 @@ public struct HomeView: View {
     @State private var showBanner = true
     @State private var voteFeedState: VoteFeedState = .success
     @State private var myVoteState: MyVoteState = .empty
+    @State private var showNavigationBar: Bool = true
 
     public init(
         onNotificationTap: @escaping () -> Void,
@@ -86,19 +87,20 @@ public struct HomeView: View {
     public var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                NavigationBar(
-                    onNotificationTap: onNotificationTap,
-                    onProfileTap: onProfileTap
-                )
+                if showNavigationBar {
+                    NavigationBar(
+                        onNotificationTap: onNotificationTap,
+                        onProfileTap: onProfileTap
+                    )
+                }
 
                 FeedSegmentedControl(selectedTab: $selectedTab)
 
-                if !shouldHideFilter {
-                    FeedFilterBar(selectedFilter: $selectedFilter)
-                }
-
                 ScrollView {
                     VStack(spacing: 0) {
+                        if !shouldHideFilter {
+                            FeedFilterBar(selectedFilter: $selectedFilter)
+                        }
                         switch selectedTab {
                         case .voteFeed:
                             voteFeedContent
@@ -107,6 +109,15 @@ public struct HomeView: View {
                         }
                     }
                 }
+                .simultaneousGesture(
+                    DragGesture()
+                        .onChanged { value in
+                            let isScrollingDown = value.translation.height < 0
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                showNavigationBar = !isScrollingDown
+                            }
+                        }
+                )
             }
 
             FloatingButton(state: .open)
@@ -121,18 +132,22 @@ public struct HomeView: View {
 
         case .success:
             if showBanner {
-                Banner(
-                    image: .feed_banner,
-                    text: "고민되는 소비가 있나요?",
-                    onClose: {
-                        withAnimation { showBanner = false }
-                    },
-                    onAction: {
-                        onCreateVoteTap()
-                    }
-                )
+                VStack {
+                    Banner(
+                        image: .feed_banner,
+                        text: "고민되는 소비가 있나요?",
+                        onClose: {
+                            withAnimation { showBanner = false }
+                        },
+                        onAction: {
+                            onCreateVoteTap()
+                        }
+                    )
+                    .padding(.bottom, 12)
+
+                    BNDivider(size: .s)
+                }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 12)
             }
 
             LazyVStack(spacing: 0) {
@@ -196,6 +211,7 @@ enum FeedFilter: String, CaseIterable {
     case ongoing = "진행중 투표"
     case closed = "마감된 투표"
 }
+
 
 struct FeedSegmentedControl: View {
     @Binding var selectedTab: FeedTab
@@ -271,7 +287,9 @@ struct FeedFilterBar: View {
             }
             Spacer()
         }
-        .padding(20)
+        .padding(.horizontal, 20)
+        .padding(.top, 20)
+        .padding(.bottom, 10)
     }
 }
 

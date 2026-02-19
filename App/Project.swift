@@ -10,6 +10,7 @@ import ProjectDescriptionHelpers
 
 let project = Module.app.project(
     dependencies: [
+        Module.Feature.splash.toDependency,
         Module.Feature.auth.toDependency,
         Module.Feature.vote.toDependency,
         Module.service.toDependency,
