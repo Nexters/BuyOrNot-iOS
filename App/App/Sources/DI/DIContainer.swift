@@ -21,6 +21,10 @@ final class DIContainer: ObservableObject {
         container.resolve()
     }
     
+    func resolve<T, A>(argument: A?) -> T {
+        container.resolve(argument: argument)
+    }
+    
     func resetLoginScope() {
         container.resetObjectScope(.login)
     }

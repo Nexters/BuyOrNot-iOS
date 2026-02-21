@@ -23,7 +23,9 @@ struct KakaoAuth {
         _ completeHandler: @escaping (OAuthToken?) -> Void
     ) {
         guard let appKey else{
-            completeHandler(nil)
+#if DEBUG
+            print("🚨 Kakao Login: AppKey is nil")
+#endif
             return
         }
         KakaoSDK.initSDK(appKey: appKey)
@@ -48,6 +50,21 @@ struct KakaoAuth {
         _ completeHandler: @escaping (OAuthToken?) -> Void
     ) {
         UserApi.shared.loginWithKakaoAccount { oauthToken, error in
+            if let error {
+#if DEBUG
+                print("🚨 Kakao Login: \(error)")
+#endif
+                completeHandler(nil)
+                return
+            }
+            
+            guard let oauthToken else {
+#if DEBUG
+                print("🚨 Kakao Login: OAuthToken is nil.")
+#endif
+                completeHandler(nil)
+                return
+            }
             completeHandler(oauthToken)
         }
     }

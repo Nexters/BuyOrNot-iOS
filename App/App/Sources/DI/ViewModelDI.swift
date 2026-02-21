@@ -11,10 +11,11 @@ import Domain
 
 extension DIContainer {
     func registerViewModels(_ container: Container) {
-        container.register(LoginViewModel.self) { resolver in
+        container.register(LoginViewModel.self) { (resolver: Resolver, arg: LoginDelegate?) in
             let repository: AuthRepository = resolver.resolve()
             return LoginViewModel(
-                repository: repository
+                repository: repository,
+                delegate: arg
             )
         }
         

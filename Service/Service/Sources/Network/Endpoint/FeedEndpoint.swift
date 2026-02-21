@@ -23,7 +23,7 @@ enum FeedEndpoint: Endpoint {
         case .deleteFeeds(let feedId):
             "/\(feedId)"
         }
-        return prefix + path
+        return version.path + prefix + path
     }
     
     var method: HTTPMethod {

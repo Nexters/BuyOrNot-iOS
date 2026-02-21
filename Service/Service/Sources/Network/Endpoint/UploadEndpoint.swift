@@ -14,7 +14,7 @@ enum UploadEndpoint: Endpoint {
         case .presignedPut:
             "/presigned-put"
         }
-        return prefix + path
+        return version.path + prefix + path
     }
     
     var method: HTTPMethod {

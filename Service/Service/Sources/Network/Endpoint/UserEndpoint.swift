@@ -15,7 +15,7 @@ enum UserEndpoint: Endpoint {
         case .getMe, .deleteMe:
             "/me"
         }
-        return prefix + path
+        return version.path + prefix + path
     }
     
     var method: HTTPMethod {

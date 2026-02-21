@@ -14,6 +14,13 @@ extension Container {
         }
         return object
     }
+
+    func resolve<T, A>(argument: A?) -> T {
+        guard let object = self.resolve(T.self, argument: argument) else {
+            fatalError("Dependency resolution failed: \(T.self)")
+        }
+        return object
+    }
 }
 
 extension Resolver {
@@ -23,5 +30,11 @@ extension Resolver {
         }
         return object
     }
-}
 
+    func resolve<T, A>(argument: A?) -> T {
+        guard let object = self.resolve(T.self, argument: argument) else {
+            fatalError("Dependency resolution failed: \(T.self)")
+        }
+        return object
+    }
+}
