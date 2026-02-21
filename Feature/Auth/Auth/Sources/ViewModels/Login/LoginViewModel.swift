@@ -22,10 +22,10 @@ public final class LoginViewModel: ObservableObject {
     
     public init(
         authRepository: AuthRepository,
-        delegate: LoginDelegate? = nil
+        argument: LoginViewModel.Argument
     ) {
         self.authRepository = authRepository
-        self.delegate = delegate
+        self.delegate = argument.delegate
     }
 
     @Published var url: URL?
@@ -172,5 +172,15 @@ public final class LoginViewModel: ObservableObject {
             color: .type(.red100),
         )
         snackBar.addItem(item)
+    }
+}
+
+public extension LoginViewModel {
+    struct Argument {
+        let delegate: LoginDelegate?
+        
+        public init(delegate: LoginDelegate?) {
+            self.delegate = delegate
+        }
     }
 }

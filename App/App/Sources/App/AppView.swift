@@ -23,13 +23,13 @@ struct AppView: View {
             case .splash:
                 SplashView(
                     viewModel: container.resolve(
-                        argument: viewModel
+                        argument: viewModel.splashViewModelArgument
                     )
                 )
             case .login:
                 LoginView(
                     viewModel: container.resolve(
-                        argument: viewModel
+                        argument: viewModel.loginViewModelArgument
                     )
                 )
             case .main:

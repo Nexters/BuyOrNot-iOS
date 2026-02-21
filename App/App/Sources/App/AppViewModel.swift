@@ -13,6 +13,14 @@ import Auth
 final class AppViewModel: ObservableObject {
     @Published var launchState: LaunchState = .splash
     
+    var splashViewModelArgument: SplashViewModel.Argument {
+        SplashViewModel.Argument(delegate: self)
+    }
+    
+    var loginViewModelArgument: LoginViewModel.Argument {
+        LoginViewModel.Argument(delegate: self)
+    }
+    
     public init() {
         
     }
