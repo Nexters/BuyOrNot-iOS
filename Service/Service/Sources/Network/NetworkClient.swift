@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Core
 
 protocol NetworkClientProtocol {
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T
@@ -174,7 +175,9 @@ final class NetworkClient: NetworkClientProtocol {
         }
         
         let accessToken = tokenService.getAccessToken() ?? ""
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        if accessToken.isNotEmpty {
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        }
 
         if let body = endpoint.body {
             do {
@@ -188,7 +191,7 @@ final class NetworkClient: NetworkClientProtocol {
         }
 
         #if DEBUG
-        print("🌐 [\(endpoint.method.rawValue)] \(url.absoluteString)")
+        print("\n🌐 [\(endpoint.method.rawValue)] \(url.absoluteString)")
         if let httpBody = request.httpBody,
            let bodyString = String(data: httpBody, encoding: .utf8) {
             print("📤 Request Body: \(bodyString)")

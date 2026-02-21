@@ -8,8 +8,26 @@
 import Foundation
 
 public enum APIConstants {
+    private enum BuildScheme {
+        case debug
+        case release
+        var value: String {
+            switch self {
+            case .debug:
+                "DEV_BASE_URL"
+            case .release:
+                "BASE_URL"
+            }
+        }
+    }
+    private static var buildScheme: BuildScheme {
+        .debug
+    }
+    
     public static var baseURL: String? {
-        Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String
+        Bundle.main.object(
+            forInfoDictionaryKey: buildScheme.value
+        ) as? String
     }
 
     public static var defaultHeaders: [String: String] {

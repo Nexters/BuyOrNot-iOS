@@ -9,9 +9,11 @@ import Domain
 
 public class AuthRepositoryImpl: AuthRepository {
     private let apiClient: NetworkClientProtocol
+    private let tokenService: TokenService
     
     public init() {
         self.apiClient = NetworkClient.shared
+        self.tokenService = TokenService()
     }
     
     private func request<T: Decodable>(_ endpoint: AuthEndpoint) async throws -> T {
@@ -65,5 +67,25 @@ public class AuthRepositoryImpl: AuthRepository {
         try await apiClient.request(
             AuthEndpoint.postLogout(body)
         )
+    }
+    
+    public func saveToken(_ token: Token) {
+        tokenService.saveRefreshToken(token.refreshToken)
+        tokenService.saveAccessToken(token.accessToken)
+        tokenService.saveTokenType(token.tokenType)
+    }
+    
+    public func getToken() -> Token {
+        Token(
+            refreshToken: tokenService.getRefreshToken() ?? "",
+            accessToken: tokenService.getAccessToken() ?? "",
+            tokenType: tokenService.getTokenType() ?? ""
+        )
+    }
+    
+    public func removeToken() {
+        tokenService.removeRefreshToken()
+        tokenService.removeAccessToken()
+        tokenService.removeTokenType()
     }
 }

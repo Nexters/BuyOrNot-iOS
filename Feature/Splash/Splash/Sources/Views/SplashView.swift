@@ -9,8 +9,11 @@ import SwiftUI
 import DesignSystem
 
 public struct SplashView: View {
-
-    public init() { }
+    private let delegate: SplashDelegate?
+    
+    public init(_ delegate: SplashDelegate? = nil) {
+        self.delegate = delegate
+    }
 
     public var body: some View {
         VStack(spacing: 20) {
@@ -20,7 +23,9 @@ public struct SplashView: View {
                 asset: .splash,
                 size: CGSize(width: 152, height: 152)
             ) { isComplete in
-                
+                if isComplete, let delegate {
+                    delegate.completeSplash()
+                }
             }
             
             BNImage(.logo)

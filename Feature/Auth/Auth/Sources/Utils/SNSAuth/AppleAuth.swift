@@ -45,24 +45,12 @@ private final class AppleLoginDelegate: NSObject {
     private func handleAppleLoginSuccess(
         _ credential: ASAuthorizationAppleIDCredential
     ) {
-        guard let authorizationCode = convertToString(credential.authorizationCode) else {
+        guard let authorizationCode = credential.identityToken?.toString else {
             completion?(nil)
             return
         }
+        
         completion?(authorizationCode)
-    }
-    
-    private func convertToString(_ data: Data?) -> String? {
-        guard let data else {
-            return nil
-        }
-        guard let string = String(data: data, encoding: .utf8) else {
-            return nil
-        }
-        guard !string.isEmpty else {
-            return nil
-        }
-        return string
     }
 }
 

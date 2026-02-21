@@ -22,11 +22,17 @@ struct GoogleAuth {
         _ completeHandler: @escaping (GIDSignInResult?) -> Void
     ) {
         guard let clientID else {
+#if DEBUG
+            print("🚨 Google Login: Client ID is nil.")
+#endif
             completeHandler(nil)
             return
         }
         
         guard let presentingViewController = Utils.topViewController else {
+#if DEBUG
+            print("🚨 Google Login: presentingViewController is nil.")
+#endif
             completeHandler(nil)
             return
         }
@@ -37,6 +43,20 @@ struct GoogleAuth {
         GIDSignIn.sharedInstance.signIn(
             withPresenting: presentingViewController
         ) { result, error in
+            if let error {
+#if DEBUG
+                print("🚨 Google Login: \(error)")
+#endif
+                completeHandler(nil)
+                return
+            }
+            guard let result else {
+#if DEBUG
+                print("🚨 Google Login: GIDSignInResult is nil.")
+#endif
+                completeHandler(nil)
+                return
+            }
             completeHandler(result)
         }
     }

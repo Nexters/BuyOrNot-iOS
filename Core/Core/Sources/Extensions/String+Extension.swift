@@ -28,4 +28,8 @@ public extension String {
         let valueWithoutComma = self.replacingOccurrences(of: ",", with: "")
         return Int(valueWithoutComma)
     }
+    
+    var isNotEmpty: Bool {
+        !self.isEmpty
+    }
 }
