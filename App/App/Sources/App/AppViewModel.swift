@@ -41,8 +41,10 @@ extension AppViewModel: SplashDelegate {
 
 extension AppViewModel: LoginDelegate {
     func completeLogin(_ result: AuthState) {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            launchState = .main
+        Task { @MainActor [weak self] in
+            withAnimation(.easeInOut(duration: 0.3)) {
+                self?.launchState = .main
+            }
         }
     }
 }
