@@ -61,7 +61,7 @@ public final class AccountSettingViewModel: ObservableObject {
                 }
                 try await self?.authRepository.logout(refreshToken: token.refreshToken)
                 self?.localRepository.removeToken()
-                /// 성공하면 로그인 화면으로 이동
+                self?.navigator.navigateToLogin()
             } catch {
             }
         }

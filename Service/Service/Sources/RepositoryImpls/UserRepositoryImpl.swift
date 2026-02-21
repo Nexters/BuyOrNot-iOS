@@ -23,8 +23,8 @@ public class UserRepositoryImpl: UserRepository {
     }
     
     public func getMe() async throws -> User {
-        let response: UserResponse = try await request(.getMe)
-        return response.toDomain()
+        let response: BaseResponse<UserResponse> = try await request(.getMe)
+        return response.data.toDomain()
     }
     
     public func deleteAccount() async throws {

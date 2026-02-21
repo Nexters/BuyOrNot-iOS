@@ -25,8 +25,12 @@ extension DIContainer {
             AppViewModel()
         }
         
-        container.register(MyPageViewModel.self) { (_, argument: MyPageViewModel.Argument) in
-            MyPageViewModel(argument: argument)
+        container.register(MyPageViewModel.self) { (resolver: Resolver, argument: MyPageViewModel.Argument) in
+            let userRepository: UserRepository = resolver.resolve()
+            return MyPageViewModel(
+                userRepository: userRepository,
+                argument: argument
+            )
         }
         
         container.register(AccountSettingViewModel.self) { (resolver: Resolver, argument: AccountSettingViewModel.Argument) in
@@ -41,12 +45,13 @@ extension DIContainer {
             )
         }
         
-        container.register(DeleteAccountViewModel.self) { (resolver: Resolver) in
+        container.register(DeleteAccountViewModel.self) { (resolver: Resolver, argument: DeleteAccountViewModel.Argument) in
             let userRepository: UserRepository = resolver.resolve()
             let localRepository: LocalRepository = resolver.resolve()
             return DeleteAccountViewModel(
                 userRepository: userRepository,
-                localRepository: localRepository
+                localRepository: localRepository,
+                argument: argument
             )
         }
         
