@@ -25,7 +25,7 @@ public struct HomeView: View {
         case .voteFeed:
             return viewModel.voteFeedState == .error
         case .myVotes:
-            return viewModel.myVoteState == .error || viewModel.myVoteState == .empty
+            return viewModel.myVoteState == .error
         }
     }
 
@@ -71,7 +71,12 @@ public struct HomeView: View {
             await viewModel.fetchFeeds()
         }
         .onChange(of: viewModel.selectedFilter) { _ in
-            Task { await viewModel.fetchFeeds() }
+            switch selectedTab {
+            case .voteFeed:
+                Task { await viewModel.fetchFeeds() }
+            case .myVotes:
+                Task { await viewModel.fetchMyFeeds() }
+            }
         }
         .onChange(of: selectedTab) { tab in
             if tab == .myVotes {
@@ -87,41 +92,49 @@ public struct HomeView: View {
             ProgressView().padding(.top, 100)
 
         case .success:
-            if showBanner {
-                VStack {
-                    Banner(
-                        image: .feed_banner,
-                        text: "고민되는 소비가 있나요?",
-                        onClose: {
-                            withAnimation { showBanner = false }
-                        },
-                        onAction: {
-                            viewModel.didTapCreateVote()
-                        }
-                    )
-                    .padding(.vertical, 12)
-                    BNDivider(size: .s)
-                }
-                .padding(.horizontal, 20)
-            }
-
-            LazyVStack(spacing: 0) {
-                ForEach(viewModel.feeds, id: \.id) { feed in
-                    VoteFeed(
-                        data: feed,
-                        onProductTap: { print("Product tapped: \(feed.id)") },
-                        onVote: { optionId in print("Voted \(optionId) on feed: \(feed.id)") }
-                    )
+            if viewModel.feeds.isEmpty {
+                FeedEmptyView()
+                    .padding(.top, 140)
+            } else {
+                if showBanner {
+                    VStack {
+                        Banner(
+                            image: .feed_banner,
+                            text: "고민되는 소비가 있나요?",
+                            onClose: {
+                                withAnimation { showBanner = false }
+                            },
+                            onAction: {
+                                viewModel.didTapCreateVote()
+                            }
+                        )
+                        .padding(.vertical, 12)
+                        BNDivider(size: .s)
+                    }
                     .padding(.horizontal, 20)
-                    .onAppear {
-                        Task { await viewModel.fetchMoreIfNeeded(currentFeedId: feed.id) }
+                }
+
+                LazyVStack(spacing: 0) {
+                    ForEach(viewModel.feeds, id: \.id) { feed in
+                        VoteFeed(
+                            data: feed,
+                            onDelete: { Task { await viewModel.deleteFeed(feedId: feed.id) } },
+                            onReport: { Task { await viewModel.reportFeed(feedId: feed.id) } },
+                            onVote: { optionId in
+                                Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
+                            }
+                        )
+                        .padding(.horizontal, 20)
+                        .onAppear {
+                            Task { await viewModel.fetchMoreIfNeeded(currentFeedId: feed.id) }
+                        }
                     }
                 }
-            }
 
-            if viewModel.isLoadingMore {
-                ProgressView()
-                    .padding(.vertical, 20)
+                if viewModel.isLoadingMore {
+                    ProgressView()
+                        .padding(.vertical, 20)
+                }
             }
 
         case .error:
@@ -144,8 +157,11 @@ public struct HomeView: View {
                 ForEach(viewModel.myFeeds, id: \.id) { feed in
                     VoteFeed(
                         data: feed,
-                        onProductTap: { print("Product tapped: \(feed.id)") },
-                        onVote: { optionId in print("Voted \(optionId) on feed: \(feed.id)") }
+                        onDelete: { Task { await viewModel.deleteFeed(feedId: feed.id) } },
+                        onReport: { Task { await viewModel.reportFeed(feedId: feed.id) } },
+                        onVote: { optionId in
+                            Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
+                        }
                     )
                     .padding(.horizontal, 20)
                 }
@@ -259,8 +275,13 @@ private struct PreviewFeedRepository: FeedRepository {
     func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> Domain.VotePage {
         VotePage(votes: [], nextCursor: nil, hasNext: false)
     }
-    func getMyVoteFeeds() async throws -> [Domain.Vote] { [] }
+    func getMyVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> Domain.VotePage {
+        VotePage(votes: [], nextCursor: nil, hasNext: false)
+    }
     func postVoteFeed(info: Domain.VoteCreateInfo) async throws -> Int { 0 }
+    func voteFeed(feedId: Int, choice: Domain.VoteChoice) async throws -> Domain.VoteResult {
+        VoteResult(feedId: feedId, choice: choice, yesCount: 0, noCount: 0, totalCount: 0)
+    }
     func reportVoteFeed(feedId: Int) async throws {}
     func deleteVoteFeed(feedId: Int) async throws {}
 }

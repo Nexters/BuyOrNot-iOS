@@ -7,6 +7,7 @@
 
 
 import Domain
+import Foundation
 
 public class FeedRepositoryImpl: FeedRepository {
     private let apiClient: NetworkClientProtocol
@@ -33,9 +34,16 @@ public class FeedRepositoryImpl: FeedRepository {
         )
     }
     
-    public func getMyVoteFeeds() async throws -> [Vote] {
-        let response: BaseResponse<[FeedsResponse]> = try await request(.getMyFeeds)
-        return response.data.map { $0.toDomain() }
+    public func getMyVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> VotePage {
+        let response: BaseResponse<FeedPageResponse> = try await request(
+            .getMyFeeds(cursor: cursor, size: size, feedStatus: feedStatus)
+        )
+        let page = response.data
+        return VotePage(
+            votes: page.content.map { $0.toDomain() },
+            nextCursor: page.nextCursor,
+            hasNext: page.hasNext
+        )
     }
 
     public func postVoteFeed(info: VoteCreateInfo) async throws -> Int {
@@ -49,6 +57,19 @@ public class FeedRepositoryImpl: FeedRepository {
         )
         let response: BaseResponse<PostFeedResponse> = try await request(.postFeeds(body))
         return response.data.feedId
+    }
+
+    public func voteFeed(feedId: Int, choice: VoteChoice) async throws -> VoteResult {
+        let body = PostVoteRequest(choice: choice.apiValue)
+        let response: BaseResponse<VoteResultResponse> = try await request(
+            .postVote(feedId: feedId, body: body)
+        )
+        guard let result = response.data.toDomain() else {
+            throw NetworkError.decodingFailed(
+                NSError(domain: "VoteResultResponse", code: -1)
+            )
+        }
+        return result
     }
     
     public func reportVoteFeed(feedId: Int) async throws {

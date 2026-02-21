@@ -7,8 +7,9 @@
 
 enum FeedEndpoint: Endpoint {
     case getFeeds(cursor: Int?, size: Int?, feedStatus: String?)
-    case getMyFeeds
+    case getMyFeeds(cursor: Int?, size: Int?, feedStatus: String?)
     case postFeeds(PostFeedRequest)
+    case postVote(feedId: Int, body: PostVoteRequest)
     case postFeedsReport(Int)
     case deleteFeeds(Int)
 
@@ -23,6 +24,8 @@ enum FeedEndpoint: Endpoint {
                 ""
             case .postFeeds:
                 ""
+            case .postVote(let feedId, _):
+                "/\(feedId)/votes"
             case .postFeedsReport(let feedId):
                 "/\(feedId)/report"
             case .deleteFeeds(let feedId):
@@ -40,6 +43,8 @@ enum FeedEndpoint: Endpoint {
                 .get
         case .postFeeds:
                 .post
+        case .postVote:
+                .post
         case .postFeedsReport:
                 .post
         case .deleteFeeds:
@@ -49,7 +54,8 @@ enum FeedEndpoint: Endpoint {
 
     var queryParameters: [String: Any]? {
         switch self {
-        case .getFeeds(let cursor, let size, let feedStatus):
+        case .getFeeds(let cursor, let size, let feedStatus),
+             .getMyFeeds(let cursor, let size, let feedStatus):
             var params: [String: Any] = [:]
             if let cursor { params["cursor"] = cursor }
             if let size { params["size"] = size }
@@ -66,6 +72,8 @@ enum FeedEndpoint: Endpoint {
             nil
         case .postFeeds(let postFeedRequest):
             postFeedRequest
+        case .postVote(_, let body):
+            body
         case .postFeedsReport:
             nil
         case .deleteFeeds:

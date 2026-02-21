@@ -19,7 +19,9 @@ public struct VoteFeedData {
     public let productImageURL: String
     public let price: String
     public let voteOptions: [VoteGroup.VoteOption]
+    public let selectedVoteId: Int?
     public let isPeriodDone: Bool
+    public let isMine: Bool
 
     public init(
         id: String,
@@ -31,7 +33,9 @@ public struct VoteFeedData {
         productImageURL: String,
         price: String,
         voteOptions: [VoteGroup.VoteOption],
-        isPeriodDone: Bool = false
+        selectedVoteId: Int? = nil,
+        isPeriodDone: Bool = false,
+        isMine: Bool = false
     ) {
         self.id = id
         self.userName = userName
@@ -42,27 +46,33 @@ public struct VoteFeedData {
         self.productImageURL = productImageURL
         self.price = price
         self.voteOptions = voteOptions
+        self.selectedVoteId = selectedVoteId
         self.isPeriodDone = isPeriodDone
+        self.isMine = isMine
     }
 }
 
 // MARK: - Main: VoteFeed
 public struct VoteFeed: View {
     let data: VoteFeedData
-    let onProductTap: () -> Void
+    let onDelete: () -> Void
+    let onReport: () -> Void
     let onVote: (Int) -> Void
 
     @State private var selectedVoteId: Int?
+    @State private var showMenu: Bool = false
 
     public init(
         data: VoteFeedData,
         selectedVoteId: Int? = nil,
-        onProductTap: @escaping () -> Void = {},
+        onDelete: @escaping () -> Void = {},
+        onReport: @escaping () -> Void = {},
         onVote: @escaping (Int) -> Void = { _ in }
     ) {
         self.data = data
-        self._selectedVoteId = State(initialValue: selectedVoteId)
-        self.onProductTap = onProductTap
+        self._selectedVoteId = State(initialValue: selectedVoteId ?? data.selectedVoteId)
+        self.onDelete = onDelete
+        self.onReport = onReport
         self.onVote = onVote
     }
 
@@ -74,7 +84,7 @@ public struct VoteFeed: View {
                     userName: data.userName,
                     category: data.category,
                     timeAgo: data.timeAgo,
-                    onProductTap: onProductTap
+                    showMenu: $showMenu
                 )
                 .padding(.top, 20)
 
@@ -95,6 +105,29 @@ public struct VoteFeed: View {
                 .padding(.top, 14)
                 .padding(.bottom, 20)
             }
+            .overlay(alignment: .topTrailing) {
+                if showMenu {
+                    FloatingContextMenu(
+                        menuButtons: [
+                            data.isMine
+                            ? FloatingContextMenuButton(
+                                text: "삭제하기"
+                            ) {
+                                showMenu = false
+                                onDelete()
+                            }
+                            : FloatingContextMenuButton(
+                                text: "신고하기"
+                            ) {
+                                showMenu = false
+                                onReport()
+                            }
+                        ]
+                    )
+                    .padding(.top, 50)
+                    .padding(.trailing, 0)
+                }
+            }
             BNDivider(size: .s)
         }
     }
@@ -107,7 +140,7 @@ private struct FeedHeader: View {
     let userName: String
     let category: String
     let timeAgo: String
-    let onProductTap: () -> Void
+    @Binding var showMenu: Bool
 
     var body: some View {
         HStack(spacing: 10) {
@@ -138,7 +171,9 @@ private struct FeedHeader: View {
 
                     Spacer()
 
-                    Button(action: onProductTap) {
+                    Button {
+                        showMenu.toggle()
+                    } label: {
                         BNImage(.combined_shape)
                             .resizable()
                             .renderingMode(.template)
@@ -288,7 +323,8 @@ private struct ProductImageCard: View {
     NavigationStack {
         VoteFeed(
             data: sampleData,
-            onProductTap: { print("Product tapped") },
+            onDelete: { print("Delete tapped") },
+            onReport: { print("Report tapped") },
             onVote: { optionId in print("Voted for option: \(optionId)") }
         )
         .padding(.horizontal, 20)
