@@ -11,8 +11,4 @@ public protocol AuthRepository {
     func loginWithKakao(accessToken: String) async throws -> Token
     func refreshToken(refreshToken: String) async throws -> Token
     func logout(refreshToken: String) async throws
-    
-    func saveToken(_ token: Token)
-    func getToken() -> Token
-    func removeToken()
 }

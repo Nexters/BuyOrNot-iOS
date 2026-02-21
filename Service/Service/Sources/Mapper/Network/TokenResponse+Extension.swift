@@ -15,4 +15,14 @@ extension TokenResponse {
             tokenType: self.tokenType
         )
     }
+    
+    func toUser() -> User {
+        User(
+            id: self.user.id,
+            nickname: self.user.nickname,
+            profileImage: self.user.profileImage,
+            socialAccount: self.user.socialAccount ?? "",
+            email: self.user.email ?? ""
+        )
+    }
 }

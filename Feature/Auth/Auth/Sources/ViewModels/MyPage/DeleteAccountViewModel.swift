@@ -10,7 +10,7 @@ import Domain
 
 public final class DeleteAccountViewModel: ObservableObject {
     private let userRepository: UserRepository
-    private let localRepository: LocalRepository
+    private let tokenRepository: TokenRepository
     private let navigator: AuthNavigator
     
     @Published var name: String = "닉네임"
@@ -19,11 +19,11 @@ public final class DeleteAccountViewModel: ObservableObject {
     
     public init(
         userRepository: UserRepository,
-        localRepository: LocalRepository,
+        tokenRepository: TokenRepository,
         argument: DeleteAccountViewModel.Argument
     ) {
         self.userRepository = userRepository
-        self.localRepository = localRepository
+        self.tokenRepository = tokenRepository
         self.navigator = argument.navigator
     }
     
@@ -48,7 +48,7 @@ public final class DeleteAccountViewModel: ObservableObject {
         Task { @MainActor [weak self] in
             do {
                 try await self?.userRepository.deleteAccount()
-                self?.localRepository.removeToken()
+                self?.tokenRepository.removeToken()
                 self?.navigator.navigateToLogin()
             } catch {
                 

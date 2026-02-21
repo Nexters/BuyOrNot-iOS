@@ -11,7 +11,7 @@ import Domain
 public final class AccountSettingViewModel: ObservableObject {
     private let authRepository: AuthRepository
     private let userRepository: UserRepository
-    private let localRepository: LocalRepository
+    private let tokenRepository: TokenRepository
     
     private let navigator: AuthNavigator
     @Published var email: String = "email@domain.com"
@@ -20,12 +20,12 @@ public final class AccountSettingViewModel: ObservableObject {
     public init(
         authRepository: AuthRepository,
         userRepository: UserRepository,
-        localRepository: LocalRepository,
+        tokenRepository: TokenRepository,
         argument: AccountSettingViewModel.Argument
     ) {
         self.authRepository = authRepository
         self.userRepository = userRepository
-        self.localRepository = localRepository
+        self.tokenRepository = tokenRepository
         self.navigator = argument.navigator
     }
     
@@ -56,11 +56,11 @@ public final class AccountSettingViewModel: ObservableObject {
     func logout() {
         Task { @MainActor [weak self] in
             do {
-                guard let token = self?.localRepository.getToken() else {
+                guard let token = self?.tokenRepository.getToken() else {
                     return
                 }
                 try await self?.authRepository.logout(refreshToken: token.refreshToken)
-                self?.localRepository.removeToken()
+                self?.tokenRepository.removeToken()
                 self?.navigator.navigateToLogin()
             } catch {
             }

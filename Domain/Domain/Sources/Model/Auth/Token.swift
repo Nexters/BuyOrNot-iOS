@@ -13,6 +13,7 @@ public struct Token {
     public var isEmpty: Bool {
         refreshToken.isEmpty || accessToken.isEmpty
     }
+    
     public init(
         refreshToken: String,
         accessToken: String,
@@ -22,4 +23,10 @@ public struct Token {
         self.accessToken = accessToken
         self.tokenType = tokenType
     }
+    
+    public static let empty = Token(
+        refreshToken: "",
+        accessToken: "",
+        tokenType: ""
+    )
 }

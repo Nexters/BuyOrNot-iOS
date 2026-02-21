@@ -9,19 +9,19 @@ import SwiftUI
 import Domain
 
 public final class SplashViewModel: ObservableObject {
-    private let localRepository: LocalRepository
+    private let tokenRepository: TokenRepository
     private let delegate: SplashDelegate?
     
     public init(
-        localRepository: LocalRepository,
+        tokenRepository: TokenRepository,
         argument: SplashViewModel.Argument
     ) {
-        self.localRepository = localRepository
+        self.tokenRepository = tokenRepository
         self.delegate = argument.delegate
     }
     
     func didSplashEnded() {
-        let token = localRepository.getToken()
+        let token = tokenRepository.getToken()
         let authState: AuthState = token.isEmpty ? .guest : .member
         delegate?.completeSplash(authState)
     }
