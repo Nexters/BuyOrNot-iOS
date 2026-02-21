@@ -12,9 +12,7 @@ public struct MyPageView: View {
     @StateObject var viewModel: MyPageViewModel
     
     public init(viewModel: MyPageViewModel) {
-        _viewModel = StateObject(
-            wrappedValue: viewModel
-        )
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     public var body: some View {

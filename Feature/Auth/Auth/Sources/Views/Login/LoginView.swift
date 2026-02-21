@@ -15,9 +15,7 @@ public struct LoginView: View {
     @StateObject var viewModel: LoginViewModel
     
     public init(viewModel: LoginViewModel) {
-        _viewModel = StateObject(
-            wrappedValue: viewModel
-        )
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     public var body: some View {

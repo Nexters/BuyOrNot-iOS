@@ -26,7 +26,9 @@ extension View {
                     )
                 )
             case .deleteAccount:
-                DeleteAccountView()
+                DeleteAccountView(
+                    viewModel: container.resolve()
+                )
             }
         }
     }

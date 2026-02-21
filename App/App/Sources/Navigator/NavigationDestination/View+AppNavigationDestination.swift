@@ -14,7 +14,7 @@ extension View {
         container: DIContainer,
         authNavigator: AuthNavigator
     ) -> some View {
-        navigationDestination(for: AppDestination.self) { destination in
+        navigationDestination(for: VoteDestination.self) { destination in
             switch destination {
             case .notification:
                 NotificationView()

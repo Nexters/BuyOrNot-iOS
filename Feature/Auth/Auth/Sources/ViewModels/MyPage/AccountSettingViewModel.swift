@@ -6,13 +6,26 @@
 //
 
 import SwiftUI
+import Domain
 
 public final class AccountSettingViewModel: ObservableObject {
+    private let authRepository: AuthRepository
+    private let userRepository: UserRepository
+    private let localRepository: LocalRepository
+    
     private let navigator: AuthNavigator
     @Published var email: String = "email@domain.com"
     @Published var showLogoutAlert: Bool = false
 
-    public init(argument: AccountSettingViewModel.Argument) {
+    public init(
+        authRepository: AuthRepository,
+        userRepository: UserRepository,
+        localRepository: LocalRepository,
+        argument: AccountSettingViewModel.Argument
+    ) {
+        self.authRepository = authRepository
+        self.userRepository = userRepository
+        self.localRepository = localRepository
         self.navigator = argument.navigator
     }
     
@@ -24,6 +37,33 @@ public final class AccountSettingViewModel: ObservableObject {
             toggleLogoutAlert()
         case .deleteAccount:
             navigator.navigateToDeleteAccount()
+        }
+    }
+    
+    func onAppear() {
+        Task { @MainActor [weak self] in
+            do {
+                let user = try await self?.userRepository.getMe()
+                guard let email = user?.email else {
+                    return
+                }
+                self?.email = email
+            } catch {
+            }
+        }
+    }
+    
+    func logout() {
+        Task { @MainActor [weak self] in
+            do {
+                guard let token = self?.localRepository.getToken() else {
+                    return
+                }
+                try await self?.authRepository.logout(refreshToken: token.refreshToken)
+                self?.localRepository.removeToken()
+                /// 성공하면 로그인 화면으로 이동
+            } catch {
+            }
         }
     }
     

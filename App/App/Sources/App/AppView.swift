@@ -6,12 +6,22 @@
 //
 
 import SwiftUI
+import Vote
 import Auth
 import Splash
 
 struct AppView: View {
     @EnvironmentObject var container: DIContainer
     @StateObject var viewModel: AppViewModel
+    @State private var router = Router()
+    
+    private var authNavigator: AuthNavigator {
+        AppAuthNavigator(router: router)
+    }
+    
+    private var voteNavigator: VoteNavigator {
+        AppVoteNavigator(router: router)
+    }
     
     init(viewModel: AppViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -19,7 +29,7 @@ struct AppView: View {
     
     var body: some View {
         Group {
-            switch viewModel.launchState {
+            switch viewModel.appDestination {
             case .splash:
                 SplashView(
                     viewModel: container.resolve(
@@ -33,7 +43,29 @@ struct AppView: View {
                     )
                 )
             case .main:
-                RootView()
+                NavigationStack(path: $router.path) {
+                    HomeView(
+                        viewModel: container.resolve(
+                            argument: HomeViewModel.Argument(
+                                navigator: voteNavigator
+                            )
+                        )
+                    )
+                    .appNavigationDestination(
+                        container: container,
+                        authNavigator: authNavigator
+                    )
+                    .authNavigationDestination(
+                        container: container,
+                        authNavigator: authNavigator
+                    )
+                }
+                .sheet(isPresented: $router.showCreateVote) {
+                    CreateVoteView()
+                        .presentationDetents([.large])
+                        .presentationCornerRadius(18)
+                }
+                .environment(router)
             }
         }
     }
