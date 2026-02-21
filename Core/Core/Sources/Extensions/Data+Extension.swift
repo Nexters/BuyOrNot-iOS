@@ -17,7 +17,7 @@ public extension Data {
         }
         return string
     }
-
+    
     var prettyPrintedJSON: String? {
         guard
             let jsonObject = try? JSONSerialization.jsonObject(with: self, options: []),

@@ -12,24 +12,12 @@ import DesignSystem
 public struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
 
-    private let onNotificationTap: () -> Void
-    private let onProfileTap: () -> Void
-    private let onCreateVoteTap: () -> Void
-
     @State private var selectedTab: FeedTab = .voteFeed
     @State private var showBanner = true
     @State private var showNavigationBar: Bool = true
 
-    public init(
-        viewModel: HomeViewModel,
-        onNotificationTap: @escaping () -> Void,
-        onProfileTap: @escaping () -> Void,
-        onCreateVoteTap: @escaping () -> Void
-    ) {
+    public init(viewModel: HomeViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
-        self.onNotificationTap = onNotificationTap
-        self.onProfileTap = onProfileTap
-        self.onCreateVoteTap = onCreateVoteTap
     }
 
     private var shouldHideFilter: Bool {
@@ -46,8 +34,8 @@ public struct HomeView: View {
             VStack(spacing: 0) {
                 if showNavigationBar {
                     NavigationBar(
-                        onNotificationTap: onNotificationTap,
-                        onProfileTap: onProfileTap
+                        onNotificationTap: { viewModel.didTapNotification() },
+                        onProfileTap: { viewModel.didTapProfile() }
                     )
                 }
 
@@ -108,7 +96,7 @@ public struct HomeView: View {
                             withAnimation { showBanner = false }
                         },
                         onAction: {
-                            onCreateVoteTap()
+                            viewModel.didTapCreateVote()
                         }
                     )
                     .padding(.vertical, 12)
@@ -277,12 +265,20 @@ private struct PreviewFeedRepository: FeedRepository {
     func deleteVoteFeed(feedId: Int) async throws {}
 }
 
+private struct MockVoteNavigator: VoteNavigator {
+    func navigateToNotification() {}
+    func navigateToMyPage() {}
+    func presentCreateVote() {}
+}
+
 #Preview {
     let _ = BNFont.loadFonts()
     HomeView(
-        viewModel: HomeViewModel(repository: PreviewFeedRepository()),
-        onNotificationTap: {},
-        onProfileTap: {},
-        onCreateVoteTap: {}
+        viewModel: HomeViewModel(
+            repository: PreviewFeedRepository(),
+            argument: .init(
+                navigator: MockVoteNavigator()
+            )
+        )
     )
 }
