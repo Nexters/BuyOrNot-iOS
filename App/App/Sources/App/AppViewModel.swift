@@ -11,7 +11,7 @@ import Splash
 import Auth
 
 final class AppViewModel: ObservableObject {
-    @Published var launchState: LaunchState = .splash
+    @Published var appDestination: AppDestination = .splash
     
     var splashViewModelArgument: SplashViewModel.Argument {
         SplashViewModel.Argument(delegate: self)
@@ -31,9 +31,9 @@ extension AppViewModel: SplashDelegate {
         withAnimation(.easeInOut(duration: 0.3)) {
             switch result {
             case .member:
-                launchState = .main
+                appDestination = .main
             case .guest:
-                launchState = .login
+                appDestination = .login
             }
         }
     }
@@ -43,7 +43,7 @@ extension AppViewModel: LoginDelegate {
     func completeLogin(_ result: AuthState) {
         Task { @MainActor [weak self] in
             withAnimation(.easeInOut(duration: 0.3)) {
-                self?.launchState = .main
+                self?.appDestination = .main
             }
         }
     }

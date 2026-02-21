@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DesignSystem
+import Domain
 
 public struct AccountSettingView: View {
     @StateObject var viewModel: AccountSettingViewModel
@@ -33,7 +34,7 @@ public struct AccountSettingView: View {
                         text: "로그아웃",
                         type: .secondaryLarge,
                     ) {
-                        /// TODO: 작업 예정
+                        viewModel.logout()
                     },
                     BNAlertButtonConfig(
                         text: "유지하기",
@@ -42,6 +43,9 @@ public struct AccountSettingView: View {
                 ]
             )
         )
+        .onAppear {
+            viewModel.onAppear()
+        }
     }
     
     @ViewBuilder
@@ -68,20 +72,4 @@ public struct AccountSettingView: View {
             EmptyView()
         }
     }
-}
-
-#Preview {
-    AccountSettingView(
-        viewModel: AccountSettingViewModel(
-            argument: .init(
-                navigator: MockAuthNavigator()
-            )
-        )
-    )
-}
-
-private struct MockAuthNavigator: AuthNavigator {
-    func navigateToTerms() {}
-    func navigateToAccountSetting() {}
-    func navigateToDeleteAccount() {}
 }

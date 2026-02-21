@@ -36,11 +36,11 @@ final class AppVoteNavigator: VoteNavigator {
     }
 
     func navigateToNotification() {
-        router.navigate(to: AppDestination.notification)
+        router.navigate(to: VoteDestination.notification)
     }
 
     func navigateToMyPage() {
-        router.navigate(to: AppDestination.myPage)
+        router.navigate(to: VoteDestination.myPage)
     }
 
     func presentCreateVote() {
