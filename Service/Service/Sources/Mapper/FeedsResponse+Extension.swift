@@ -20,9 +20,10 @@ extension FeedsResponse {
             yesCount: self.yesCount,
             noCount: self.noCount,
             voteStatus: VoteStatus(
-                rawValue: self.voteStatus
+                rawValue: self.feedStatus
             ),
             s3ObjectKey: self.s3ObjectKey,
+            viewUrl: self.viewUrl,
             imageWidth: self.imageWidth,
             imageHeight: self.imageHeight,
             author: FeedAuthor(
@@ -32,7 +33,11 @@ extension FeedsResponse {
             ),
             createdAt: toDateComponents(
                 from: self.createdAt
-            )
+            ),
+            hasVoted: self.hasVoted ?? false,
+            myVoteChoice: self.myVoteChoice.flatMap {
+                VoteChoice(rawValue: $0)
+            }
         )
     }
     
@@ -48,8 +53,18 @@ extension FeedsResponse {
     }
     
     private func parseISO8601Date(_ value: String) -> Date? {
-        return getISO8601Formatter([.withInternetDateTime, .withFractionalSeconds]).date(from: value) ??
-        getISO8601Formatter([.withInternetDateTime]).date(from: value)
+        if let date = getISO8601Formatter([.withInternetDateTime, .withFractionalSeconds]).date(from: value) ??
+            getISO8601Formatter([.withInternetDateTime]).date(from: value) {
+            return date
+        }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+        if let date = formatter.date(from: value) {
+            return date
+        }
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter.date(from: value)
     }
     
     private func getISO8601Formatter(_ formatOptions: ISO8601DateFormatter.Options) -> ISO8601DateFormatter {
