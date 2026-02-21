@@ -13,7 +13,7 @@ public struct VoteCreateInfo {
     public let imageWidth: Int
     public let imageHeight: Int
     
-    init(category: FeedCategory, price: Int, content: String, s3ObjectKey: String, imageWidth: Int, imageHeight: Int) {
+    public init(category: FeedCategory, price: Int, content: String, s3ObjectKey: String, imageWidth: Int, imageHeight: Int) {
         self.category = category
         self.price = price
         self.content = content

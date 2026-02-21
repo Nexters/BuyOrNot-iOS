@@ -8,13 +8,16 @@
 import SwiftUI
 import Core
 import DesignSystem
+import Domain
 
 public struct CreateVoteView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject private var viewModel = CreateVoteViewModel()
+    @StateObject private var viewModel: CreateVoteViewModel
     @FocusState private var focusState: FocusedTextField?
     
-    public init() {}
+    public init(viewModel: CreateVoteViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     public var body: some View {
         VStack(spacing: 0) {
@@ -42,9 +45,11 @@ public struct CreateVoteView: View {
                         state: viewModel.createButtonState,
                         width: 80
                     ) {
-                        let result = viewModel.postVote()
-                        if result {
-                            dismiss()
+                        Task {
+                            let result = await viewModel.postVote()
+                            if result {
+                                dismiss()
+                            }
                         }
                     }
                 }
@@ -252,6 +257,32 @@ public struct CreateVoteView: View {
     }
 }
 
+private struct MockUploadsRepository: UploadsRepository {
+    func postUploadImage(data: Data, fileName: String, contentType: String) async throws -> ImageInfo {
+        ImageInfo(uploadUrl: "", s3ObjectKey: "mock", viewUrl: "")
+    }
+}
+
+private struct MockFeedRepository: FeedRepository {
+    func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> VotePage {
+        VotePage(votes: [], nextCursor: nil, hasNext: false)
+    }
+    func getMyVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> VotePage {
+        VotePage(votes: [], nextCursor: nil, hasNext: false)
+    }
+    func postVoteFeed(info: VoteCreateInfo) async throws -> Int { 0 }
+    func voteFeed(feedId: Int, choice: VoteChoice) async throws -> VoteResult {
+        VoteResult(feedId: feedId, choice: choice, yesCount: 0, noCount: 0, totalCount: 0)
+    }
+    func reportVoteFeed(feedId: Int) async throws {}
+    func deleteVoteFeed(feedId: Int) async throws {}
+}
+
 #Preview {
-    CreateVoteView()
+    CreateVoteView(
+        viewModel: CreateVoteViewModel(
+            uploadsRepository: MockUploadsRepository(),
+            feedRepository: MockFeedRepository()
+        )
+    )
 }
