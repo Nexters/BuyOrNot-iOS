@@ -23,11 +23,14 @@ public class FeedRepositoryImpl: FeedRepository {
         try await apiClient.request(endpoint)
     }
     
-    public func getVoteFeeds() async throws -> [Vote] {
-        let response: BaseResponse<[FeedsResponse]> = try await request(.getFeeds)
-        return response.data.map {
-            $0.toDomain()
-        }
+    public func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> VotePage {
+        let response: BaseResponse<FeedPageResponse> = try await request(.getFeeds(cursor: cursor, size: size, feedStatus: feedStatus))
+        let page = response.data
+        return VotePage(
+            votes: page.content.map { $0.toDomain() },
+            nextCursor: page.nextCursor,
+            hasNext: page.hasNext
+        )
     }
     
     public func postVoteFeed(info: VoteCreateInfo) async throws -> Int {

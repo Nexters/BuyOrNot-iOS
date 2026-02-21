@@ -11,11 +11,13 @@ import Vote
 import Auth
 
 struct RootView: View {
+    @EnvironmentObject var container: DIContainer
     @State private var router = Router()
 
     var body: some View {
         NavigationStack(path: $router.path) {
             HomeView(
+                viewModel: container.resolve(),
                 onNotificationTap: { router.navigate(to: .notification) },
                 onProfileTap: { router.navigate(to: .myPage) },
                 onCreateVoteTap: { router.showCreateVote = true }
