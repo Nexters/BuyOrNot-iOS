@@ -214,8 +214,8 @@ final class NetworkClient: NetworkClientProtocol {
 
         #if DEBUG
         print("📥 Status Code: \(httpResponse.statusCode)")
-        if let data = data, let responseString = String(data: data, encoding: .utf8) {
-            print("📦 Response: \(responseString)")
+        if let responseString = data?.prettyPrintedJSON {
+            print("📦 Response:\n\(responseString)")
         }
         #endif
 

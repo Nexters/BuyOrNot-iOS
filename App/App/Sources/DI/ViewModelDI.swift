@@ -24,6 +24,14 @@ extension DIContainer {
             AppViewModel()
         }
         
+        container.register(MyPageViewModel.self) { (_, argument: MyPageViewModel.Argument) in
+            MyPageViewModel(argument: argument)
+        }
+        
+        container.register(AccountSettingViewModel.self) { (_, argument: AccountSettingViewModel.Argument) in
+            AccountSettingViewModel(argument: argument)
+        }
+        
         container.register(SplashViewModel.self) { (resolver: Resolver, argument: SplashViewModel.Argument) in
             let localRepository: LocalRepository = resolver.resolve()
             return SplashViewModel(

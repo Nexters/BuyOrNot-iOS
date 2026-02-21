@@ -49,6 +49,12 @@ let project = Module.app.project(
                 "$(BASE_URL)",
             "DEV_BASE_URL":
                 "$(DEV_BASE_URL)",
+            "SERVICE_TERMS_URL":
+                "$(SERVICE_TERMS_URL)",
+            "PRIVACY_POLICY_URL":
+                "$(PRIVACY_POLICY_URL)",
+            "USER_FEEDBACK_URL":
+                "$(USER_FEEDBACK_URL)",
             "LSApplicationQueriesSchemes": .array([
                 "kakaokompassauth",
                 "kakaolink",

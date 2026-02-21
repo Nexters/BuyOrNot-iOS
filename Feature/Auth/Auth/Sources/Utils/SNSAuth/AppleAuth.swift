@@ -45,11 +45,10 @@ private final class AppleLoginDelegate: NSObject {
     private func handleAppleLoginSuccess(
         _ credential: ASAuthorizationAppleIDCredential
     ) {
-        guard let authorizationCode = credential.identityToken?.toString else {
+        guard let authorizationCode = credential.authorizationCode?.toString else {
             completion?(nil)
             return
         }
-        
         completion?(authorizationCode)
     }
 }
@@ -63,7 +62,6 @@ extension AppleLoginDelegate: ASAuthorizationControllerDelegate {
             completion?(nil)
             return
         }
-        
         handleAppleLoginSuccess(credential)
     }
     

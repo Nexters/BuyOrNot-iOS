@@ -9,9 +9,7 @@ import SwiftUI
 import DesignSystem
 
 public struct HomeView: View {
-    private let onNotificationTap: () -> Void
-    private let onProfileTap: () -> Void
-    private let onCreateVoteTap: () -> Void
+    private let navigator: VoteNavigator
 
     @State private var selectedTab: FeedTab = .voteFeed
     @State private var selectedFilter: FeedFilter = .all
@@ -20,14 +18,8 @@ public struct HomeView: View {
     @State private var myVoteState: MyVoteState = .empty
     @State private var showNavigationBar: Bool = true
 
-    public init(
-        onNotificationTap: @escaping () -> Void,
-        onProfileTap: @escaping () -> Void,
-        onCreateVoteTap: @escaping () -> Void
-    ) {
-        self.onNotificationTap = onNotificationTap
-        self.onProfileTap = onProfileTap
-        self.onCreateVoteTap = onCreateVoteTap
+    public init(navigator: VoteNavigator) {
+        self.navigator = navigator
     }
 
     private let sampleFeeds: [VoteFeedData] = [
@@ -89,8 +81,8 @@ public struct HomeView: View {
             VStack(spacing: 0) {
                 if showNavigationBar {
                     NavigationBar(
-                        onNotificationTap: onNotificationTap,
-                        onProfileTap: onProfileTap
+                        onNotificationTap: { navigator.navigateToNotification() },
+                        onProfileTap: { navigator.navigateToMyPage() }
                     )
                 }
 
@@ -140,7 +132,7 @@ public struct HomeView: View {
                             withAnimation { showBanner = false }
                         },
                         onAction: {
-                            onCreateVoteTap()
+                            navigator.presentCreateVote()
                         }
                     )
                     .padding(.bottom, 12)
@@ -295,9 +287,11 @@ struct FeedFilterBar: View {
 
 #Preview {
     let _ = BNFont.loadFonts()
-    HomeView(
-        onNotificationTap: {},
-        onProfileTap: {},
-        onCreateVoteTap: {}
-    )
+    HomeView(navigator: MockVoteNavigator())
+}
+
+private struct MockVoteNavigator: VoteNavigator {
+    func navigateToNotification() {}
+    func navigateToMyPage() {}
+    func presentCreateVote() {}
 }

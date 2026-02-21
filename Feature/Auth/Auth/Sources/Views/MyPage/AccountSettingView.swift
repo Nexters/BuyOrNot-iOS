@@ -9,10 +9,10 @@ import SwiftUI
 import DesignSystem
 
 public struct AccountSettingView: View {
-    @StateObject var viewModel = AccountSettingViewModel()
+    @StateObject var viewModel: AccountSettingViewModel
     
-    public init() {
-        
+    public init(viewModel: AccountSettingViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     public var body: some View {
@@ -71,5 +71,17 @@ public struct AccountSettingView: View {
 }
 
 #Preview {
-    AccountSettingView()
+    AccountSettingView(
+        viewModel: AccountSettingViewModel(
+            argument: .init(
+                navigator: MockAuthNavigator()
+            )
+        )
+    )
+}
+
+private struct MockAuthNavigator: AuthNavigator {
+    func navigateToTerms() {}
+    func navigateToAccountSetting() {}
+    func navigateToDeleteAccount() {}
 }
