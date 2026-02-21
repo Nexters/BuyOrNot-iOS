@@ -9,6 +9,13 @@ public enum VoteChoice {
     case yes
     case no
 
+    public var apiValue: String {
+        switch self {
+        case .yes: return "YES"
+        case .no: return "NO"
+        }
+    }
+
     public init?(rawValue: String) {
         switch rawValue {
         case "YES":

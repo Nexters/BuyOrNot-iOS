@@ -116,7 +116,9 @@ public struct HomeView: View {
                         data: feed,
                         onDelete: { Task { await viewModel.deleteFeed(feedId: feed.id) } },
                         onReport: { Task { await viewModel.reportFeed(feedId: feed.id) } },
-                        onVote: { optionId in print("Voted \(optionId) on feed: \(feed.id)") }
+                        onVote: { optionId in
+                            Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
+                        }
                     )
                     .padding(.horizontal, 20)
                     .onAppear {
@@ -152,7 +154,9 @@ public struct HomeView: View {
                         data: feed,
                         onDelete: { Task { await viewModel.deleteFeed(feedId: feed.id) } },
                         onReport: { Task { await viewModel.reportFeed(feedId: feed.id) } },
-                        onVote: { optionId in print("Voted \(optionId) on feed: \(feed.id)") }
+                        onVote: { optionId in
+                            Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
+                        }
                     )
                     .padding(.horizontal, 20)
                 }
@@ -270,6 +274,9 @@ private struct PreviewFeedRepository: FeedRepository {
         VotePage(votes: [], nextCursor: nil, hasNext: false)
     }
     func postVoteFeed(info: Domain.VoteCreateInfo) async throws -> Int { 0 }
+    func voteFeed(feedId: Int, choice: Domain.VoteChoice) async throws -> Domain.VoteResult {
+        VoteResult(feedId: feedId, choice: choice, yesCount: 0, noCount: 0, totalCount: 0)
+    }
     func reportVoteFeed(feedId: Int) async throws {}
     func deleteVoteFeed(feedId: Int) async throws {}
 }
