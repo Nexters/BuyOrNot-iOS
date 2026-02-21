@@ -21,19 +21,19 @@ struct AppView: View {
         Group {
             switch viewModel.launchState {
             case .splash:
-                SplashView()
+                SplashView(viewModel)
             case .login:
                 LoginView(
-                    viewModel: container.resolve()
+                    viewModel: container.resolve(
+                        argument: viewModel
+                    )
                 )
             case .main:
                 RootView()
             }
         }
         .onAppear {
-            Task {
-                await viewModel.onAppear()
-            }
+            viewModel.onAppear()
         }
     }
     

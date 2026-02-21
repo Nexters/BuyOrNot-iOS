@@ -26,7 +26,7 @@ enum AuthEndpoint: Endpoint {
         case .postLogout:
             "/logout"
         }
-        return prefix + path
+        return version.path + prefix + path
     }
     
     var method: HTTPMethod {

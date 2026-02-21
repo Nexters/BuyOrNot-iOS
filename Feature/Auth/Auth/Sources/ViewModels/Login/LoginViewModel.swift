@@ -16,16 +16,27 @@ import GoogleSignIn
 import KakaoSDKAuth
 import KakaoSDKCommon
 
+public enum LoginViewState {
+    case `default`
+    case loginSuccess
+}
+
 public final class LoginViewModel: ObservableObject {
-    let repository: AuthRepository
+    private let repository: AuthRepository
+    private let delegate: LoginDelegate?
     
-    public init(repository: AuthRepository) {
+    public init(
+        repository: AuthRepository,
+        delegate: LoginDelegate? = nil
+    ) {
         self.repository = repository
+        self.delegate = delegate
     }
 
     @Published var url: URL?
     @Published var loginErrorMessage: String?
     @Published var snackBar = BNSnackBarManager()
+    @Published var state: LoginViewState = .default
     
     var policyText: AttributedString {
         let serviceTermsURL = URL(string: Constants.getValue(with: .serviceTermsURL))
@@ -73,11 +84,22 @@ public final class LoginViewModel: ObservableObject {
     private func loginWithGoogle() {
         let googleAuth = GoogleAuth()
         googleAuth.requestLogin { [weak self] gidSignInResult in
-            guard let gidSignInResult else {
+            guard let idToken = gidSignInResult?.user.idToken?.tokenString else {
                 self?.showErrorSnackBar()
                 return
             }
-            print(gidSignInResult)
+            Task { [weak self] in
+                defer {
+                    self?.showErrorSnackBar()
+                }
+                guard let self else { return }
+                do {
+                    let result = try await repository.loginWithGoogle(
+                        idToken: idToken
+                    )
+                    repository.saveToken(result)
+                } catch { }
+            }
         }
     }
     
@@ -85,14 +107,24 @@ public final class LoginViewModel: ObservableObject {
     private func loginWithApple() {
         let appleAuth = AppleAuth()
         appleAuth.requestLogin { [weak self] authorizationCode in
-            defer {
-                appleAuth.clearDelegate()
-            }
             guard let authorizationCode else {
                 self?.showErrorSnackBar()
+                appleAuth.clearDelegate()
                 return
             }
-            print(authorizationCode)
+            Task { [weak self] in
+                defer {
+                    self?.showErrorSnackBar()
+                    appleAuth.clearDelegate()
+                }
+                guard let self else { return }
+                do {
+                    let result = try await repository.loginWithApple(
+                        authorizationCode: authorizationCode
+                    )
+                    repository.saveToken(result)
+                } catch { }
+            }
         }
     }
     
@@ -104,7 +136,18 @@ public final class LoginViewModel: ObservableObject {
                 self?.showErrorSnackBar()
                 return
             }
-            print(oauthToken)
+            Task { [weak self] in
+                defer {
+                    self?.showErrorSnackBar()
+                }
+                guard let self else { return }
+                do {
+                    let result = try await repository.loginWithKakao(
+                        accessToken: oauthToken.accessToken
+                    )
+                    repository.saveToken(result)
+                } catch { }
+            }
         }
     }
     

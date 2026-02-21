@@ -56,6 +56,11 @@ public struct LoginView: View {
         .onOpenURL(
             perform: viewModel.handleAuthUrl
         )
+        .onChange(of: viewModel.state) { oldValue, newValue in
+            if newValue == .loginSuccess {
+                onSuccessLogin()
+            }
+        }
     }
 }
 

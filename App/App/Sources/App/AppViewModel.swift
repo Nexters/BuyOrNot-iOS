@@ -7,6 +7,8 @@
 
 import SwiftUI
 import Domain
+import Splash
+import Auth
 
 final class AppViewModel: ObservableObject {
     @Published var launchState: LaunchState = .splash
@@ -15,20 +17,27 @@ final class AppViewModel: ObservableObject {
     private let localRepository: LocalRepository
     
     public init(
-     authRepository: AuthRepository,
-     localRepository: LocalRepository
+        authRepository: AuthRepository,
+        localRepository: LocalRepository
     ) {
         self.authRepository = authRepository
         self.localRepository = localRepository
     }
     
-    func onAppear() async {
-        try? await Task.sleep(nanoseconds: 2 * .second)
+    func onAppear() {
         let token = localRepository.getToken()
-        if token.isEmpty {
-            withAnimation {
-                launchState = .login
-            }
-        }
+        // TODO
+    }
+}
+
+extension AppViewModel: SplashDelegate {
+    func completeSplash() {
+        // TODO
+    }
+}
+
+extension AppViewModel: LoginDelegate {
+    func completeLogin(_ result: LoginResult) {
+        // TODO
     }
 }
