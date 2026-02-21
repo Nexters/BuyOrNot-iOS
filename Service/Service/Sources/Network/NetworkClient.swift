@@ -125,13 +125,13 @@ final class NetworkClient: NetworkClientProtocol {
         let endpoint = AuthEndpoint.postRefreshToken(
             RefreshTokenRequest(refreshToken: refreshToken)
         )
-        let response: TokenResponse = try await request(
+        let response: BaseResponse<TokenResponse> = try await request(
             endpoint,
             didRetryAfterRefresh: false
         )
-        tokenService.saveRefreshToken(response.refreshToken)
-        tokenService.saveAccessToken(response.accessToken)
-        tokenService.saveTokenType(response.tokenType)
+        tokenService.saveRefreshToken(response.data.refreshToken)
+        tokenService.saveAccessToken(response.data.accessToken)
+        tokenService.saveTokenType(response.data.tokenType)
     }
 
     private func buildRequest(from endpoint: Endpoint) throws -> URLRequest {

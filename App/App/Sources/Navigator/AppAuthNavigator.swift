@@ -6,13 +6,17 @@
 //
 
 import Auth
-import Vote
 
 final class AppAuthNavigator: AuthNavigator {
     private let router: Router
+    private let onNavigateToLogin: () -> Void
 
-    init(router: Router) {
+    init(
+        router: Router,
+        onNavigateToLogin: @escaping () -> Void
+    ) {
         self.router = router
+        self.onNavigateToLogin = onNavigateToLogin
     }
 
     func navigateToTerms() {
@@ -26,24 +30,8 @@ final class AppAuthNavigator: AuthNavigator {
     func navigateToDeleteAccount() {
         router.navigate(to: AuthDestination.deleteAccount)
     }
-}
-
-final class AppVoteNavigator: VoteNavigator {
-    private let router: Router
-
-    init(router: Router) {
-        self.router = router
-    }
-
-    func navigateToNotification() {
-        router.navigate(to: AppDestination.notification)
-    }
-
-    func navigateToMyPage() {
-        router.navigate(to: AppDestination.myPage)
-    }
-
-    func presentCreateVote() {
-        router.showCreateVote = true
+    
+    func navigateToLogin() {
+        onNavigateToLogin()
     }
 }

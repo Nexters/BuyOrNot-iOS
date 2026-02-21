@@ -12,9 +12,7 @@ public struct SplashView: View {
     @StateObject var viewModel: SplashViewModel
     
     public init(viewModel: SplashViewModel) {
-        _viewModel = StateObject(
-            wrappedValue: viewModel
-        )
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
 
     public var body: some View {

@@ -7,13 +7,14 @@
 
 import SwiftUI
 import DesignSystem
+import Domain
 
 public struct DeleteAccountView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject var viewModel = DeleteAccountViewModel()
+    @StateObject var viewModel: DeleteAccountViewModel
     
-    public init() {
-        
+    public init(viewModel: DeleteAccountViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     public var body: some View {
@@ -51,7 +52,7 @@ public struct DeleteAccountView: View {
                         text: "탈퇴하기",
                         type: .secondaryLarge,
                     ) {
-                        /// TODO: 작업 예정
+                        viewModel.deleteUser()
                     },
                     BNAlertButtonConfig(
                         text: "유지하기",
@@ -62,9 +63,51 @@ public struct DeleteAccountView: View {
                 ]
             )
         )
+        .onAppear {
+            viewModel.onAppear()
+        }
     }
 }
 
 #Preview {
-    PolicyView()
+    DeleteAccountView(
+        viewModel: DeleteAccountViewModel(
+            userRepository: MockUserRepository(),
+            localRepository: MockLocalRepository(),
+            argument: .init(
+                navigator: MockAuthNavigator()
+            )
+        )
+    )
+}
+
+private final class MockUserRepository: UserRepository {
+    func getMe() async throws -> User {
+        User(
+            id: 0,
+            nickname: "테스트유저",
+            profileImage: "",
+            socialAccount: "apple",
+            email: "test@buyornot.com"
+        )
+    }
+    
+    func deleteAccount() async throws {}
+}
+
+private final class MockLocalRepository: LocalRepository {
+    func saveToken(_ token: Token) {}
+    
+    func getToken() -> Token {
+        Token(refreshToken: "", accessToken: "", tokenType: "")
+    }
+    
+    func removeToken() {}
+}
+
+private struct MockAuthNavigator: AuthNavigator {
+    func navigateToTerms() {}
+    func navigateToAccountSetting() {}
+    func navigateToDeleteAccount() {}
+    func navigateToLogin() {}
 }
