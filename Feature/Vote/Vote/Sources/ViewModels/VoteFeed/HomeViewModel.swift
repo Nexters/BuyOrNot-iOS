@@ -18,6 +18,9 @@ public final class HomeViewModel: ObservableObject {
     @Published var selectedFilter: FeedFilter = .all
     @Published var isLoadingMore: Bool = false
 
+    @Published var myVoteState: MyVoteState = .loading
+    @Published var myFeeds: [VoteFeedData] = []
+
     private var cursor: Int?
     private var hasMorePages: Bool = true
 
@@ -73,6 +76,23 @@ public final class HomeViewModel: ObservableObject {
     func applyFilter(_ filter: FeedFilter) async {
         selectedFilter = filter
         await fetchFeeds()
+    }
+
+    @MainActor
+    func fetchMyFeeds() async {
+        myVoteState = .loading
+        do {
+            let votes = try await repository.getMyVoteFeeds()
+            if votes.isEmpty {
+                myVoteState = .empty
+            } else {
+                myFeeds = votes.map { toVoteFeedData($0) }
+                myVoteState = .success
+            }
+        } catch {
+            print("[HomeViewModel] fetchMyFeeds error: \(error)")
+            myVoteState = .error
+        }
     }
 
     private func feedStatusParam(for filter: FeedFilter) -> String? {

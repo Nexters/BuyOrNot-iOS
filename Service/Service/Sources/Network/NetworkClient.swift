@@ -59,8 +59,8 @@ final class NetworkClient: NetworkClientProtocol {
             } catch {
                 #if DEBUG
                 print("🚨 Decoding failed: \(error)")
-                if let jsonString = String(data: data, encoding: .utf8) {
-                    print("📦 Response data: \(jsonString)")
+                if let jsonString = data.prettyPrintedJSON {
+                    print("📦 Response data:\n\(jsonString)")
                 }
                 #endif
                 throw NetworkError.decodingFailed(error)
@@ -214,8 +214,8 @@ final class NetworkClient: NetworkClientProtocol {
 
         #if DEBUG
         print("📥 Status Code: \(httpResponse.statusCode)")
-        if let data = data, let responseString = String(data: data, encoding: .utf8) {
-            print("📦 Response: \(responseString)")
+        if let responseString = data?.prettyPrintedJSON {
+            print("📦 Response:\n\(responseString)")
         }
         #endif
 

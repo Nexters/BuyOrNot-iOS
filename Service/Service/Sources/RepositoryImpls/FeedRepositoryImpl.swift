@@ -33,6 +33,11 @@ public class FeedRepositoryImpl: FeedRepository {
         )
     }
     
+    public func getMyVoteFeeds() async throws -> [Vote] {
+        let response: BaseResponse<[FeedsResponse]> = try await request(.getMyFeeds)
+        return response.data.map { $0.toDomain() }
+    }
+
     public func postVoteFeed(info: VoteCreateInfo) async throws -> Int {
         let body = PostFeedRequest(
             category: info.category.rawValue,
