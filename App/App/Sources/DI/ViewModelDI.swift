@@ -9,6 +9,7 @@ import Swinject
 import Auth
 import Splash
 import Domain
+import Vote
 
 extension DIContainer {
     func registerViewModels(_ container: Container) {
@@ -36,6 +37,14 @@ extension DIContainer {
             let localRepository: LocalRepository = resolver.resolve()
             return SplashViewModel(
                 localRepository: localRepository,
+                argument: argument
+            )
+        }
+
+        container.register(HomeViewModel.self) { (resolver: Resolver, argument: HomeViewModel.Argument) in
+            let repository: FeedRepository = resolver.resolve()
+            return HomeViewModel(
+                repository: repository,
                 argument: argument
             )
         }
