@@ -69,7 +69,9 @@ struct AppView: View {
                     )
                 }
                 .sheet(isPresented: $router.showCreateVote) {
-                    CreateVoteView()
+                    CreateVoteView(
+                        viewModel: container.resolve()
+                    )
                         .presentationDetents([.large])
                         .presentationCornerRadius(18)
                 }

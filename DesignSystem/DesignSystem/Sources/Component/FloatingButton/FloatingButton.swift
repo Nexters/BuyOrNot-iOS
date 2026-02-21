@@ -9,9 +9,14 @@ import SwiftUI
 
 public struct FloatingButton: View {
     @State private var state: FloatingButtonState = .close
+    private let onVoteCreate: () -> Void
     
-    public init(state: FloatingButtonState) {
+    public init(
+        state: FloatingButtonState,
+        onVoteCreate: @escaping () -> Void = {}
+    ) {
         self.state = state
+        self.onVoteCreate = onVoteCreate
     }
     
     @ViewBuilder
@@ -44,14 +49,15 @@ public struct FloatingButton: View {
                                     icon: .vote,
                                     text: "투표 등록",
                                 ) {
-                                    // TODO: (종식, 20260128) - 작업 필요
+                                    onVoteCreate()
+                                    self.state = .close
                                 },
-                                FloatingContextMenuButton(
-                                    icon: .product,
-                                    text: "상품 리뷰",
-                                ) {
-                                    // TODO: (종식, 20260128) - 작업 필요
-                                },
+//                                FloatingContextMenuButton(
+//                                    icon: .product,
+//                                    text: "상품 리뷰",
+//                                ) {
+//                                    // TODO: (종식, 20260128) - 작업 필요
+//                                },
                             ]
                         )
                     }
