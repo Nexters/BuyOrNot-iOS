@@ -93,14 +93,57 @@ public final class HomeViewModel: ObservableObject {
     }
 
     @MainActor
+    func deleteFeed(feedId: String) async {
+        guard let id = Int(feedId) else { return }
+        do {
+            try await repository.deleteVoteFeed(feedId: id)
+            feeds.removeAll { $0.id == feedId }
+            myFeeds.removeAll { $0.id == feedId }
+            if myFeeds.isEmpty {
+                myVoteState = .empty
+            }
+        } catch {
+            print("[HomeViewModel] deleteFeed error: \(error)")
+        }
+    }
+
+    @MainActor
+    func reportFeed(feedId: String) async {
+        guard let id = Int(feedId) else { return }
+        do {
+            try await repository.reportVoteFeed(feedId: id)
+            feeds.removeAll { $0.id == feedId }
+        } catch {
+            print("[HomeViewModel] reportFeed error: \(error)")
+        }
+    }
+
+    @MainActor
+    func vote(feedId: String, optionId: Int) async {
+        guard let id = Int(feedId),
+              let choice = voteChoice(for: optionId) else { return }
+        do {
+            let result = try await repository.voteFeed(feedId: id, choice: choice)
+            applyVoteResult(result, selectedOptionId: optionId)
+        } catch {
+            print("[HomeViewModel] vote error: \(error)")
+        }
+    }
+
+    @MainActor
     func fetchMyFeeds() async {
         myVoteState = .loading
         do {
-            let votes = try await repository.getMyVoteFeeds()
-            if votes.isEmpty {
+            let page = try await repository.getMyVoteFeeds(
+                cursor: nil,
+                size: pageSize,
+                feedStatus: feedStatusParam(for: selectedFilter)
+            )
+            if page.votes.isEmpty {
+                myFeeds = []
                 myVoteState = .empty
             } else {
-                myFeeds = votes.map { toVoteFeedData($0) }
+                myFeeds = page.votes.map { toVoteFeedData($0, isMine: true) }
                 myVoteState = .success
             }
         } catch {
@@ -117,8 +160,66 @@ public final class HomeViewModel: ObservableObject {
         }
     }
 
-    private func toVoteFeedData(_ vote: Vote) -> VoteFeedData {
-        VoteFeedData(
+    private func voteChoice(for optionId: Int) -> VoteChoice? {
+        switch optionId {
+        case 0: return .yes
+        case 1: return .no
+        default: return nil
+        }
+    }
+
+    private func applyVoteResult(_ result: VoteResult, selectedOptionId: Int) {
+        let feedId = String(result.feedId)
+
+        func update(_ item: VoteFeedData) -> VoteFeedData {
+            let updatedOptions: [VoteGroup.VoteOption] = [
+                .init(
+                    id: 0,
+                    text: "사! 가즈아!",
+                    voteCount: result.yesCount,
+                    imageURL: selectedOptionId == 0 ? item.userProfileImageURL : nil
+                ),
+                .init(
+                    id: 1,
+                    text: "애매하긴 해..",
+                    voteCount: result.noCount,
+                    imageURL: selectedOptionId == 1 ? item.userProfileImageURL : nil
+                )
+            ]
+            return VoteFeedData(
+                id: item.id,
+                userName: item.userName,
+                userProfileImageURL: item.userProfileImageURL,
+                category: item.category,
+                timeAgo: item.timeAgo,
+                content: item.content,
+                productImageURL: item.productImageURL,
+                price: item.price,
+                voteOptions: updatedOptions,
+                selectedVoteId: selectedOptionId,
+                isPeriodDone: item.isPeriodDone,
+                isMine: item.isMine
+            )
+        }
+
+        if let index = feeds.firstIndex(where: { $0.id == feedId }) {
+            feeds[index] = update(feeds[index])
+        }
+        if let index = myFeeds.firstIndex(where: { $0.id == feedId }) {
+            myFeeds[index] = update(myFeeds[index])
+        }
+    }
+
+    private func toVoteFeedData(_ vote: Vote, isMine: Bool = false) -> VoteFeedData {
+        let selectedVoteId: Int? = {
+            switch vote.myVoteChoice {
+            case .yes: return 0
+            case .no: return 1
+            case .none: return nil
+            }
+        }()
+
+        return VoteFeedData(
             id: String(vote.feedId),
             userName: vote.author.nickname,
             userProfileImageURL: vote.author.profileImage,
@@ -127,12 +228,38 @@ public final class HomeViewModel: ObservableObject {
             content: vote.content,
             productImageURL: vote.viewUrl,
             price: formatPrice(vote.price),
-            voteOptions: [
-                .init(id: 0, text: "사! 가즈아!", voteCount: vote.yesCount),
-                .init(id: 1, text: "애매하긴 해..", voteCount: vote.noCount)
-            ],
-            isPeriodDone: vote.voteStatus == .closed
+            voteOptions: voteOptions(
+                yesCount: vote.yesCount,
+                noCount: vote.noCount,
+                selectedOptionId: selectedVoteId,
+                userProfileImageURL: vote.author.profileImage
+            ),
+            selectedVoteId: selectedVoteId,
+            isPeriodDone: vote.voteStatus == .closed,
+            isMine: isMine
         )
+    }
+
+    private func voteOptions(
+        yesCount: Int,
+        noCount: Int,
+        selectedOptionId: Int?,
+        userProfileImageURL: String
+    ) -> [VoteGroup.VoteOption] {
+        [
+            .init(
+                id: 0,
+                text: "사! 가즈아!",
+                voteCount: yesCount,
+                imageURL: selectedOptionId == 0 ? userProfileImageURL : nil
+            ),
+            .init(
+                id: 1,
+                text: "애매하긴 해..",
+                voteCount: noCount,
+                imageURL: selectedOptionId == 1 ? userProfileImageURL : nil
+            )
+        ]
     }
 
     private func categoryDisplayName(_ category: FeedCategory) -> String {
