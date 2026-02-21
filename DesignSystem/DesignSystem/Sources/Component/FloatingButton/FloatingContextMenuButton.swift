@@ -8,9 +8,9 @@
 import SwiftUI
 
 public struct FloatingContextMenuButton: View {
-    
-    init(
-        icon: BNImageAsset,
+
+    public init(
+        icon: BNImageAsset? = nil,
         text: String,
         action: @escaping () -> Void
     ) {
@@ -18,24 +18,28 @@ public struct FloatingContextMenuButton: View {
         self.text = text
         self.action = action
     }
-    
-    private let icon: BNImageAsset
+
+    private let icon: BNImageAsset?
     private let text: String
     private let action: () -> Void
-    
+
     @State private var isPressing: Bool = false
-    
+
     private var backgroundColor: Color {
         .type(isPressing ? .gray200 : .gray0)
     }
-    
+
     public var body: some View {
         HStack(spacing: 6) {
-            BNImage(icon)
-                .style(
-                    color: .gray800,
-                    size: 14,
-                )
+
+            if let icon {
+                BNImage(icon)
+                    .style(
+                        color: .gray800,
+                        size: 14
+                    )
+            }
+
             BNText(text)
                 .style(
                     style: .b3m,

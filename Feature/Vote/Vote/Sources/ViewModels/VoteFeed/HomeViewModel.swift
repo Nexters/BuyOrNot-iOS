@@ -93,14 +93,45 @@ public final class HomeViewModel: ObservableObject {
     }
 
     @MainActor
+    func deleteFeed(feedId: String) async {
+        guard let id = Int(feedId) else { return }
+        do {
+            try await repository.deleteVoteFeed(feedId: id)
+            feeds.removeAll { $0.id == feedId }
+            myFeeds.removeAll { $0.id == feedId }
+            if myFeeds.isEmpty {
+                myVoteState = .empty
+            }
+        } catch {
+            print("[HomeViewModel] deleteFeed error: \(error)")
+        }
+    }
+
+    @MainActor
+    func reportFeed(feedId: String) async {
+        guard let id = Int(feedId) else { return }
+        do {
+            try await repository.reportVoteFeed(feedId: id)
+            feeds.removeAll { $0.id == feedId }
+        } catch {
+            print("[HomeViewModel] reportFeed error: \(error)")
+        }
+    }
+
+    @MainActor
     func fetchMyFeeds() async {
         myVoteState = .loading
         do {
-            let votes = try await repository.getMyVoteFeeds()
-            if votes.isEmpty {
+            let page = try await repository.getMyVoteFeeds(
+                cursor: nil,
+                size: pageSize,
+                feedStatus: feedStatusParam(for: selectedFilter)
+            )
+            if page.votes.isEmpty {
+                myFeeds = []
                 myVoteState = .empty
             } else {
-                myFeeds = votes.map { toVoteFeedData($0) }
+                myFeeds = page.votes.map { toVoteFeedData($0, isMine: true) }
                 myVoteState = .success
             }
         } catch {
@@ -117,7 +148,7 @@ public final class HomeViewModel: ObservableObject {
         }
     }
 
-    private func toVoteFeedData(_ vote: Vote) -> VoteFeedData {
+    private func toVoteFeedData(_ vote: Vote, isMine: Bool = false) -> VoteFeedData {
         VoteFeedData(
             id: String(vote.feedId),
             userName: vote.author.nickname,
@@ -131,7 +162,8 @@ public final class HomeViewModel: ObservableObject {
                 .init(id: 0, text: "사! 가즈아!", voteCount: vote.yesCount),
                 .init(id: 1, text: "애매하긴 해..", voteCount: vote.noCount)
             ],
-            isPeriodDone: vote.voteStatus == .closed
+            isPeriodDone: vote.voteStatus == .closed,
+            isMine: isMine
         )
     }
 
