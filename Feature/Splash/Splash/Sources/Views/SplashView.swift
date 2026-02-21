@@ -9,10 +9,12 @@ import SwiftUI
 import DesignSystem
 
 public struct SplashView: View {
-    private let delegate: SplashDelegate?
+    @StateObject var viewModel: SplashViewModel
     
-    public init(_ delegate: SplashDelegate? = nil) {
-        self.delegate = delegate
+    public init(viewModel: SplashViewModel) {
+        _viewModel = StateObject(
+            wrappedValue: viewModel
+        )
     }
 
     public var body: some View {
@@ -23,9 +25,7 @@ public struct SplashView: View {
                 asset: .splash,
                 size: CGSize(width: 152, height: 152)
             ) { isComplete in
-                if isComplete, let delegate {
-                    delegate.completeSplash()
-                }
+                viewModel.didSplashEnded()
             }
             
             BNImage(.logo)
@@ -35,8 +35,4 @@ public struct SplashView: View {
         }
         .padding(.bottom, 320)
     }
-}
-
-#Preview {
-    SplashView()
 }
