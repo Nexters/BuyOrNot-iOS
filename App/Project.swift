@@ -45,6 +45,10 @@ let project = Module.app.project(
                 "$(BUNDLE_ID)",
             "KAKAO_NATIVE_APP_KEY":
                 "$(KAKAO_NATIVE_APP_KEY)",
+            "BASE_URL":
+                "$(BASE_URL)",
+            "DEV_BASE_URL":
+                "$(DEV_BASE_URL)",
             "LSApplicationQueriesSchemes": .array([
                 "kakaokompassauth",
                 "kakaolink",
