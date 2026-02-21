@@ -22,7 +22,7 @@ struct FeedEmptyView: View {
                     .font(BNFont.font(.t1b))
                     .foregroundColor(BNColor(.type(.gray800)).color)
 
-                Text("투표에 참여하고 소식을 받아보세요!")
+                Text("고민되는 상품의 투표를 올려보세요!")
                     .font(BNFont.font(.b5m))
                     .foregroundColor(BNColor(.type(.gray600)).color)
             }

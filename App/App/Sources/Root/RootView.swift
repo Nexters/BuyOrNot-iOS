@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-//import Splash
 import Vote
 import Auth
 
@@ -24,7 +23,13 @@ struct RootView: View {
 
     var body: some View {
         NavigationStack(path: $router.path) {
-            HomeView(navigator: voteNavigator)
+            HomeView(
+                viewModel: container.resolve(
+                    argument: HomeViewModel.Argument(
+                        navigator: voteNavigator
+                    )
+                )
+            )
             .appNavigationDestination(
                 container: container,
                 authNavigator: authNavigator

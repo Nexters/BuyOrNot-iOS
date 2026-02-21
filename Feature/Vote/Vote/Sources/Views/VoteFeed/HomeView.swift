@@ -6,73 +6,26 @@
 //
 
 import SwiftUI
+import Domain
 import DesignSystem
 
 public struct HomeView: View {
-    private let navigator: VoteNavigator
+    @StateObject var viewModel: HomeViewModel
 
     @State private var selectedTab: FeedTab = .voteFeed
-    @State private var selectedFilter: FeedFilter = .all
     @State private var showBanner = true
-    @State private var voteFeedState: VoteFeedState = .success
-    @State private var myVoteState: MyVoteState = .empty
     @State private var showNavigationBar: Bool = true
 
-    public init(navigator: VoteNavigator) {
-        self.navigator = navigator
+    public init(viewModel: HomeViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
-
-    private let sampleFeeds: [VoteFeedData] = [
-        VoteFeedData(
-            id: "1",
-            userName: "조은",
-            userProfileImageURL: "https://www.studiopeople.kr/common/img/default_profile.png",
-            category: "전자기기",
-            timeAgo: "6시간 전",
-            content: "맥북 프로 M4 살까 고민중인데 어떻게 생각하세요?",
-            productImageURL: "https://www.locknlock.com/kor/image/story/lounge/ex/vr/tvahbryl/html/56994767otqf.jpg",
-            price: "₩ 2,490,000",
-            voteOptions: [
-                .init(id: 0, text: "사! 가즈아!", voteCount: 45, imageURL: "https://example.com/profile.jpg"),
-                .init(id: 1, text: "애매하긴 해..", voteCount: 23, imageURL: "https://example.com/profile.jpg")
-            ]
-        ),
-        VoteFeedData(
-            id: "2",
-            userName: "민수",
-            userProfileImageURL: "https://www.studiopeople.kr/common/img/default_profile.png",
-            category: "패션",
-            timeAgo: "12시간 전",
-            content: "겨울 패딩 이거 어때요? 가격대가 좀 있는데...",
-            productImageURL: "https://www.locknlock.com/kor/image/story/lounge/ex/vr/tvahbryl/html/56994767otqf.jpg",
-            price: "₩ 389,000",
-            voteOptions: [
-                .init(id: 0, text: "사! 가즈아!", voteCount: 67, imageURL: "https://example.com/profile.jpg"),
-                .init(id: 1, text: "애매하긴 해..", voteCount: 12, imageURL: "https://example.com/profile.jpg")
-            ]
-        ),
-        VoteFeedData(
-            id: "3",
-            userName: "지영",
-            userProfileImageURL: "https://www.studiopeople.kr/common/img/default_profile.png",
-            category: "뷰티",
-            timeAgo: "1일 전",
-            content: "이 립스틱 색상 예쁘지 않나요?",
-            productImageURL: "https://www.locknlock.com/kor/image/story/lounge/ex/vr/tvahbryl/html/56994767otqf.jpg",
-            price: "₩ 42,000",
-            voteOptions: [
-                .init(id: 0, text: "사! 가즈아!", voteCount: 89, imageURL: "https://example.com/profile.jpg"),
-                .init(id: 1, text: "애매하긴 해..", voteCount: 34, imageURL: "https://example.com/profile.jpg")
-            ]
-        )
-    ]
 
     private var shouldHideFilter: Bool {
         switch selectedTab {
         case .voteFeed:
-            return voteFeedState == .error
+            return viewModel.voteFeedState == .error
         case .myVotes:
-            return myVoteState == .error || myVoteState == .empty
+            return viewModel.myVoteState == .error || viewModel.myVoteState == .empty
         }
     }
 
@@ -81,8 +34,8 @@ public struct HomeView: View {
             VStack(spacing: 0) {
                 if showNavigationBar {
                     NavigationBar(
-                        onNotificationTap: { navigator.navigateToNotification() },
-                        onProfileTap: { navigator.navigateToMyPage() }
+                        onNotificationTap: { viewModel.didTapNotification() },
+                        onProfileTap: { viewModel.didTapProfile() }
                     )
                 }
 
@@ -91,7 +44,7 @@ public struct HomeView: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         if !shouldHideFilter {
-                            FeedFilterBar(selectedFilter: $selectedFilter)
+                            FeedFilterBar(selectedFilter: $viewModel.selectedFilter)
                         }
                         switch selectedTab {
                         case .voteFeed:
@@ -114,11 +67,22 @@ public struct HomeView: View {
 
             FloatingButton(state: .open)
         }
+        .task {
+            await viewModel.fetchFeeds()
+        }
+        .onChange(of: viewModel.selectedFilter) { _ in
+            Task { await viewModel.fetchFeeds() }
+        }
+        .onChange(of: selectedTab) { tab in
+            if tab == .myVotes {
+                Task { await viewModel.fetchMyFeeds() }
+            }
+        }
     }
 
     @ViewBuilder
     private var voteFeedContent: some View {
-        switch voteFeedState {
+        switch viewModel.voteFeedState {
         case .loading:
             ProgressView().padding(.top, 100)
 
@@ -132,30 +96,37 @@ public struct HomeView: View {
                             withAnimation { showBanner = false }
                         },
                         onAction: {
-                            navigator.presentCreateVote()
+                            viewModel.didTapCreateVote()
                         }
                     )
-                    .padding(.bottom, 12)
-
+                    .padding(.vertical, 12)
                     BNDivider(size: .s)
                 }
                 .padding(.horizontal, 20)
             }
 
             LazyVStack(spacing: 0) {
-                ForEach(sampleFeeds, id: \.id) { feed in
+                ForEach(viewModel.feeds, id: \.id) { feed in
                     VoteFeed(
                         data: feed,
                         onProductTap: { print("Product tapped: \(feed.id)") },
                         onVote: { optionId in print("Voted \(optionId) on feed: \(feed.id)") }
                     )
                     .padding(.horizontal, 20)
+                    .onAppear {
+                        Task { await viewModel.fetchMoreIfNeeded(currentFeedId: feed.id) }
+                    }
                 }
+            }
+
+            if viewModel.isLoadingMore {
+                ProgressView()
+                    .padding(.vertical, 20)
             }
 
         case .error:
             FeedErrorView {
-                voteFeedState = .loading
+                Task { await viewModel.fetchFeeds() }
             }
             .padding(.top, 140)
         }
@@ -163,14 +134,14 @@ public struct HomeView: View {
 
     @ViewBuilder
     private var myVotesContent: some View {
-        switch myVoteState {
+        switch viewModel.myVoteState {
         case .loading:
             ProgressView()
                 .padding(.top, 100)
 
         case .success:
             LazyVStack(spacing: 0) {
-                ForEach(sampleFeeds, id: \.id) { feed in
+                ForEach(viewModel.myFeeds, id: \.id) { feed in
                     VoteFeed(
                         data: feed,
                         onProductTap: { print("Product tapped: \(feed.id)") },
@@ -186,7 +157,7 @@ public struct HomeView: View {
 
         case .error:
             FeedErrorView {
-                myVoteState = .loading
+                Task { await viewModel.fetchMyFeeds() }
             }
             .padding(.top, 140)
         }
@@ -280,18 +251,34 @@ struct FeedFilterBar: View {
             Spacer()
         }
         .padding(.horizontal, 20)
-        .padding(.top, 20)
-        .padding(.bottom, 10)
+        .padding(.top, 16)
     }
 }
 
-#Preview {
-    let _ = BNFont.loadFonts()
-    HomeView(navigator: MockVoteNavigator())
+private struct PreviewFeedRepository: FeedRepository {
+    func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> Domain.VotePage {
+        VotePage(votes: [], nextCursor: nil, hasNext: false)
+    }
+    func getMyVoteFeeds() async throws -> [Domain.Vote] { [] }
+    func postVoteFeed(info: Domain.VoteCreateInfo) async throws -> Int { 0 }
+    func reportVoteFeed(feedId: Int) async throws {}
+    func deleteVoteFeed(feedId: Int) async throws {}
 }
 
 private struct MockVoteNavigator: VoteNavigator {
     func navigateToNotification() {}
     func navigateToMyPage() {}
     func presentCreateVote() {}
+}
+
+#Preview {
+    let _ = BNFont.loadFonts()
+    HomeView(
+        viewModel: HomeViewModel(
+            repository: PreviewFeedRepository(),
+            argument: .init(
+                navigator: MockVoteNavigator()
+            )
+        )
+    )
 }

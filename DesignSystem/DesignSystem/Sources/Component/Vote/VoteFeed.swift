@@ -19,6 +19,7 @@ public struct VoteFeedData {
     public let productImageURL: String
     public let price: String
     public let voteOptions: [VoteGroup.VoteOption]
+    public let isPeriodDone: Bool
 
     public init(
         id: String,
@@ -29,7 +30,8 @@ public struct VoteFeedData {
         content: String,
         productImageURL: String,
         price: String,
-        voteOptions: [VoteGroup.VoteOption]
+        voteOptions: [VoteGroup.VoteOption],
+        isPeriodDone: Bool = false
     ) {
         self.id = id
         self.userName = userName
@@ -40,6 +42,7 @@ public struct VoteFeedData {
         self.productImageURL = productImageURL
         self.price = price
         self.voteOptions = voteOptions
+        self.isPeriodDone = isPeriodDone
     }
 }
 
@@ -80,6 +83,7 @@ public struct VoteFeed: View {
                     productImageURL: data.productImageURL,
                     price: data.price,
                     voteOptions: data.voteOptions,
+                    isPeriodDone: data.isPeriodDone,
                     selectedVoteId: selectedVoteId,
                     onVote: { optionId in
                         withAnimation {
@@ -158,6 +162,7 @@ private struct FeedContent: View {
     let productImageURL: String
     let price: String
     let voteOptions: [VoteGroup.VoteOption]
+    let isPeriodDone: Bool
     let selectedVoteId: Int?
     let onVote: (Int) -> Void
 
@@ -178,7 +183,7 @@ private struct FeedContent: View {
 
                 VoteGroup(
                     options: voteOptions,
-                    selectedOptionId: selectedVoteId,
+                    isPeriodDone: isPeriodDone, selectedOptionId: selectedVoteId,
                     onVote: onVote
                 )
             }
