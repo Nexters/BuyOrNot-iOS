@@ -12,11 +12,11 @@ import Domain
 
 extension DIContainer {
     func registerViewModels(_ container: Container) {
-        container.register(LoginViewModel.self) { (resolver: Resolver, arg: LoginDelegate?) in
+        container.register(LoginViewModel.self) { (resolver: Resolver, argument: LoginViewModel.Argument) in
             let authRepository: AuthRepository = resolver.resolve()
             return LoginViewModel(
                 authRepository: authRepository,
-                delegate: arg
+                argument: argument
             )
         }
         
@@ -24,11 +24,11 @@ extension DIContainer {
             AppViewModel()
         }
         
-        container.register(SplashViewModel.self) { (resolver: Resolver, arg: SplashDelegate?) in
+        container.register(SplashViewModel.self) { (resolver: Resolver, argument: SplashViewModel.Argument) in
             let localRepository: LocalRepository = resolver.resolve()
             return SplashViewModel(
                 localRepository: localRepository,
-                delegate: arg
+                argument: argument
             )
         }
     }

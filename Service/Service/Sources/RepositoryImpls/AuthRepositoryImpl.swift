@@ -24,40 +24,40 @@ public class AuthRepositoryImpl: AuthRepository {
         let body = AppleAuthRequest(
             authorizationCode: authorizationCode
         )
-        let response: TokenResponse = try await request(
+        let response: BaseResponse<TokenResponse> = try await request(
             .postAppleLogin(body)
         )
-        return response.toToken()
+        return response.data.toToken()
     }
     
     public func loginWithGoogle(idToken: String) async throws -> Token {
         let body = GoogleAuthRequest(
             idToken: idToken
         )
-        let response: TokenResponse = try await request(
+        let response: BaseResponse<TokenResponse> = try await request(
             .postGoogleLogin(body)
         )
-        return response.toToken()
+        return response.data.toToken()
     }
     
     public func loginWithKakao(accessToken: String) async throws -> Token {
         let body = KakaoAuthRequest(
             accessToken: accessToken
         )
-        let response: TokenResponse = try await request(
+        let response: BaseResponse<TokenResponse> = try await request(
             .postKakaoLogin(body)
         )
-        return response.toToken()
+        return response.data.toToken()
     }
     
     public func refreshToken(refreshToken: String) async throws -> Token {
         let body = RefreshTokenRequest(
             refreshToken: refreshToken
         )
-        let response: TokenResponse = try await request(
+        let response: BaseResponse<TokenResponse> = try await request(
             .postRefreshToken(body)
         )
-        return response.toToken()
+        return response.data.toToken()
     }
     
     public func logout(refreshToken: String) async throws {
