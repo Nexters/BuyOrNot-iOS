@@ -7,7 +7,7 @@
 
 enum FeedEndpoint: Endpoint {
     case getFeeds(cursor: Int?, size: Int?, feedStatus: String?)
-    case getMyFeeds
+    case getMyFeeds(cursor: Int?, size: Int?, feedStatus: String?)
     case postFeeds(PostFeedRequest)
     case postFeedsReport(Int)
     case deleteFeeds(Int)
@@ -49,7 +49,8 @@ enum FeedEndpoint: Endpoint {
 
     var queryParameters: [String: Any]? {
         switch self {
-        case .getFeeds(let cursor, let size, let feedStatus):
+        case .getFeeds(let cursor, let size, let feedStatus),
+             .getMyFeeds(let cursor, let size, let feedStatus):
             var params: [String: Any] = [:]
             if let cursor { params["cursor"] = cursor }
             if let size { params["size"] = size }

@@ -33,9 +33,16 @@ public class FeedRepositoryImpl: FeedRepository {
         )
     }
     
-    public func getMyVoteFeeds() async throws -> [Vote] {
-        let response: BaseResponse<[FeedsResponse]> = try await request(.getMyFeeds)
-        return response.data.map { $0.toDomain() }
+    public func getMyVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> VotePage {
+        let response: BaseResponse<FeedPageResponse> = try await request(
+            .getMyFeeds(cursor: cursor, size: size, feedStatus: feedStatus)
+        )
+        let page = response.data
+        return VotePage(
+            votes: page.content.map { $0.toDomain() },
+            nextCursor: page.nextCursor,
+            hasNext: page.hasNext
+        )
     }
 
     public func postVoteFeed(info: VoteCreateInfo) async throws -> Int {
