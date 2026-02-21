@@ -7,14 +7,21 @@
 
 import SwiftUI
 import Core
+import Domain
 
 public final class MyPageViewModel: ObservableObject {
+    private let userRepository: UserRepository
     private let navigator: AuthNavigator
+    
     @Published var name: String = "이름입니다최대열자임"
     @Published var appVersion: String = "0.0.1"
     @Published var url: URL?
     
-    public init(argument: MyPageViewModel.Argument) {
+    public init(
+        userRepository: UserRepository,
+        argument: MyPageViewModel.Argument
+    ) {
+        self.userRepository = userRepository
         self.navigator = argument.navigator
     }
     
@@ -26,6 +33,19 @@ public final class MyPageViewModel: ObservableObject {
             navigator.navigateToTerms()
         case .feedback:
             openFeedbackUrl()
+        }
+    }
+    
+    func onAppear() {
+        Task { @MainActor [weak self] in
+            do {
+                let user = try await self?.userRepository.getMe()
+                guard let nickname = user?.nickname else {
+                    return
+                }
+                self?.name = nickname
+            } catch {
+            }
         }
     }
     

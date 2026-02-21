@@ -11,6 +11,7 @@ import Domain
 public final class DeleteAccountViewModel: ObservableObject {
     private let userRepository: UserRepository
     private let localRepository: LocalRepository
+    private let navigator: AuthNavigator
     
     @Published var name: String = "닉네임"
     @Published var guide: String = "지금까지의 투표들이 전부 사라져요 :("
@@ -18,10 +19,12 @@ public final class DeleteAccountViewModel: ObservableObject {
     
     public init(
         userRepository: UserRepository,
-        localRepository: LocalRepository
+        localRepository: LocalRepository,
+        argument: DeleteAccountViewModel.Argument
     ) {
         self.userRepository = userRepository
         self.localRepository = localRepository
+        self.navigator = argument.navigator
     }
     
     func didTapDeleteAccountButton() {
@@ -46,10 +49,20 @@ public final class DeleteAccountViewModel: ObservableObject {
             do {
                 try await self?.userRepository.deleteAccount()
                 self?.localRepository.removeToken()
-                /// 성공하면 로그인 화면으로 이동
+                self?.navigator.navigateToLogin()
             } catch {
                 
             }
+        }
+    }
+}
+
+public extension DeleteAccountViewModel {
+    struct Argument {
+        let navigator: AuthNavigator
+        
+        public init(navigator: AuthNavigator) {
+            self.navigator = navigator
         }
     }
 }

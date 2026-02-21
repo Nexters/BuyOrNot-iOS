@@ -27,7 +27,11 @@ extension View {
                 )
             case .deleteAccount:
                 DeleteAccountView(
-                    viewModel: container.resolve()
+                    viewModel: container.resolve(
+                        argument: DeleteAccountViewModel.Argument(
+                            navigator: authNavigator
+                        )
+                    )
                 )
             }
         }

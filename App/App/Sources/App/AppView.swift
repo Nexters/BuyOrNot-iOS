@@ -16,7 +16,15 @@ struct AppView: View {
     @State private var router = Router()
     
     private var authNavigator: AuthNavigator {
-        AppAuthNavigator(router: router)
+        AppAuthNavigator(
+            router: router,
+            onNavigateToLogin: {
+                router.popToRoot()
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    viewModel.appDestination = .login
+                }
+            }
+        )
     }
     
     private var voteNavigator: VoteNavigator {

@@ -73,7 +73,10 @@ public struct DeleteAccountView: View {
     DeleteAccountView(
         viewModel: DeleteAccountViewModel(
             userRepository: MockUserRepository(),
-            localRepository: MockLocalRepository()
+            localRepository: MockLocalRepository(),
+            argument: .init(
+                navigator: MockAuthNavigator()
+            )
         )
     )
 }
@@ -100,4 +103,11 @@ private final class MockLocalRepository: LocalRepository {
     }
     
     func removeToken() {}
+}
+
+private struct MockAuthNavigator: AuthNavigator {
+    func navigateToTerms() {}
+    func navigateToAccountSetting() {}
+    func navigateToDeleteAccount() {}
+    func navigateToLogin() {}
 }
