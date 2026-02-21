@@ -12,6 +12,7 @@ public enum BNImageAsset: String {
     case empty_image = "empty_image"
     case error_image = "error_image"
     case notification_empty_image = "notification_empty_image"
+    case delete_account = "delete_account"
     
     /// SNS Login Logo
     case google_logo
