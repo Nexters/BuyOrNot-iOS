@@ -13,31 +13,28 @@ import Auth
 final class AppViewModel: ObservableObject {
     @Published var launchState: LaunchState = .splash
     
-    private let authRepository: AuthRepository
-    private let localRepository: LocalRepository
-    
-    public init(
-        authRepository: AuthRepository,
-        localRepository: LocalRepository
-    ) {
-        self.authRepository = authRepository
-        self.localRepository = localRepository
-    }
-    
-    func onAppear() {
-        let token = localRepository.getToken()
-        // TODO
+    public init() {
+        
     }
 }
 
 extension AppViewModel: SplashDelegate {
-    func completeSplash() {
-        // TODO
+    func completeSplash(_ result: AuthState) {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            switch result {
+            case .member:
+                launchState = .main
+            case .guest:
+                launchState = .login
+            }
+        }
     }
 }
 
 extension AppViewModel: LoginDelegate {
-    func completeLogin(_ result: LoginResult) {
-        // TODO
+    func completeLogin(_ result: AuthState) {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            launchState = .main
+        }
     }
 }

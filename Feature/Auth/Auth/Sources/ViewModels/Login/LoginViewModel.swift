@@ -16,27 +16,21 @@ import GoogleSignIn
 import KakaoSDKAuth
 import KakaoSDKCommon
 
-public enum LoginViewState {
-    case `default`
-    case loginSuccess
-}
-
 public final class LoginViewModel: ObservableObject {
-    private let repository: AuthRepository
+    private let authRepository: AuthRepository
     private let delegate: LoginDelegate?
     
     public init(
-        repository: AuthRepository,
+        authRepository: AuthRepository,
         delegate: LoginDelegate? = nil
     ) {
-        self.repository = repository
+        self.authRepository = authRepository
         self.delegate = delegate
     }
 
     @Published var url: URL?
     @Published var loginErrorMessage: String?
     @Published var snackBar = BNSnackBarManager()
-    @Published var state: LoginViewState = .default
     
     var policyText: AttributedString {
         let serviceTermsURL = URL(string: Constants.getValue(with: .serviceTermsURL))
@@ -69,6 +63,10 @@ public final class LoginViewModel: ObservableObject {
         return text
     }
     
+    func guestLogin() {
+        delegate?.completeLogin(.guest)
+    }
+    
     func login(with type: LoginType) {
         switch type {
         case .google:
@@ -94,10 +92,11 @@ public final class LoginViewModel: ObservableObject {
                 }
                 guard let self else { return }
                 do {
-                    let result = try await repository.loginWithGoogle(
+                    let result = try await authRepository.loginWithGoogle(
                         idToken: idToken
                     )
-                    repository.saveToken(result)
+                    authRepository.saveToken(result)
+                    delegate?.completeLogin(.member)
                 } catch { }
             }
         }
@@ -119,10 +118,11 @@ public final class LoginViewModel: ObservableObject {
                 }
                 guard let self else { return }
                 do {
-                    let result = try await repository.loginWithApple(
+                    let result = try await authRepository.loginWithApple(
                         authorizationCode: authorizationCode
                     )
-                    repository.saveToken(result)
+                    authRepository.saveToken(result)
+                    delegate?.completeLogin(.member)
                 } catch { }
             }
         }
@@ -142,10 +142,11 @@ public final class LoginViewModel: ObservableObject {
                 }
                 guard let self else { return }
                 do {
-                    let result = try await repository.loginWithKakao(
+                    let result = try await authRepository.loginWithKakao(
                         accessToken: oauthToken.accessToken
                     )
-                    repository.saveToken(result)
+                    authRepository.saveToken(result)
+                    delegate?.completeLogin(.member)
                 } catch { }
             }
         }

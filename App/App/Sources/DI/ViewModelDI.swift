@@ -7,24 +7,28 @@
 
 import Swinject
 import Auth
+import Splash
 import Domain
 
 extension DIContainer {
     func registerViewModels(_ container: Container) {
         container.register(LoginViewModel.self) { (resolver: Resolver, arg: LoginDelegate?) in
-            let repository: AuthRepository = resolver.resolve()
+            let authRepository: AuthRepository = resolver.resolve()
             return LoginViewModel(
-                repository: repository,
+                authRepository: authRepository,
                 delegate: arg
             )
         }
         
-        container.register(AppViewModel.self) { resolver in
-            let authRepository: AuthRepository = resolver.resolve()
+        container.register(AppViewModel.self) { _ in
+            AppViewModel()
+        }
+        
+        container.register(SplashViewModel.self) { (resolver: Resolver, arg: SplashDelegate?) in
             let localRepository: LocalRepository = resolver.resolve()
-            return AppViewModel(
-                authRepository: authRepository,
-                localRepository: localRepository
+            return SplashViewModel(
+                localRepository: localRepository,
+                delegate: arg
             )
         }
     }

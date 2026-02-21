@@ -18,7 +18,7 @@ extension LoginView {
     
     @ViewBuilder
     func loginTitle() -> some View {
-        BNText("현명한 소비를 위한\n합리적인 비교 방법")
+        BNText("현명한 소비를 위한\n집단지성 비교 방법")
             .style(style: .h1sb, color: .gray900)
             .padding(.top, 30)
             .padding(.bottom, 60)
@@ -79,7 +79,7 @@ extension LoginView {
     @ViewBuilder
     func guestLoginButton() -> some View {
         Button {
-            
+            viewModel.guestLogin()
         } label: {
             BNText("비회원으로 시작하기")
                 .style(style: .c2m, color: .gray700)
