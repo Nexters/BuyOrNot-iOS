@@ -21,7 +21,11 @@ struct AppView: View {
         Group {
             switch viewModel.launchState {
             case .splash:
-                SplashView(viewModel)
+                SplashView(
+                    viewModel: container.resolve(
+                        argument: viewModel
+                    )
+                )
             case .login:
                 LoginView(
                     viewModel: container.resolve(
@@ -32,13 +36,5 @@ struct AppView: View {
                 RootView()
             }
         }
-        .onAppear {
-            viewModel.onAppear()
-        }
     }
-    
-}
-
-#Preview {
-    SplashView()
 }
