@@ -7,17 +7,6 @@
 
 import SwiftUI
 
-enum AppDestination: Hashable {
-    case notification
-    case myPage
-}
-
-enum AuthDestination: Hashable {
-    case terms
-    case accountSetting
-    case deleteAccount
-}
-
 @Observable
 class Router {
     var path = NavigationPath()

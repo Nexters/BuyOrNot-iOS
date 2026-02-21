@@ -1,32 +1,31 @@
 //
-//  View+AuthNavigationDestination.swift
+//  View+AppNavigationDestination.swift
 //  App
 //
 //  Created by Codex on 2/21/26.
 //
 
 import SwiftUI
+import Vote
 import Auth
 
 extension View {
-    func authNavigationDestination(
+    func appNavigationDestination(
         container: DIContainer,
         authNavigator: AuthNavigator
     ) -> some View {
-        navigationDestination(for: AuthDestination.self) { destination in
+        navigationDestination(for: VoteDestination.self) { destination in
             switch destination {
-            case .terms:
-                PolicyView()
-            case .accountSetting:
-                AccountSettingView(
+            case .notification:
+                NotificationView()
+            case .myPage:
+                MyPageView(
                     viewModel: container.resolve(
-                        argument: AccountSettingViewModel.Argument(
+                        argument: MyPageViewModel.Argument(
                             navigator: authNavigator
                         )
                     )
                 )
-            case .deleteAccount:
-                DeleteAccountView()
             }
         }
     }

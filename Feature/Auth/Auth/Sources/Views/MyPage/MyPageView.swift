@@ -7,14 +7,13 @@
 
 import SwiftUI
 import DesignSystem
+import Domain
 
 public struct MyPageView: View {
     @StateObject var viewModel: MyPageViewModel
     
     public init(viewModel: MyPageViewModel) {
-        _viewModel = StateObject(
-            wrappedValue: viewModel
-        )
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
     public var body: some View {
@@ -44,6 +43,9 @@ public struct MyPageView: View {
             if let url = viewModel.url {
                 BNWebView(url: url)
             }
+        }
+        .onAppear {
+            viewModel.onAppear()
         }
     }
     
@@ -89,6 +91,7 @@ public struct MyPageView: View {
 #Preview {
     MyPageView(
         viewModel: MyPageViewModel(
+            userRepository: MockUserRepository(),
             argument: .init(
                 navigator: MockAuthNavigator()
             )
@@ -100,4 +103,19 @@ private struct MockAuthNavigator: AuthNavigator {
     func navigateToTerms() {}
     func navigateToAccountSetting() {}
     func navigateToDeleteAccount() {}
+    func navigateToLogin() {}
+}
+
+private final class MockUserRepository: UserRepository {
+    func getMe() async throws -> User {
+        User(
+            id: 0,
+            nickname: "테스트유저",
+            profileImage: "",
+            socialAccount: "apple",
+            email: "test@buyornot.com"
+        )
+    }
+    
+    func deleteAccount() async throws {}
 }
