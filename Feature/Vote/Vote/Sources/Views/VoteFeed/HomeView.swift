@@ -18,7 +18,6 @@ public struct HomeView: View {
 
     @State private var selectedTab: FeedTab = .voteFeed
     @State private var showBanner = true
-    @State private var myVoteState: MyVoteState = .empty
     @State private var showNavigationBar: Bool = true
 
     public init(
@@ -38,7 +37,7 @@ public struct HomeView: View {
         case .voteFeed:
             return viewModel.voteFeedState == .error
         case .myVotes:
-            return myVoteState == .error || myVoteState == .empty
+            return viewModel.myVoteState == .error || viewModel.myVoteState == .empty
         }
     }
 
@@ -85,6 +84,11 @@ public struct HomeView: View {
         }
         .onChange(of: viewModel.selectedFilter) { _ in
             Task { await viewModel.fetchFeeds() }
+        }
+        .onChange(of: selectedTab) { tab in
+            if tab == .myVotes {
+                Task { await viewModel.fetchMyFeeds() }
+            }
         }
     }
 
@@ -142,14 +146,14 @@ public struct HomeView: View {
 
     @ViewBuilder
     private var myVotesContent: some View {
-        switch myVoteState {
+        switch viewModel.myVoteState {
         case .loading:
             ProgressView()
                 .padding(.top, 100)
 
         case .success:
             LazyVStack(spacing: 0) {
-                ForEach(viewModel.feeds, id: \.id) { feed in
+                ForEach(viewModel.myFeeds, id: \.id) { feed in
                     VoteFeed(
                         data: feed,
                         onProductTap: { print("Product tapped: \(feed.id)") },
@@ -165,7 +169,7 @@ public struct HomeView: View {
 
         case .error:
             FeedErrorView {
-                myVoteState = .loading
+                Task { await viewModel.fetchMyFeeds() }
             }
             .padding(.top, 140)
         }
@@ -267,6 +271,7 @@ private struct PreviewFeedRepository: FeedRepository {
     func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> Domain.VotePage {
         VotePage(votes: [], nextCursor: nil, hasNext: false)
     }
+    func getMyVoteFeeds() async throws -> [Domain.Vote] { [] }
     func postVoteFeed(info: Domain.VoteCreateInfo) async throws -> Int { 0 }
     func reportVoteFeed(feedId: Int) async throws {}
     func deleteVoteFeed(feedId: Int) async throws {}

@@ -7,6 +7,7 @@
 
 public protocol FeedRepository {
     func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> VotePage
+    func getMyVoteFeeds() async throws -> [Vote]
     func postVoteFeed(info: VoteCreateInfo) async throws -> Int
     func reportVoteFeed(feedId: Int) async throws
     func deleteVoteFeed(feedId: Int) async throws
