@@ -6,11 +6,11 @@
 //
 
 enum FeedEndpoint: Endpoint {
-    case getFeeds
+    case getFeeds(cursor: Int?, size: Int?, feedStatus: String?)
     case postFeeds(PostFeedRequest)
     case postFeedsReport(Int)
     case deleteFeeds(Int)
-    
+
     var path: String {
         let prefix = "/feeds"
         let path = switch self {
@@ -25,7 +25,7 @@ enum FeedEndpoint: Endpoint {
         }
         return version.path + prefix + path
     }
-    
+
     var method: HTTPMethod {
         switch self {
         case .getFeeds:
@@ -38,7 +38,20 @@ enum FeedEndpoint: Endpoint {
                 .delete
         }
     }
-    
+
+    var queryParameters: [String: Any]? {
+        switch self {
+        case .getFeeds(let cursor, let size, let feedStatus):
+            var params: [String: Any] = [:]
+            if let cursor { params["cursor"] = cursor }
+            if let size { params["size"] = size }
+            if let feedStatus { params["feedStatus"] = feedStatus }
+            return params.isEmpty ? nil : params
+        default:
+            return nil
+        }
+    }
+
     var body: (any Encodable)? {
         switch self {
         case .getFeeds:

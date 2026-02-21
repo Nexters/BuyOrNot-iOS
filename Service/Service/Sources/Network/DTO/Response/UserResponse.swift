@@ -11,4 +11,12 @@ struct UserResponse: Decodable {
     let profileImage: String
     let socialAccount: String?
     let email: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id = "userId"
+        case nickname
+        case profileImage
+        case socialAccount
+        case email
+    }
 }
