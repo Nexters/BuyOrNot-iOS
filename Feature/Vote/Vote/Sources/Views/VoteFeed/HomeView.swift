@@ -65,10 +65,16 @@ public struct HomeView: View {
                 )
             }
 
-            FloatingButton(state: .open)
+            FloatingButton(
+                state: .close,
+                onVoteCreate: { viewModel.didTapCreateVote() }
+            )
         }
         .task {
             await viewModel.fetchFeeds()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .voteFeedDidCreate)) { _ in
+            Task { await viewModel.fetchFeeds() }
         }
         .onChange(of: viewModel.selectedFilter) { _ in
             switch selectedTab {

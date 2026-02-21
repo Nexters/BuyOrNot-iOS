@@ -70,5 +70,14 @@ extension DIContainer {
                 argument: argument
             )
         }
+
+        container.register(CreateVoteViewModel.self) { (resolver: Resolver) in
+            let uploadsRepository: UploadsRepository = resolver.resolve()
+            let feedRepository: FeedRepository = resolver.resolve()
+            return CreateVoteViewModel(
+                uploadsRepository: uploadsRepository,
+                feedRepository: feedRepository
+            )
+        }
     }
 }
