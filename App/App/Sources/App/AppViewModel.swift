@@ -13,6 +13,14 @@ import Auth
 final class AppViewModel: ObservableObject {
     @Published var launchState: LaunchState = .splash
     
+    var splashViewModelArgument: SplashViewModel.Argument {
+        SplashViewModel.Argument(delegate: self)
+    }
+    
+    var loginViewModelArgument: LoginViewModel.Argument {
+        LoginViewModel.Argument(delegate: self)
+    }
+    
     public init() {
         
     }
@@ -33,8 +41,10 @@ extension AppViewModel: SplashDelegate {
 
 extension AppViewModel: LoginDelegate {
     func completeLogin(_ result: AuthState) {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            launchState = .main
+        Task { @MainActor [weak self] in
+            withAnimation(.easeInOut(duration: 0.3)) {
+                self?.launchState = .main
+            }
         }
     }
 }

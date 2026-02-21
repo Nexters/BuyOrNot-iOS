@@ -14,15 +14,25 @@ public final class SplashViewModel: ObservableObject {
     
     public init(
         localRepository: LocalRepository,
-        delegate: SplashDelegate? = nil
+        argument: SplashViewModel.Argument
     ) {
         self.localRepository = localRepository
-        self.delegate = delegate
+        self.delegate = argument.delegate
     }
     
     func didSplashEnded() {
         let token = localRepository.getToken()
         let authState: AuthState = token.isEmpty ? .guest : .member
         delegate?.completeSplash(authState)
+    }
+}
+
+public extension SplashViewModel {
+    struct Argument {
+        let delegate: SplashDelegate?
+        
+        public init(delegate: SplashDelegate?) {
+            self.delegate = delegate
+        }
     }
 }
