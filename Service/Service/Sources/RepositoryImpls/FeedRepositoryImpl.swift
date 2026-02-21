@@ -7,6 +7,7 @@
 
 
 import Domain
+import Foundation
 
 public class FeedRepositoryImpl: FeedRepository {
     private let apiClient: NetworkClientProtocol
@@ -56,6 +57,19 @@ public class FeedRepositoryImpl: FeedRepository {
         )
         let response: BaseResponse<PostFeedResponse> = try await request(.postFeeds(body))
         return response.data.feedId
+    }
+
+    public func voteFeed(feedId: Int, choice: VoteChoice) async throws -> VoteResult {
+        let body = PostVoteRequest(choice: choice.apiValue)
+        let response: BaseResponse<VoteResultResponse> = try await request(
+            .postVote(feedId: feedId, body: body)
+        )
+        guard let result = response.data.toDomain() else {
+            throw NetworkError.decodingFailed(
+                NSError(domain: "VoteResultResponse", code: -1)
+            )
+        }
+        return result
     }
     
     public func reportVoteFeed(feedId: Int) async throws {

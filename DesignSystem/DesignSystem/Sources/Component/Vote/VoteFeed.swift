@@ -19,6 +19,7 @@ public struct VoteFeedData {
     public let productImageURL: String
     public let price: String
     public let voteOptions: [VoteGroup.VoteOption]
+    public let selectedVoteId: Int?
     public let isPeriodDone: Bool
     public let isMine: Bool
 
@@ -32,6 +33,7 @@ public struct VoteFeedData {
         productImageURL: String,
         price: String,
         voteOptions: [VoteGroup.VoteOption],
+        selectedVoteId: Int? = nil,
         isPeriodDone: Bool = false,
         isMine: Bool = false
     ) {
@@ -44,6 +46,7 @@ public struct VoteFeedData {
         self.productImageURL = productImageURL
         self.price = price
         self.voteOptions = voteOptions
+        self.selectedVoteId = selectedVoteId
         self.isPeriodDone = isPeriodDone
         self.isMine = isMine
     }
@@ -67,7 +70,7 @@ public struct VoteFeed: View {
         onVote: @escaping (Int) -> Void = { _ in }
     ) {
         self.data = data
-        self._selectedVoteId = State(initialValue: selectedVoteId)
+        self._selectedVoteId = State(initialValue: selectedVoteId ?? data.selectedVoteId)
         self.onDelete = onDelete
         self.onReport = onReport
         self.onVote = onVote
