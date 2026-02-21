@@ -17,4 +17,18 @@ public extension Data {
         }
         return string
     }
+    
+    var prettyPrintedJSON: String? {
+        guard
+            let jsonObject = try? JSONSerialization.jsonObject(with: self, options: []),
+            let prettyData = try? JSONSerialization.data(
+                withJSONObject: jsonObject,
+                options: [.prettyPrinted, .sortedKeys]
+            ),
+            let prettyString = String(data: prettyData, encoding: .utf8)
+        else {
+            return nil
+        }
+        return prettyString
+    }
 }
