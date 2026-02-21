@@ -11,6 +11,7 @@ import DesignSystem
 
 public final class HomeViewModel: ObservableObject {
     private let repository: FeedRepository
+    private let navigator: VoteNavigator
     private let pageSize = 10
 
     @Published var voteFeedState: VoteFeedState = .loading
@@ -24,8 +25,21 @@ public final class HomeViewModel: ObservableObject {
     private var cursor: Int?
     private var hasMorePages: Bool = true
 
-    public init(repository: FeedRepository) {
+    public init(repository: FeedRepository, argument: HomeViewModel.Argument) {
         self.repository = repository
+        self.navigator = argument.navigator
+    }
+
+    func didTapNotification() {
+        navigator.navigateToNotification()
+    }
+
+    func didTapProfile() {
+        navigator.navigateToMyPage()
+    }
+
+    func didTapCreateVote() {
+        navigator.presentCreateVote()
     }
 
     @MainActor
@@ -158,6 +172,16 @@ public final class HomeViewModel: ObservableObject {
             return "\(minute)분 전"
         } else {
             return "방금 전"
+        }
+    }
+}
+
+public extension HomeViewModel {
+    struct Argument {
+        let navigator: VoteNavigator
+        
+        public init(navigator: VoteNavigator) {
+            self.navigator = navigator
         }
     }
 }

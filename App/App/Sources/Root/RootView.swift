@@ -6,30 +6,38 @@
 //
 
 import SwiftUI
-//import Splash
 import Vote
 import Auth
 
 struct RootView: View {
     @EnvironmentObject var container: DIContainer
     @State private var router = Router()
+    
+    private var authNavigator: AuthNavigator {
+        AppAuthNavigator(router: router)
+    }
+    
+    private var voteNavigator: VoteNavigator {
+        AppVoteNavigator(router: router)
+    }
 
     var body: some View {
         NavigationStack(path: $router.path) {
             HomeView(
-                viewModel: container.resolve(),
-                onNotificationTap: { router.navigate(to: .notification) },
-                onProfileTap: { router.navigate(to: .myPage) },
-                onCreateVoteTap: { router.showCreateVote = true }
+                viewModel: container.resolve(
+                    argument: HomeViewModel.Argument(
+                        navigator: voteNavigator
+                    )
+                )
             )
-            .navigationDestination(for: AppDestination.self) { destination in
-                switch destination {
-                case .notification:
-                    NotificationView()
-                case .myPage:
-                    MyPageView()
-                }
-            }
+            .appNavigationDestination(
+                container: container,
+                authNavigator: authNavigator
+            )
+            .authNavigationDestination(
+                container: container,
+                authNavigator: authNavigator
+            )
         }
         .sheet(isPresented: $router.showCreateVote) {
             CreateVoteView()

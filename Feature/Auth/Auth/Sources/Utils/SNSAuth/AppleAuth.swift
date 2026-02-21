@@ -49,7 +49,6 @@ private final class AppleLoginDelegate: NSObject {
             completion?(nil)
             return
         }
-        
         completion?(authorizationCode)
     }
 }
@@ -63,7 +62,6 @@ extension AppleLoginDelegate: ASAuthorizationControllerDelegate {
             completion?(nil)
             return
         }
-        
         handleAppleLoginSuccess(credential)
     }
     

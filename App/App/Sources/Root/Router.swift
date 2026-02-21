@@ -12,12 +12,18 @@ enum AppDestination: Hashable {
     case myPage
 }
 
+enum AuthDestination: Hashable {
+    case terms
+    case accountSetting
+    case deleteAccount
+}
+
 @Observable
 class Router {
-    var path: [AppDestination] = []
+    var path = NavigationPath()
     var showCreateVote: Bool = false
 
-    func navigate(to destination: AppDestination) {
+    func navigate<D: Hashable>(to destination: D) {
         path.append(destination)
     }
 
@@ -27,6 +33,6 @@ class Router {
     }
 
     func popToRoot() {
-        path.removeAll()
+        path = NavigationPath()
     }
 }

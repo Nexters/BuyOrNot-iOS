@@ -9,10 +9,12 @@ import SwiftUI
 import DesignSystem
 
 public struct MyPageView: View {
-    @StateObject var viewModel = MyPageViewModel()
+    @StateObject var viewModel: MyPageViewModel
     
-    public init() {
-        
+    public init(viewModel: MyPageViewModel) {
+        _viewModel = StateObject(
+            wrappedValue: viewModel
+        )
     }
     
     public var body: some View {
@@ -85,5 +87,17 @@ public struct MyPageView: View {
 
 
 #Preview {
-    MyPageView()
+    MyPageView(
+        viewModel: MyPageViewModel(
+            argument: .init(
+                navigator: MockAuthNavigator()
+            )
+        )
+    )
+}
+
+private struct MockAuthNavigator: AuthNavigator {
+    func navigateToTerms() {}
+    func navigateToAccountSetting() {}
+    func navigateToDeleteAccount() {}
 }

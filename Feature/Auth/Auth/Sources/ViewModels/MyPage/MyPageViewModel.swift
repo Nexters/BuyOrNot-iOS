@@ -8,19 +8,22 @@
 import SwiftUI
 import Core
 
-final class MyPageViewModel: ObservableObject {
+public final class MyPageViewModel: ObservableObject {
+    private let navigator: AuthNavigator
     @Published var name: String = "이름입니다최대열자임"
     @Published var appVersion: String = "0.0.1"
     @Published var url: URL?
     
+    public init(argument: MyPageViewModel.Argument) {
+        self.navigator = argument.navigator
+    }
+    
     func didTapMenu(_ menu: MyPageMenu) {
         switch menu {
         case .accountInfo:
-            /// TODO: 작업 예정
-            break
+            navigator.navigateToAccountSetting()
         case .terms:
-            /// TODO: 작업 예정
-            break
+            navigator.navigateToTerms()
         case .feedback:
             openFeedbackUrl()
         }
@@ -32,5 +35,15 @@ final class MyPageViewModel: ObservableObject {
             return
         }
         self.url = url
+    }
+}
+
+public extension MyPageViewModel {
+    struct Argument {
+        let navigator: AuthNavigator
+        
+        public init(navigator: AuthNavigator) {
+            self.navigator = navigator
+        }
     }
 }
