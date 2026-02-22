@@ -1,5 +1,5 @@
 //
-//  UserDefaultsStore.swift
+//  UserDefaultsClient.swift
 //  Service
 //
 //  Created by 문종식 on 2/14/26.
@@ -36,6 +36,10 @@ final class UserDefaultsClient: UserDefaultsClientProtocol {
     }
     
     func set<T: Codable>(_ value: T?, for key: UserDefaultsKey) {
+        guard let value else {
+            remove(for: key)
+            return
+        }
         guard let data = try? encoder.encode(value) else {
             return
         }

@@ -29,6 +29,7 @@ public class AuthRepositoryImpl: AuthRepository {
         let response: BaseResponse<TokenResponse> = try await request(
             .postAppleLogin(body)
         )
+        saveToStore(response.data)
         return response.data.toToken()
     }
     
@@ -39,6 +40,7 @@ public class AuthRepositoryImpl: AuthRepository {
         let response: BaseResponse<TokenResponse> = try await request(
             .postGoogleLogin(body)
         )
+        saveToStore(response.data)
         return response.data.toToken()
     }
     
@@ -49,6 +51,7 @@ public class AuthRepositoryImpl: AuthRepository {
         let response: BaseResponse<TokenResponse> = try await request(
             .postKakaoLogin(body)
         )
+        saveToStore(response.data)
         return response.data.toToken()
     }
     
@@ -59,6 +62,7 @@ public class AuthRepositoryImpl: AuthRepository {
         let response: BaseResponse<TokenResponse> = try await request(
             .postRefreshToken(body)
         )
+        saveToStore(response.data)
         return response.data.toToken()
     }
     
