@@ -18,13 +18,16 @@ import KakaoSDKCommon
 
 public final class LoginViewModel: ObservableObject {
     private let authRepository: AuthRepository
+    private let tokenRepository: TokenRepository
     private let delegate: LoginDelegate?
     
     public init(
         authRepository: AuthRepository,
+        tokenRepository: TokenRepository,
         argument: LoginViewModel.Argument
     ) {
         self.authRepository = authRepository
+        self.tokenRepository = tokenRepository
         self.delegate = argument.delegate
     }
 
@@ -95,7 +98,7 @@ public final class LoginViewModel: ObservableObject {
                     let result = try await authRepository.loginWithGoogle(
                         idToken: idToken
                     )
-                    authRepository.saveToken(result)
+                    tokenRepository.saveToken(result)
                     delegate?.completeLogin(.member)
                 } catch { }
             }
@@ -121,7 +124,7 @@ public final class LoginViewModel: ObservableObject {
                     let result = try await authRepository.loginWithApple(
                         authorizationCode: authorizationCode
                     )
-                    authRepository.saveToken(result)
+                    tokenRepository.saveToken(result)
                     delegate?.completeLogin(.member)
                 } catch { }
             }
@@ -145,7 +148,7 @@ public final class LoginViewModel: ObservableObject {
                     let result = try await authRepository.loginWithKakao(
                         accessToken: oauthToken.accessToken
                     )
-                    authRepository.saveToken(result)
+                    tokenRepository.saveToken(result)
                     delegate?.completeLogin(.member)
                 } catch { }
             }
