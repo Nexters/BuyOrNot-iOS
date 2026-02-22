@@ -19,18 +19,18 @@ final class NetworkClient: NetworkClientProtocol {
     private let session: URLSession
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
-    private let tokenService: TokenService
+    private let tokenStore: TokenStore
 
     public init(
         session: URLSession = .shared,
         decoder: JSONDecoder = JSONDecoder(),
         encoder: JSONEncoder = JSONEncoder(),
-        tokenService: TokenService = TokenService()
+        tokenStore: TokenStore = TokenStore()
     ) {
         self.session = session
         self.decoder = decoder
         self.encoder = encoder
-        self.tokenService = tokenService
+        self.tokenStore = tokenStore
     }
 
     public func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
@@ -121,7 +121,7 @@ final class NetworkClient: NetworkClientProtocol {
     }
 
     private func refreshAccessToken() async throws {
-        let refreshToken = tokenService.getRefreshToken() ?? ""
+        let refreshToken = tokenStore.getToken()?.refreshToken ?? ""
         let endpoint = AuthEndpoint.postRefreshToken(
             RefreshTokenRequest(refreshToken: refreshToken)
         )
@@ -129,9 +129,7 @@ final class NetworkClient: NetworkClientProtocol {
             endpoint,
             didRetryAfterRefresh: false
         )
-        tokenService.saveRefreshToken(response.data.refreshToken)
-        tokenService.saveAccessToken(response.data.accessToken)
-        tokenService.saveTokenType(response.data.tokenType)
+        tokenStore.saveToken(response.data.toToken())
     }
 
     private func buildRequest(from endpoint: Endpoint) throws -> URLRequest {
@@ -174,7 +172,7 @@ final class NetworkClient: NetworkClientProtocol {
             request.setValue($0.value, forHTTPHeaderField: $0.key)
         }
         
-        let accessToken = tokenService.getAccessToken() ?? ""
+        let accessToken = tokenStore.getToken()?.accessToken ?? ""
         if accessToken.isNotEmpty {
             request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         }
