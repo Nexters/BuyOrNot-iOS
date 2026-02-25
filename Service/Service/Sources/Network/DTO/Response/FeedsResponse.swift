@@ -22,8 +22,8 @@ struct FeedsResponse: Decodable {
     public let noCount: Int
     public let totalCount: Int
     public let feedStatus: String
-    public let s3ObjectKey: String
-    public let viewUrl: String
+    public let s3ObjectKey: String?
+    public let viewUrl: String?
     public let imageWidth: Int
     public let imageHeight: Int
     public let author: UserResponse

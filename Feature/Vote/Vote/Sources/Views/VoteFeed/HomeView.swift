@@ -292,6 +292,16 @@ private struct PreviewFeedRepository: FeedRepository {
     func deleteVoteFeed(feedId: Int) async throws {}
 }
 
+private struct PreviewUserRepository: UserRepository {
+    func getMe() async throws -> User {
+        User(id: 1, nickname: "preview", profileImage: "", socialAccount: "KAKAO", email: "")
+    }
+    func getCachedUser() -> User? {
+        User(id: 1, nickname: "preview", profileImage: "", socialAccount: "KAKAO", email: "")
+    }
+    func deleteAccount() async throws {}
+}
+
 private struct MockVoteNavigator: VoteNavigator {
     func navigateToNotification() {}
     func navigateToMyPage() {}
@@ -302,7 +312,8 @@ private struct MockVoteNavigator: VoteNavigator {
     let _ = BNFont.loadFonts()
     HomeView(
         viewModel: HomeViewModel(
-            repository: PreviewFeedRepository(),
+            feedRepository: PreviewFeedRepository(),
+            userRepository: PreviewUserRepository(),
             argument: .init(
                 navigator: MockVoteNavigator()
             )
