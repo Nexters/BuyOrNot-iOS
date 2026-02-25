@@ -23,14 +23,14 @@ struct NavigationBar: View {
             Spacer()
 
             HStack(spacing: 24) {
-                Button {
-                    onNotificationTap()
-                } label: {
-                    BNImage(.notification_fill)
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(BNColor(.type(.gray500)).color)
-                }
+//                Button {
+//                    onNotificationTap()
+//                } label: {
+//                    BNImage(.notification_fill)
+//                        .resizable()
+//                        .frame(width: 20, height: 20)
+//                        .foregroundColor(BNColor(.type(.gray500)).color)
+//                }
 
                 Button {
                     onProfileTap()
