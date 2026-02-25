@@ -83,5 +83,22 @@ extension DIContainer {
                 feedRepository: feedRepository
             )
         }
+
+        container.register(NotificationViewModel.self) { (resolver: Resolver, argument: NotificationViewModel.Argument) in
+            let notificationRepository: NotificationRepository = resolver.resolve()
+            return NotificationViewModel(
+                notificationRepository: notificationRepository,
+                argument: argument
+            )
+        }
+
+        container.register(FeedDetailViewModel.self) { (resolver: Resolver) in
+            let feedRepository: FeedRepository = resolver.resolve()
+            let userRepository: UserRepository = resolver.resolve()
+            return FeedDetailViewModel(
+                feedRepository: feedRepository,
+                userRepository: userRepository
+            )
+        }
     }
 }

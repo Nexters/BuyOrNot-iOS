@@ -8,4 +8,5 @@
 enum VoteDestination: Hashable {
     case notification
     case myPage
+    case feedDetail(feedId: Int)
 }
