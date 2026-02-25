@@ -30,5 +30,9 @@ extension DIContainer {
         container.register(UploadsRepository.self) { _ in
             UploadsRepositoryImpl()
         }
+
+        container.register(NotificationRepository.self) { _ in
+            NotificationRepositoryImpl()
+        }
     }
 }

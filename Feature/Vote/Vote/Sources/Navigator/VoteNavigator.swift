@@ -9,4 +9,5 @@ public protocol VoteNavigator {
     func navigateToNotification()
     func navigateToMyPage()
     func presentCreateVote()
+    func navigateToFeedDetail(feedId: Int)
 }

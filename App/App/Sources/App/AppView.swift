@@ -61,7 +61,8 @@ struct AppView: View {
                     )
                     .appNavigationDestination(
                         container: container,
-                        authNavigator: authNavigator
+                        authNavigator: authNavigator,
+                        voteNavigator: voteNavigator
                     )
                     .authNavigationDestination(
                         container: container,
