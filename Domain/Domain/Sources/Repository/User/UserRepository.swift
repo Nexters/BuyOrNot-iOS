@@ -7,5 +7,6 @@
 
 public protocol UserRepository {
     func getMe() async throws -> User
+    func getCachedUser() -> User?
     func deleteAccount() async throws
 }

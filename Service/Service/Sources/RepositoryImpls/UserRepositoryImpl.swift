@@ -33,6 +33,10 @@ public class UserRepositoryImpl: UserRepository {
         userStore.saveUser(data)
         return data
     }
+
+    public func getCachedUser() -> User? {
+        userStore.getUser()
+    }
     
     public func deleteAccount() async throws {
         try await request(.deleteMe)
