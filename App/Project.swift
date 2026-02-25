@@ -78,7 +78,10 @@ let project = Module.app.project(
     entitlements: "App/App.entitlements",
     settings: .settings(
         base: [
-            "OTHER_LDFLAGS": ["$(inherited)", "-ObjC"]
+            "INFOPLIST_KEY_CFBundleDisplayName": "살까말까",
+            "OTHER_LDFLAGS": ["$(inherited)", "-ObjC"],
+            "MARKETING_VERSION": "0.0.2",
+            "CURRENT_PROJECT_VERSION": "0",
         ],
         configurations: [
             .debug(
