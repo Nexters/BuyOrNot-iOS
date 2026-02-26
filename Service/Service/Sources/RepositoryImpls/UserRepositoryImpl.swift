@@ -37,6 +37,11 @@ public class UserRepositoryImpl: UserRepository {
     public func getCachedUser() -> User? {
         userStore.getUser()
     }
+
+    public func updateFCMToken(_ token: String) async throws {
+        let body = UpdateFCMTokenRequest(fcmToken: token)
+        try await request(.patchFcmToken(body))
+    }
     
     public func deleteAccount() async throws {
         try await request(.deleteMe)

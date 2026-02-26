@@ -5,12 +5,16 @@
 //  Created by 이조은 on 2/12/26.
 //
 
+import UIKit
 import SwiftUI
 import DesignSystem
 
 public struct NotificationView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
+
     @ObservedObject var viewModel: NotificationViewModel
+    @State private var isNotificationAuthorized: Bool = false
 
     public init(viewModel: NotificationViewModel) {
         self.viewModel = viewModel
@@ -29,9 +33,15 @@ public struct NotificationView: View {
                     })
                         .padding(.top, 20)
 
-                    NotificationPermissionBanner(onTap: { })
-                        .padding(.top, 16)
-                        .padding(.horizontal, 20)
+                    if !isNotificationAuthorized {
+                        NotificationPermissionBanner(onTap: {
+                            if let url = URL(string: UIApplication.openSettingsURLString) {
+                                openURL(url)
+                            }
+                        })
+                            .padding(.top, 16)
+                            .padding(.horizontal, 20)
+                    }
 
                     switch viewModel.state {
                     case .loading:
@@ -58,8 +68,19 @@ public struct NotificationView: View {
         .background(BNColor(.type(.gray0)).color)
         .navigationBarHidden(true)
         .task {
+            viewModel.onAppear()
+            await refreshNotificationPermission()
             await viewModel.fetchNotifications()
         }
+        .onAppear {
+            Task { await refreshNotificationPermission() }
+        }
+    }
+
+    private func refreshNotificationPermission() async {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        let status = settings.authorizationStatus
+        isNotificationAuthorized = status == .authorized || status == .provisional || status == .ephemeral
     }
 }
 
@@ -133,7 +154,6 @@ private struct NotificationPermissionBanner: View {
             Spacer()
 
             Button {
-                // TODO: 알림 허용 로직
                 onTap()
             } label: {
                 Text("알림 켜기")

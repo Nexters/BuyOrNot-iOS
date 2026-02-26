@@ -21,6 +21,11 @@ public struct NotificationItemData: Identifiable {
 public final class NotificationViewModel: ObservableObject {
     private let notificationRepository: NotificationRepository
     private let navigator: VoteNavigator
+    private let onAppearHandler: () -> Void
+
+    private static var cachedNotifications: [NotificationItemData] = []
+    private static var cachedState: NotificationState = .loading
+    private static var cachedFilter: NotificationFilter = .all
 
     @Published var state: NotificationState = .loading
     @Published var notifications: [NotificationItemData] = []
@@ -29,15 +34,30 @@ public final class NotificationViewModel: ObservableObject {
     public init(notificationRepository: NotificationRepository, argument: NotificationViewModel.Argument) {
         self.notificationRepository = notificationRepository
         self.navigator = argument.navigator
+        self.onAppearHandler = argument.onAppear
+        self.notifications = Self.cachedNotifications
+        self.state = Self.cachedState
+        self.selectedFilter = Self.cachedFilter
     }
 
     func didTapNotification(feedId: Int) {
         navigator.navigateToFeedDetail(feedId: feedId)
     }
 
+    func onAppear() {
+        onAppearHandler()
+    }
+
     @MainActor
-    func fetchNotifications() async {
-        state = .loading
+    func fetchNotifications(force: Bool = false) async {
+        let hasData = !notifications.isEmpty
+        if !force, hasData {
+            return
+        }
+        let previousState = state
+        if !hasData {
+            state = .loading
+        }
         do {
             let typeParam = apiTypeParam(for: selectedFilter)
             let items = try await notificationRepository.getNotifications(type: typeParam)
@@ -48,6 +68,11 @@ public final class NotificationViewModel: ObservableObject {
                 notifications = items.map { toItemData($0) }
                 state = .success
             }
+            Self.cachedNotifications = notifications
+            Self.cachedState = state
+            Self.cachedFilter = selectedFilter
+        } catch is CancellationError {
+            state = hasData ? previousState : .error
         } catch {
             print("[NotificationViewModel] fetchNotifications error: \(error)")
             state = .error
@@ -57,7 +82,7 @@ public final class NotificationViewModel: ObservableObject {
     @MainActor
     func applyFilter(_ filter: NotificationFilter) async {
         selectedFilter = filter
-        await fetchNotifications()
+        await fetchNotifications(force: true)
     }
 
     private func apiTypeParam(for filter: NotificationFilter) -> String? {
@@ -119,9 +144,11 @@ public final class NotificationViewModel: ObservableObject {
 public extension NotificationViewModel {
     struct Argument {
         let navigator: VoteNavigator
+        let onAppear: () -> Void
 
-        public init(navigator: VoteNavigator) {
+        public init(navigator: VoteNavigator, onAppear: @escaping () -> Void = {}) {
             self.navigator = navigator
+            self.onAppear = onAppear
         }
     }
 }
