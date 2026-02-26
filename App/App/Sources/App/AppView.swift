@@ -9,9 +9,11 @@ import SwiftUI
 import Vote
 import Auth
 import Splash
+import Domain
 
 struct AppView: View {
     @EnvironmentObject var container: DIContainer
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject var viewModel: AppViewModel
     @State private var router = Router()
     
@@ -77,6 +79,18 @@ struct AppView: View {
                         .presentationCornerRadius(18)
                 }
                 .environment(router)
+            }
+        }
+        .task {
+            await PushNotificationService.shared.requestAuthorizationIfNeeded()
+        }
+        .onChange(of: scenePhase) { phase in
+            guard phase == .active else { return }
+            Task {
+                let userRepository: UserRepository = container.resolve()
+                await PushNotificationService.shared.syncFCMTokenIfPossible(
+                    userRepository: userRepository
+                )
             }
         }
     }

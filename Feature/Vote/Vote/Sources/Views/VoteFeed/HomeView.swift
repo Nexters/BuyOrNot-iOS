@@ -318,6 +318,7 @@ private struct PreviewUserRepository: UserRepository {
     func getCachedUser() -> User? {
         User(id: 1, nickname: "preview", profileImage: "", socialAccount: "KAKAO", email: "")
     }
+    func updateFCMToken(_ token: String) async throws {}
     func deleteAccount() async throws {}
 }
 

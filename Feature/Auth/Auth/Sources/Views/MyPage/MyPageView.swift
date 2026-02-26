@@ -126,6 +126,8 @@ private final class MockUserRepository: UserRepository {
             email: "test@buyornot.com"
         )
     }
+
+    func updateFCMToken(_ token: String) async throws {}
     
     func deleteAccount() async throws {}
 }

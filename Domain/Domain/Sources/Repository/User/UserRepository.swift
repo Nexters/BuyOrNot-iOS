@@ -8,5 +8,6 @@
 public protocol UserRepository {
     func getMe() async throws -> User
     func getCachedUser() -> User?
+    func updateFCMToken(_ token: String) async throws
     func deleteAccount() async throws
 }
