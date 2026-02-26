@@ -8,7 +8,6 @@
 import SwiftUI
 import Vote
 import Auth
-import Domain
 
 extension View {
     func appNavigationDestination(
@@ -22,15 +21,7 @@ extension View {
                 NotificationView(
                     viewModel: container.resolve(
                         argument: NotificationViewModel.Argument(
-                            navigator: voteNavigator,
-                            onAppear: {
-                                Task {
-                                    let userRepository: UserRepository = container.resolve()
-                                    await PushNotificationService.shared.syncFCMTokenIfPossible(
-                                        userRepository: userRepository
-                                    )
-                                }
-                            }
+                            navigator: voteNavigator
                         )
                     )
                 )
