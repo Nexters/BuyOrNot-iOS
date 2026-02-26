@@ -12,12 +12,19 @@ import Auth
 extension View {
     func appNavigationDestination(
         container: DIContainer,
-        authNavigator: AuthNavigator
+        authNavigator: AuthNavigator,
+        voteNavigator: VoteNavigator
     ) -> some View {
         navigationDestination(for: VoteDestination.self) { destination in
             switch destination {
             case .notification:
-                NotificationView()
+                NotificationView(
+                    viewModel: container.resolve(
+                        argument: NotificationViewModel.Argument(
+                            navigator: voteNavigator
+                        )
+                    )
+                )
             case .myPage:
                 MyPageView(
                     viewModel: container.resolve(
@@ -25,6 +32,11 @@ extension View {
                             navigator: authNavigator
                         )
                     )
+                )
+            case .feedDetail(let feedId):
+                FeedDetailView(
+                    viewModel: container.resolve(),
+                    feedId: feedId
                 )
             }
         }

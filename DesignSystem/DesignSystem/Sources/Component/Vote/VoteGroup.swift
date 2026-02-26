@@ -30,6 +30,7 @@ public struct VoteGroup: View {
 
     private let options: [VoteOption]
     private let isPeriodDone: Bool
+    private let isVotingLocked: Bool
     private let selectedOptionId: Int?
     private let onVote: ((Int) -> Void)?
 
@@ -44,11 +45,11 @@ public struct VoteGroup: View {
     }
 
     private var showResults: Bool {
-        isPeriodDone || selectedOptionId != nil
+        isPeriodDone || selectedOptionId != nil || isVotingLocked
     }
 
     private var isVotingEnabled: Bool {
-        !isPeriodDone && selectedOptionId == nil
+        !isVotingLocked && !isPeriodDone && selectedOptionId == nil
     }
 
     private var statusText: String {
@@ -60,11 +61,13 @@ public struct VoteGroup: View {
     public init(
         options: [VoteOption],
         isPeriodDone: Bool = false,
+        isVotingLocked: Bool = false,
         selectedOptionId: Int? = nil,
         onVote: ((Int) -> Void)? = nil
     ) {
         self.options = options
         self.isPeriodDone = isPeriodDone
+        self.isVotingLocked = isVotingLocked
         self.selectedOptionId = selectedOptionId
         self.onVote = onVote
     }
@@ -119,7 +122,7 @@ public struct VoteGroup: View {
     }
 
     private func getStyle(for optionId: Int) -> VoteButtonStyle {
-        if isPeriodDone {
+        if isPeriodDone || isVotingLocked {
             return optionId == winnerOptionId ? .black : .gray
         } else if let selected = selectedOptionId {
             return optionId == selected ? .black : .gray

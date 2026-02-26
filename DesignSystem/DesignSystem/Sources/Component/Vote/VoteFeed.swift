@@ -22,6 +22,7 @@ public struct VoteFeedData {
     public let selectedVoteId: Int?
     public let isPeriodDone: Bool
     public let isMine: Bool
+    public let isVotingLocked: Bool
 
     public init(
         id: String,
@@ -35,7 +36,8 @@ public struct VoteFeedData {
         voteOptions: [VoteGroup.VoteOption],
         selectedVoteId: Int? = nil,
         isPeriodDone: Bool = false,
-        isMine: Bool = false
+        isMine: Bool = false,
+        isVotingLocked: Bool = false
     ) {
         self.id = id
         self.userName = userName
@@ -49,6 +51,7 @@ public struct VoteFeedData {
         self.selectedVoteId = selectedVoteId
         self.isPeriodDone = isPeriodDone
         self.isMine = isMine
+        self.isVotingLocked = isVotingLocked
     }
 }
 
@@ -94,6 +97,7 @@ public struct VoteFeed: View {
                     price: data.price,
                     voteOptions: data.voteOptions,
                     isPeriodDone: data.isPeriodDone,
+                    isVotingLocked: data.isVotingLocked,
                     selectedVoteId: selectedVoteId,
                     onVote: { optionId in
                         withAnimation {
@@ -198,6 +202,7 @@ private struct FeedContent: View {
     let price: String
     let voteOptions: [VoteGroup.VoteOption]
     let isPeriodDone: Bool
+    let isVotingLocked: Bool
     let selectedVoteId: Int?
     let onVote: (Int) -> Void
 
@@ -218,7 +223,9 @@ private struct FeedContent: View {
 
                 VoteGroup(
                     options: voteOptions,
-                    isPeriodDone: isPeriodDone, selectedOptionId: selectedVoteId,
+                    isPeriodDone: isPeriodDone,
+                    isVotingLocked: isVotingLocked,
+                    selectedOptionId: selectedVoteId,
                     onVote: onVote
                 )
             }

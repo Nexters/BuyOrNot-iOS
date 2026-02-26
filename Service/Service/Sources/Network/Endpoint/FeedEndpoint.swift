@@ -12,6 +12,7 @@ enum FeedEndpoint: Endpoint {
     case postVote(feedId: Int, body: PostVoteRequest)
     case postFeedsReport(Int)
     case deleteFeeds(Int)
+    case getFeed(feedId: Int)
 
     var path: String {
         switch self {
@@ -30,6 +31,8 @@ enum FeedEndpoint: Endpoint {
                 "/\(feedId)/report"
             case .deleteFeeds(let feedId):
                 "/\(feedId)"
+            case .getFeed(let feedId):
+                "/\(feedId)"
             case .getMyFeeds:
                 ""
             }
@@ -39,7 +42,7 @@ enum FeedEndpoint: Endpoint {
 
     var method: HTTPMethod {
         switch self {
-        case .getFeeds, .getMyFeeds:
+        case .getFeeds, .getMyFeeds, .getFeed:
                 .get
         case .postFeeds:
                 .post
@@ -68,7 +71,7 @@ enum FeedEndpoint: Endpoint {
 
     var body: (any Encodable)? {
         switch self {
-        case .getFeeds, .getMyFeeds:
+        case .getFeeds, .getMyFeeds, .getFeed:
             nil
         case .postFeeds(let postFeedRequest):
             postFeedRequest

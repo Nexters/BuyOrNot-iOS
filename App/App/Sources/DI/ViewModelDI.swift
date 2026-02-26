@@ -66,9 +66,11 @@ extension DIContainer {
         }
 
         container.register(HomeViewModel.self) { (resolver: Resolver, argument: HomeViewModel.Argument) in
-            let repository: FeedRepository = resolver.resolve()
+            let feedRepository: FeedRepository = resolver.resolve()
+            let userRepository: UserRepository = resolver.resolve()
             return HomeViewModel(
-                repository: repository,
+                feedRepository: feedRepository,
+                userRepository: userRepository,
                 argument: argument
             )
         }
@@ -79,6 +81,23 @@ extension DIContainer {
             return CreateVoteViewModel(
                 uploadsRepository: uploadsRepository,
                 feedRepository: feedRepository
+            )
+        }
+
+        container.register(NotificationViewModel.self) { (resolver: Resolver, argument: NotificationViewModel.Argument) in
+            let notificationRepository: NotificationRepository = resolver.resolve()
+            return NotificationViewModel(
+                notificationRepository: notificationRepository,
+                argument: argument
+            )
+        }
+
+        container.register(FeedDetailViewModel.self) { (resolver: Resolver) in
+            let feedRepository: FeedRepository = resolver.resolve()
+            let userRepository: UserRepository = resolver.resolve()
+            return FeedDetailViewModel(
+                feedRepository: feedRepository,
+                userRepository: userRepository
             )
         }
     }
