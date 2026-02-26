@@ -107,6 +107,16 @@ private struct MockAuthNavigator: AuthNavigator {
 }
 
 private final class MockUserRepository: UserRepository {
+    func getCachedUser() -> User? {
+        User(
+            id: 0,
+            nickname: "테스트유저",
+            profileImage: "",
+            socialAccount: "apple",
+            email: "test@buyornot.com"
+        )
+    }
+    
     func getMe() async throws -> User {
         User(
             id: 0,
@@ -116,6 +126,8 @@ private final class MockUserRepository: UserRepository {
             email: "test@buyornot.com"
         )
     }
+
+    func updateFCMToken(_ token: String) async throws {}
     
     func deleteAccount() async throws {}
 }

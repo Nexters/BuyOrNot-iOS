@@ -25,4 +25,8 @@ final class AppVoteNavigator: VoteNavigator {
     func presentCreateVote() {
         router.showCreateVote = true
     }
+
+    func navigateToFeedDetail(feedId: Int) {
+        router.navigate(to: VoteDestination.feedDetail(feedId: feedId))
+    }
 }

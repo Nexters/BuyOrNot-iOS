@@ -139,3 +139,5 @@ Tuist/Dependencies/
 
 
 secret.xcconfig
+/App/App/Resources/GoogleService-Info.plist
+/App/Derived/Sources/TuistPlists+App.swift

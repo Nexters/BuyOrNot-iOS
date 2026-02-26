@@ -16,6 +16,7 @@ let project = Module.app.project(
         Module.service.toDependency,
         .external(name: "Swinject"),
         .external(name: "KakaoSDKAuth"),
+        .external(name: "FirebaseMessaging"),
     ],
     infoPlist: .extendingDefault(
         with: [

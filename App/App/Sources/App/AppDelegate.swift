@@ -7,9 +7,15 @@
 
 import UIKit
 import DesignSystem
+import UserNotifications
+import FirebaseCore
+import FirebaseMessaging
 
-class AppDelegate: NSObject, UIApplicationDelegate {    
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
+        UNUserNotificationCenter.current().delegate = self
+        Messaging.messaging().delegate = self
         
         /// Load DesignSystem Resource
         BNFont.loadFonts()
@@ -19,5 +25,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         return .portrait
+    }
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
     }
 }

@@ -79,4 +79,9 @@ public class FeedRepositoryImpl: FeedRepository {
     public func deleteVoteFeed(feedId: Int) async throws {
         try await request(.deleteFeeds(feedId))
     }
+
+    public func getFeedDetail(feedId: Int) async throws -> Vote {
+        let response: BaseResponse<FeedsResponse> = try await request(.getFeed(feedId: feedId))
+        return response.data.toDomain()
+    }
 }

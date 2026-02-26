@@ -10,8 +10,10 @@ import Domain
 import DesignSystem
 
 public final class HomeViewModel: ObservableObject {
-    private let repository: FeedRepository
+    private let feedRepository: FeedRepository
+    private let userRepository: UserRepository
     private let navigator: VoteNavigator
+    private let currentUserId: Int?
     private let pageSize = 10
 
     @Published var voteFeedState: VoteFeedState = .loading
@@ -25,9 +27,14 @@ public final class HomeViewModel: ObservableObject {
     private var cursor: Int?
     private var hasMorePages: Bool = true
 
-    public init(repository: FeedRepository, argument: HomeViewModel.Argument) {
-        self.repository = repository
+    public init(feedRepository: FeedRepository, userRepository: UserRepository, argument: HomeViewModel.Argument) {
+        self.feedRepository = feedRepository
+        self.userRepository = userRepository
         self.navigator = argument.navigator
+        self.currentUserId = userRepository.getCachedUser()?.id
+        #if DEBUG
+        print("🔍 [HomeViewModel] currentUserId: \(String(describing: self.currentUserId))")
+        #endif
     }
 
     func didTapNotification() {
@@ -48,7 +55,7 @@ public final class HomeViewModel: ObservableObject {
         hasMorePages = true
         voteFeedState = .loading
         do {
-            let page = try await repository.getVoteFeeds(
+            let page = try await feedRepository.getVoteFeeds(
                 cursor: nil,
                 size: pageSize,
                 feedStatus: feedStatusParam(for: selectedFilter)
@@ -72,7 +79,7 @@ public final class HomeViewModel: ObservableObject {
 
         isLoadingMore = true
         do {
-            let page = try await repository.getVoteFeeds(
+            let page = try await feedRepository.getVoteFeeds(
                 cursor: cursor,
                 size: pageSize,
                 feedStatus: feedStatusParam(for: selectedFilter)
@@ -96,7 +103,7 @@ public final class HomeViewModel: ObservableObject {
     func deleteFeed(feedId: String) async {
         guard let id = Int(feedId) else { return }
         do {
-            try await repository.deleteVoteFeed(feedId: id)
+            try await feedRepository.deleteVoteFeed(feedId: id)
             feeds.removeAll { $0.id == feedId }
             myFeeds.removeAll { $0.id == feedId }
             if myFeeds.isEmpty {
@@ -111,7 +118,7 @@ public final class HomeViewModel: ObservableObject {
     func reportFeed(feedId: String) async {
         guard let id = Int(feedId) else { return }
         do {
-            try await repository.reportVoteFeed(feedId: id)
+            try await feedRepository.reportVoteFeed(feedId: id)
             feeds.removeAll { $0.id == feedId }
         } catch {
             print("[HomeViewModel] reportFeed error: \(error)")
@@ -123,7 +130,7 @@ public final class HomeViewModel: ObservableObject {
         guard let id = Int(feedId),
               let choice = voteChoice(for: optionId) else { return }
         do {
-            let result = try await repository.voteFeed(feedId: id, choice: choice)
+            let result = try await feedRepository.voteFeed(feedId: id, choice: choice)
             applyVoteResult(result, selectedOptionId: optionId)
         } catch {
             print("[HomeViewModel] vote error: \(error)")
@@ -134,7 +141,7 @@ public final class HomeViewModel: ObservableObject {
     func fetchMyFeeds() async {
         myVoteState = .loading
         do {
-            let page = try await repository.getMyVoteFeeds(
+            let page = try await feedRepository.getMyVoteFeeds(
                 cursor: nil,
                 size: pageSize,
                 feedStatus: feedStatusParam(for: selectedFilter)
@@ -198,7 +205,8 @@ public final class HomeViewModel: ObservableObject {
                 voteOptions: updatedOptions,
                 selectedVoteId: selectedOptionId,
                 isPeriodDone: item.isPeriodDone,
-                isMine: item.isMine
+                isMine: item.isMine,
+                isVotingLocked: item.isVotingLocked
             )
         }
 
@@ -218,6 +226,7 @@ public final class HomeViewModel: ObservableObject {
             case .none: return nil
             }
         }()
+        let isMyFeed = isMine || (currentUserId != nil && vote.author.id == currentUserId)
 
         return VoteFeedData(
             id: String(vote.feedId),
@@ -236,7 +245,8 @@ public final class HomeViewModel: ObservableObject {
             ),
             selectedVoteId: selectedVoteId,
             isPeriodDone: vote.voteStatus == .closed,
-            isMine: isMine
+            isMine: isMyFeed,
+            isVotingLocked: isMyFeed
         )
     }
 

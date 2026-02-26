@@ -22,8 +22,8 @@ extension FeedsResponse {
             voteStatus: VoteStatus(
                 rawValue: self.feedStatus
             ),
-            s3ObjectKey: self.s3ObjectKey,
-            viewUrl: self.viewUrl,
+            s3ObjectKey: self.s3ObjectKey ?? "",
+            viewUrl: self.viewUrl ?? "",
             imageWidth: self.imageWidth,
             imageHeight: self.imageHeight,
             author: FeedAuthor(

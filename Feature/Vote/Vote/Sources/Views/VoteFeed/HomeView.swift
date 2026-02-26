@@ -290,19 +290,51 @@ private struct PreviewFeedRepository: FeedRepository {
     }
     func reportVoteFeed(feedId: Int) async throws {}
     func deleteVoteFeed(feedId: Int) async throws {}
+    func getFeedDetail(feedId: Int) async throws -> Vote {
+        Vote(
+            feedId: feedId,
+            content: "",
+            price: 0,
+            category: .etc,
+            yesCount: 0,
+            noCount: 0,
+            voteStatus: .open,
+            s3ObjectKey: "",
+            viewUrl: "",
+            imageWidth: 0,
+            imageHeight: 0,
+            author: FeedAuthor(id: 0, nickname: "", profileImage: ""),
+            createdAt: DateComponents(),
+            hasVoted: false,
+            myVoteChoice: nil
+        )
+    }
+}
+
+private struct PreviewUserRepository: UserRepository {
+    func getMe() async throws -> User {
+        User(id: 1, nickname: "preview", profileImage: "", socialAccount: "KAKAO", email: "")
+    }
+    func getCachedUser() -> User? {
+        User(id: 1, nickname: "preview", profileImage: "", socialAccount: "KAKAO", email: "")
+    }
+    func updateFCMToken(_ token: String) async throws {}
+    func deleteAccount() async throws {}
 }
 
 private struct MockVoteNavigator: VoteNavigator {
     func navigateToNotification() {}
     func navigateToMyPage() {}
     func presentCreateVote() {}
+    func navigateToFeedDetail(feedId: Int) {}
 }
 
 #Preview {
     let _ = BNFont.loadFonts()
     HomeView(
         viewModel: HomeViewModel(
-            repository: PreviewFeedRepository(),
+            feedRepository: PreviewFeedRepository(),
+            userRepository: PreviewUserRepository(),
             argument: .init(
                 navigator: MockVoteNavigator()
             )

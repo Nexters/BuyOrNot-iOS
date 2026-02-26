@@ -5,32 +5,20 @@
 //  Created by 이조은 on 2/12/26.
 //
 
+import UIKit
 import SwiftUI
 import DesignSystem
 
-// TODO: 임시 데이터, 추후 삭제 예정
-struct NotificationItem: Identifiable {
-    let id: String
-    let imageURL: String
-    let status: String
-    let message: String
-    let timeAgo: String
-    let isRead: Bool
-
-    static let samples: [NotificationItem] = [
-        .init(id: "1", imageURL: "https://example.com/1.jpg", status: "투표 종료", message: "78% '애매하긴 해!'", timeAgo: "6시간 전", isRead: false),
-        .init(id: "2", imageURL: "https://example.com/2.jpg", status: "투표 종료", message: "56% '사! 가즈아!'", timeAgo: "3일 전", isRead: true),
-        .init(id: "3", imageURL: "https://example.com/3.jpg", status: "투표 종료", message: "90% '애매하긴 해!'", timeAgo: "6일 전", isRead: false),
-        .init(id: "4", imageURL: "https://example.com/4.jpg", status: "투표 종료", message: "무승부! 2차전 가보자고!", timeAgo: "1주 전", isRead: true)
-    ]
-}
-
 public struct NotificationView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedFilter: NotificationFilter = .myVotes
-    @State private var notifications: [NotificationItem] = NotificationItem.samples
+    @Environment(\.openURL) private var openURL
 
-    public init() {}
+    @ObservedObject var viewModel: NotificationViewModel
+    @State private var isNotificationAuthorized: Bool = false
+
+    public init(viewModel: NotificationViewModel) {
+        self.viewModel = viewModel
+    }
 
     public var body: some View {
         VStack(spacing: 0) {
@@ -38,18 +26,40 @@ public struct NotificationView: View {
 
             ScrollView {
                 VStack(spacing: 0) {
-                    NotificationFilterBar(selectedFilter: $selectedFilter)
+                    NotificationFilterBar(selectedFilter: $viewModel.selectedFilter, onFilterChanged: { filter in
+                        Task {
+                            await viewModel.applyFilter(filter)
+                        }
+                    })
                         .padding(.top, 20)
 
-                    NotificationPermissionBanner(onTap: { })
-                        .padding(.top, 16)
-                        .padding(.horizontal, 20)
+                    if !isNotificationAuthorized {
+                        NotificationPermissionBanner(onTap: {
+                            if let url = URL(string: UIApplication.openSettingsURLString) {
+                                openURL(url)
+                            }
+                        })
+                            .padding(.top, 16)
+                            .padding(.horizontal, 20)
+                    }
 
-                    if notifications.isEmpty {
+                    switch viewModel.state {
+                    case .loading:
+                        ProgressView()
+                            .padding(.top, 120)
+                    case .empty:
                         AlarmEmptyView()
                             .padding(.top, 120)
-                    } else {
-                        NotificationListContent(notifications: notifications)
+                    case .error:
+                        AlarmEmptyView()
+                            .padding(.top, 120)
+                    case .success:
+                        NotificationListContent(
+                            notifications: viewModel.notifications,
+                            onTap: { feedId in
+                                viewModel.didTapNotification(feedId: feedId)
+                            }
+                        )
                             .padding(.top, 10)
                     }
                 }
@@ -57,6 +67,20 @@ public struct NotificationView: View {
         }
         .background(BNColor(.type(.gray0)).color)
         .navigationBarHidden(true)
+        .task {
+            viewModel.onAppear()
+            await refreshNotificationPermission()
+            await viewModel.fetchNotifications()
+        }
+        .onAppear {
+            Task { await refreshNotificationPermission() }
+        }
+    }
+
+    private func refreshNotificationPermission() async {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        let status = settings.authorizationStatus
+        isNotificationAuthorized = status == .authorized || status == .provisional || status == .ephemeral
     }
 }
 
@@ -92,6 +116,7 @@ private struct NotificationNavigationBar: View {
 
 private struct NotificationFilterBar: View {
     @Binding var selectedFilter: NotificationFilter
+    let onFilterChanged: (NotificationFilter) -> Void
 
     var body: some View {
         HStack(spacing: 8) {
@@ -99,7 +124,10 @@ private struct NotificationFilterBar: View {
                 BNChip(
                     title: filter.rawValue,
                     state: selectedFilter == filter ? .selected : .unselected,
-                    onTap: { selectedFilter = filter }
+                    onTap: {
+                        selectedFilter = filter
+                        onFilterChanged(filter)
+                    }
                 )
             }
             Spacer()
@@ -126,7 +154,6 @@ private struct NotificationPermissionBanner: View {
             Spacer()
 
             Button {
-                // TODO: 알림 허용 로직
                 onTap()
             } label: {
                 Text("알림 켜기")
@@ -145,14 +172,13 @@ private struct NotificationPermissionBanner: View {
 }
 
 private struct NotificationListContent: View {
-    let notifications: [NotificationItem]
+    let notifications: [NotificationItemData]
+    let onTap: (Int) -> Void
 
     var body: some View {
         LazyVStack(spacing: 0) {
-            ForEach(notifications.indices, id: \.self) { index in
-                let item = notifications[index]
-
-                NotificationCell(item: item)
+            ForEach(notifications) { item in
+                NotificationCell(item: item, onTap: { onTap(item.feedId) })
             }
 
             Text("30일 전 알림까지 보여줘요")
@@ -165,12 +191,13 @@ private struct NotificationListContent: View {
 }
 
 private struct NotificationCell: View {
-    let item: NotificationItem
+    let item: NotificationItemData
+    let onTap: () -> Void
     @State private var isPressed = false
 
     var body: some View {
         Button {
-            print("Notification tapped: \(item.id)")
+            onTap()
         } label: {
             VStack {
                 HStack(alignment: .center, spacing: 14) {
@@ -221,9 +248,4 @@ private struct PressableButtonStyle: ButtonStyle {
         configuration.label
             .background(configuration.isPressed ? BNColor(.type(.gray50)).color : Color.clear)
     }
-}
-
-#Preview {
-    let _ = BNFont.loadFonts()
-    NotificationView()
 }
