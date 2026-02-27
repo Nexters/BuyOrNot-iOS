@@ -8,6 +8,9 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
+let version = "0.0.1"
+let build = 2
+
 let project = Module.app.project(
     dependencies: [
         Module.Feature.splash.toDependency,
@@ -20,6 +23,8 @@ let project = Module.app.project(
     ],
     infoPlist: .extendingDefault(
         with: [
+            "CFBundleShortVersionString": .string(version),
+            "CFBundleVersion": .string(build.description),
             "UISupportedInterfaceOrientations": [
                 "UIInterfaceOrientationPortrait",
             ],
@@ -81,8 +86,8 @@ let project = Module.app.project(
         base: [
             "INFOPLIST_KEY_CFBundleDisplayName": "살까말까",
             "OTHER_LDFLAGS": ["$(inherited)", "-ObjC"],
-            "MARKETING_VERSION": "0.0.2",
-            "CURRENT_PROJECT_VERSION": "0",
+            "MARKETING_VERSION": .string(version),
+            "CURRENT_PROJECT_VERSION": .string(build.description),
         ],
         configurations: [
             .debug(
