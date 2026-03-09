@@ -22,7 +22,7 @@ public struct NotificationView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            NotificationNavigationBar(onBackTap: { dismiss() })
+            BNNavigationBar(title: "알림", onLeadingTap: { dismiss() })
 
             ScrollView {
                 VStack(spacing: 0) {
@@ -88,30 +88,6 @@ enum NotificationFilter: String, CaseIterable {
     case all = "전체"
     case myVotes = "내가 올린 투표"
     case participated = "참여한 투표"
-}
-
-private struct NotificationNavigationBar: View {
-    let onBackTap: () -> Void
-
-    var body: some View {
-        HStack(spacing: 0) {
-            Button(action: onBackTap) {
-                BNImage(.left)
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(BNColor(.type(.gray900)).color)
-                    .padding(10)
-            }
-
-            Text("알림")
-                .font(BNFont.font(.t1b))
-                .foregroundColor(BNColor(.type(.gray900)).color)
-
-            Spacer()
-        }
-        .padding(.horizontal, 10)
-        .frame(height: 60)
-    }
 }
 
 private struct NotificationFilterBar: View {

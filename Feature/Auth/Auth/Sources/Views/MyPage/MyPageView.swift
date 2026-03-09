@@ -10,26 +10,32 @@ import DesignSystem
 import Domain
 
 public struct MyPageView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: MyPageViewModel
-    
+
     public init(viewModel: MyPageViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-    
+
     public var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                profile
-                BNDivider(size: .s)
-                    .padding(.vertical, 20)
-                menus
-                appVersion
+        VStack(spacing: 0) {
+            BNNavigationBar(onLeadingTap: { dismiss() })
+
+            ScrollView {
+                VStack(spacing: 0) {
+                    profile
+                    BNDivider(size: .s)
+                        .padding(.vertical, 20)
+                    menus
+                    appVersion
+                }
             }
+            .scrollBounceBehavior(
+                .basedOnSize,
+                axes: .vertical
+            )
         }
-        .scrollBounceBehavior(
-            .basedOnSize,
-            axes: .vertical
-        )
+        .navigationBarHidden(true)
         .sheet(
             isPresented: Binding(
                 get: { viewModel.url != nil },
