@@ -18,13 +18,11 @@ struct FeedEmptyView: View {
                 .foregroundColor(BNColor(.type(.gray200)).color)
 
             VStack(spacing: 6) {
-                Text("아직 올린 투표가 없어요")
-                    .font(BNFont.font(.t1b))
-                    .foregroundColor(BNColor(.type(.gray800)).color)
+                BNText("아직 올린 투표가 없어요")
+                    .style(style: .t1b, color: .gray800)
 
-                Text("고민되는 상품의 투표를 올려보세요!")
-                    .font(BNFont.font(.b5m))
-                    .foregroundColor(BNColor(.type(.gray600)).color)
+                BNText("고민되는 상품의 투표를 올려보세요!")
+                    .style(style: .b5m, color: .gray600)
             }
         }
         .frame(maxWidth: .infinity)

@@ -30,9 +30,8 @@ public struct FeedDetailView: View {
 
             case .error:
                 Spacer()
-                Text("피드를 불러올 수 없습니다")
-                    .font(BNFont.font(.b3m))
-                    .foregroundColor(BNColor(.type(.gray600)).color)
+                BNText("피드를 불러올 수 없습니다")
+                    .style(style: .b3m, color: .gray600)
                 Spacer()
 
             case .success:
