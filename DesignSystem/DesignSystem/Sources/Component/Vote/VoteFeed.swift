@@ -160,18 +160,16 @@ private struct FeedHeader: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 4) {
-                    Text(userName)
-                        .font(BNFont.font(.b6m))
-                        .foregroundStyle(BNColor(.type(.gray800)).color)
+                    BNText(userName)
+                        .style(style: .b6m, color: .gray800)
 
                     BNImage(.right)
                         .resizable()
                         .frame(width: 10, height: 10)
                         .foregroundStyle(BNColor(.type(.gray600)).color)
 
-                    Text(category)
-                        .font(BNFont.font(.b6m))
-                        .foregroundStyle(BNColor(.type(.gray800)).color)
+                    BNText(category)
+                        .style(style: .b6m, color: .gray800)
 
                     Spacer()
 
@@ -186,9 +184,8 @@ private struct FeedHeader: View {
                     }
                 }
 
-                Text(timeAgo)
-                    .font(BNFont.font(.b7m))
-                    .foregroundStyle(BNColor(.type(.gray600)).color)
+                BNText(timeAgo)
+                    .style(style: .b7m, color: .gray600)
             }
         }
     }
@@ -211,9 +208,8 @@ private struct FeedContent: View {
     var body: some View {
         VStack {
             VStack(spacing: 12) {
-                Text(content)
-                    .font(BNFont.font(.p4m))
-                    .foregroundStyle(BNColor(.type(.gray900)).color)
+                BNText(content)
+                    .style(style: .p4m, color: .gray900)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 ProductImageCard(
@@ -276,9 +272,8 @@ private struct ProductImageCard: View {
                 .frame(width: size, height: size)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
-                Text(price)
-                    .font(BNFont.font(.t1b))
-                    .foregroundColor(BNColor(.type(.gray0)).color)
+                BNText(price)
+                    .style(style: .t1b, color: .gray0)
                     .padding(.leading, 14)
                     .padding(.bottom, 16)
 

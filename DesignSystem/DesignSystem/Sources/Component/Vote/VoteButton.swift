@@ -83,9 +83,8 @@ public struct VoteButton: View {
     // MARK: - Subviews
     private func buttonContent(textColor: Color) -> some View {
         HStack(spacing: Layout.spacing) {
-                Text(text)
-                    .font(.s4sb)
-                    .foregroundColor(textColor)
+                BNText(text)
+                    .style(style: .s4sb, color: textColor)
 
                 Spacer(minLength: 0)
 
@@ -104,9 +103,8 @@ public struct VoteButton: View {
                 userProfileImage(url: url)
             }
 
-            Text("\(percent)%")
-                .font(BNFont.font(.s4sb))
-                .foregroundColor(textColor)
+            BNText("\(percent)%")
+                .style(style: .s4sb, color: textColor)
         }
     }
 

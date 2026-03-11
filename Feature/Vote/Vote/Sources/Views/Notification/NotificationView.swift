@@ -123,18 +123,16 @@ private struct NotificationPermissionBanner: View {
                 .frame(width: 16, height: 16)
                 .foregroundColor(BNColor(.type(.gray600)).color)
 
-            Text("투표 종료 및 결과 소식을 받아보세요")
-                .font(BNFont.font(.b5m))
-                .foregroundColor(BNColor(.type(.gray700)).color)
+            BNText("투표 종료 및 결과 소식을 받아보세요")
+                .style(style: .b5m, color: .gray700)
 
             Spacer()
 
             Button {
                 onTap()
             } label: {
-                Text("알림 켜기")
-                    .font(BNFont.font(.s5sb))
-                    .foregroundColor(BNColor(.type(.gray800)).color)
+                BNText("알림 켜기")
+                    .style(style: .s5sb, color: .gray800)
             }
         }
         .padding(.horizontal, 18)
@@ -157,9 +155,8 @@ private struct NotificationListContent: View {
                 NotificationCell(item: item, onTap: { onTap(item.feedId) })
             }
 
-            Text("30일 전 알림까지 보여줘요")
-                .font(BNFont.font(.b5m))
-                .foregroundColor(BNColor(.type(.gray600)).color)
+            BNText("30일 전 알림까지 보여줘요")
+                .style(style: .b5m, color: .gray600)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 20)
         }
@@ -189,20 +186,17 @@ private struct NotificationCell: View {
 
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
-                            Text(item.status)
-                                .font(BNFont.font(.b5m))
-                                .foregroundColor(BNColor(.type(.gray600)).color)
+                            BNText(item.status)
+                                .style(style: .b5m, color: .gray600)
 
                             Spacer()
 
-                            Text(item.timeAgo)
-                                .font(BNFont.font(.b6m))
-                                .foregroundColor(BNColor(.type(.gray600)).color)
+                            BNText(item.timeAgo)
+                                .style(style: .b6m, color: .gray600)
                         }
 
-                        Text(item.message)
-                            .font(BNFont.font(.s3sb))
-                            .foregroundColor(BNColor(.type(.gray900)).color)
+                        BNText(item.message)
+                            .style(style: .s3sb, color: .gray900)
                             .lineLimit(1)
                     }
                 }
