@@ -98,12 +98,37 @@ public struct CreateVoteView: View {
                 ]
             )
         )
+        .bnAlert(
+            isPresented: $viewModel.showCancelAlert,
+            isEnableDismiss: true,
+            config: BNAlertConfig(
+                title: "다음에 등록할까요?",
+                message: "지금까지 쓴 내용은 저장되지 않아요.",
+                buttons: [
+                    BNAlertButtonConfig(
+                        text: "나가기",
+                        type: .secondaryLarge
+                    ) {
+                        viewModel.removePendingVoteCreateInfo()
+                        dismiss()
+                    },
+                    BNAlertButtonConfig(
+                        text: "유지하기",
+                        type: .primary
+                    ) { }
+                ]
+            )
+        )
     }
     
     @ViewBuilder
     private var cancel: some View {
         Button {
-            dismiss()
+            if viewModel.isWritingInProgress {
+                viewModel.didTapCancel()
+            } else {
+                dismiss()
+            }
         } label: {
             BNText("취소")
                 .style(style: .s4sb, color: .gray700)
@@ -298,11 +323,18 @@ private struct MockFeedRepository: FeedRepository {
     }
 }
 
+private struct MockPendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository {
+    func savePendingVoteCreateInfo(_ info: PendingVoteCreateInfo) {}
+    func getPendingVoteCreateInfo() -> PendingVoteCreateInfo? { nil }
+    func removePendingVoteCreateInfo() {}
+}
+
 #Preview {
     CreateVoteView(
         viewModel: CreateVoteViewModel(
             uploadsRepository: MockUploadsRepository(),
-            feedRepository: MockFeedRepository()
+            feedRepository: MockFeedRepository(),
+            pendingVoteCreateInfoRepository: MockPendingVoteCreateInfoRepository()
         )
     )
 }
