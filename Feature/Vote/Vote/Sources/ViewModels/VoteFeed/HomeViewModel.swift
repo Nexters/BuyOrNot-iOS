@@ -12,6 +12,7 @@ import DesignSystem
 public final class HomeViewModel: ObservableObject {
     private let feedRepository: FeedRepository
     private let userRepository: UserRepository
+    private let reportFeedRepository: ReportFeedRepository
     private let navigator: VoteNavigator
     private let currentUserId: Int?
     private let pageSize = 10
@@ -26,12 +27,22 @@ public final class HomeViewModel: ObservableObject {
 
     private var cursor: Int?
     private var hasMorePages: Bool = true
+    private var removedFeedIds: Set<String> = []
+    private var reportedFeedIds: Set<String> = []
 
-    public init(feedRepository: FeedRepository, userRepository: UserRepository, argument: HomeViewModel.Argument) {
+    public init(
+        feedRepository: FeedRepository,
+        userRepository: UserRepository,
+        reportFeedRepository: ReportFeedRepository,
+        argument: HomeViewModel.Argument
+    ) {
         self.feedRepository = feedRepository
         self.userRepository = userRepository
+        self.reportFeedRepository = reportFeedRepository
         self.navigator = argument.navigator
         self.currentUserId = userRepository.getCachedUser()?.id
+        self.reportedFeedIds = reportFeedRepository.getReportFeed()?.ids ?? []
+        self.removedFeedIds = reportedFeedIds
         #if DEBUG
         print("🔍 [HomeViewModel] currentUserId: \(String(describing: self.currentUserId))")
         #endif
@@ -60,7 +71,9 @@ public final class HomeViewModel: ObservableObject {
                 size: pageSize,
                 feedStatus: feedStatusParam(for: selectedFilter)
             )
-            feeds = page.votes.map { toVoteFeedData($0) }
+            feeds = page.votes
+                .filter { removedFeedIds.contains(String($0.feedId)) == false }
+                .map { toVoteFeedData($0) }
             cursor = page.nextCursor
             hasMorePages = page.hasNext
             voteFeedState = .success
@@ -84,7 +97,11 @@ public final class HomeViewModel: ObservableObject {
                 size: pageSize,
                 feedStatus: feedStatusParam(for: selectedFilter)
             )
-            feeds.append(contentsOf: page.votes.map { toVoteFeedData($0) })
+            appendUniqueFeeds(
+                page.votes
+                    .filter { removedFeedIds.contains(String($0.feedId)) == false }
+                    .map { toVoteFeedData($0) }
+            )
             cursor = page.nextCursor
             hasMorePages = page.hasNext
         } catch {
@@ -104,11 +121,13 @@ public final class HomeViewModel: ObservableObject {
         guard let id = Int(feedId) else { return }
         do {
             try await feedRepository.deleteVoteFeed(feedId: id)
+            removedFeedIds.insert(feedId)
             feeds.removeAll { $0.id == feedId }
             myFeeds.removeAll { $0.id == feedId }
             if myFeeds.isEmpty {
                 myVoteState = .empty
             }
+            await backfillFeedIfNeeded()
         } catch {
             print("[HomeViewModel] deleteFeed error: \(error)")
         }
@@ -119,7 +138,17 @@ public final class HomeViewModel: ObservableObject {
         guard let id = Int(feedId) else { return }
         do {
             try await feedRepository.reportVoteFeed(feedId: id)
+            removedFeedIds.insert(feedId)
+            reportedFeedIds.insert(feedId)
+            reportFeedRepository.saveReportFeed(
+                ReportFeed(ids: reportedFeedIds)
+            )
             feeds.removeAll { $0.id == feedId }
+            myFeeds.removeAll { $0.id == feedId }
+            if myFeeds.isEmpty {
+                myVoteState = .empty
+            }
+            await backfillFeedIfNeeded()
         } catch {
             print("[HomeViewModel] reportFeed error: \(error)")
         }
@@ -146,16 +175,60 @@ public final class HomeViewModel: ObservableObject {
                 size: pageSize,
                 feedStatus: feedStatusParam(for: selectedFilter)
             )
-            if page.votes.isEmpty {
+            let filteredVotes = page.votes.filter {
+                removedFeedIds.contains(String($0.feedId)) == false
+            }
+            if filteredVotes.isEmpty {
                 myFeeds = []
                 myVoteState = .empty
             } else {
-                myFeeds = page.votes.map { toVoteFeedData($0, isMine: true) }
+                myFeeds = filteredVotes.map { toVoteFeedData($0, isMine: true) }
                 myVoteState = .success
             }
         } catch {
             print("[HomeViewModel] fetchMyFeeds error: \(error)")
             myVoteState = .error
+        }
+    }
+
+    @MainActor
+    private func backfillFeedIfNeeded() async {
+        guard hasMorePages, isLoadingMore == false else {
+            return
+        }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+
+        while hasMorePages {
+            do {
+                let page = try await feedRepository.getVoteFeeds(
+                    cursor: cursor,
+                    size: pageSize,
+                    feedStatus: feedStatusParam(for: selectedFilter)
+                )
+                cursor = page.nextCursor
+                hasMorePages = page.hasNext
+
+                let newFeeds = page.votes
+                    .filter { removedFeedIds.contains(String($0.feedId)) == false }
+                    .map { toVoteFeedData($0) }
+                appendUniqueFeeds(newFeeds)
+
+                if newFeeds.isEmpty == false {
+                    break
+                }
+            } catch {
+                break
+            }
+        }
+    }
+
+    private func appendUniqueFeeds(_ items: [VoteFeedData]) {
+        guard items.isEmpty == false else { return }
+        var existingFeedIds = Set(feeds.map(\.id))
+        for item in items where existingFeedIds.contains(item.id) == false {
+            feeds.append(item)
+            existingFeedIds.insert(item.id)
         }
     }
 

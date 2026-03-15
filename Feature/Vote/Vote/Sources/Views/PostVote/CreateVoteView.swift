@@ -57,8 +57,15 @@ public struct CreateVoteView: View {
             .padding(.horizontal, 20)
         }
         .onAppear {
-            self.focusState = .price
+            let shouldShowRestoreAlert = viewModel.checkPendingVoteCreateInfoOnAppear()
+            self.focusState = shouldShowRestoreAlert ? nil : .price
         }
+        .onChange(of: viewModel.showRestorePendingAlert) { _, isPresented in
+            if isPresented {
+                focusState = nil
+            }
+        }
+        .interactiveDismissDisabled(true)
         .padding(.top, 20)
         .padding(.bottom, 10)
         .sheet(isPresented: $viewModel.showPhotoPicker) {
@@ -97,12 +104,57 @@ public struct CreateVoteView: View {
                 ]
             )
         )
+        .bnAlert(
+            isPresented: $viewModel.showCancelAlert,
+            isEnableDismiss: true,
+            config: BNAlertConfig(
+                title: "다음에 등록할까요?",
+                message: "지금까지 쓴 내용은 저장되지 않아요.",
+                buttons: [
+                    BNAlertButtonConfig(
+                        text: "나가기",
+                        type: .secondaryLarge
+                    ) {
+                        viewModel.removePendingVoteCreateInfo()
+                        dismiss()
+                    },
+                    BNAlertButtonConfig(
+                        text: "유지하기",
+                        type: .primary
+                    ) { }
+                ]
+            )
+        )
+        .bnAlert(
+            isPresented: $viewModel.showRestorePendingAlert,
+            isEnableDismiss: true,
+            config: BNAlertConfig(
+                title: "이전에 작성하던 글이 있어요!",
+                message: "[닫기] 선택 시 해당 내용은 복구할 수 없어요.",
+                buttons: [
+                    .close,
+                    BNAlertButtonConfig(
+                        text: "불러오기",
+                        type: .primary
+                    ) {
+                        viewModel.restorePendingVoteCreateInfo()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            focusState = .price
+                        }
+                    }
+                ]
+            )
+        )
     }
     
     @ViewBuilder
     private var cancel: some View {
         Button {
-            dismiss()
+            if viewModel.isWritingInProgress {
+                viewModel.didTapCancel()
+            } else {
+                dismiss()
+            }
         } label: {
             BNText("취소")
                 .style(style: .s4sb, color: .gray700)
@@ -110,7 +162,7 @@ public struct CreateVoteView: View {
     }
     
     @ViewBuilder
-    private func category(_ text: String?) -> some View {
+    private func category(_ selectedCategory: FeedCategory?) -> some View {
         HStack(spacing: 8) {
             BNText("투표 등록")
                 .style(style: .s3sb, color: .gray800)
@@ -119,8 +171,8 @@ public struct CreateVoteView: View {
             Button {
                 viewModel.showCategoryBottomSheet = true
             } label: {
-                if let text {
-                    BNText(text)
+                if let selectedCategory {
+                    BNText(selectedCategory.displayName)
                         .style(style: .s3sb, color: .gray800)
                 } else {
                     BNText("카테고리 추가")
@@ -297,11 +349,18 @@ private struct MockFeedRepository: FeedRepository {
     }
 }
 
+private struct MockPendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository {
+    func savePendingVoteCreateInfo(_ info: PendingVoteCreateInfo) {}
+    func getPendingVoteCreateInfo() -> PendingVoteCreateInfo? { nil }
+    func removePendingVoteCreateInfo() {}
+}
+
 #Preview {
     CreateVoteView(
         viewModel: CreateVoteViewModel(
             uploadsRepository: MockUploadsRepository(),
-            feedRepository: MockFeedRepository()
+            feedRepository: MockFeedRepository(),
+            pendingVoteCreateInfoRepository: MockPendingVoteCreateInfoRepository()
         )
     )
 }
