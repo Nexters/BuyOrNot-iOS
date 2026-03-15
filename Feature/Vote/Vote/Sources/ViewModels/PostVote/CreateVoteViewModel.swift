@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 import SwiftUI
 import UIKit
 import Photos
@@ -26,12 +27,20 @@ public final class CreateVoteViewModel: ObservableObject {
     @Published var showPhotoPicker = false
     @Published var showCustomAlert = false
     @Published var showCategoryBottomSheet = false
+    @Published var showCancelAlert = false
     
     private let uploadsRepository: UploadsRepository
     private let feedRepository: FeedRepository
+    private let pendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository
+    private var anyCancellable = Set<AnyCancellable>()
+    private var isPendingAutoSaveEnabled = true
     
     var contentsLimitCount: Int {
         _contentsLimitCount
+    }
+
+    var isWritingInProgress: Bool {
+        category != nil || price.isEmpty == false || contents.isEmpty == false
     }
     
     private let _accessLevel: PHAccessLevel = .readWrite
@@ -40,10 +49,13 @@ public final class CreateVoteViewModel: ObservableObject {
 
     public init(
         uploadsRepository: UploadsRepository,
-        feedRepository: FeedRepository
+        feedRepository: FeedRepository,
+        pendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository
     ) {
         self.uploadsRepository = uploadsRepository
         self.feedRepository = feedRepository
+        self.pendingVoteCreateInfoRepository = pendingVoteCreateInfoRepository
+        bindPendingVoteCreateInfoAutoSave()
     }
     
     func didChangeCategory(_ category: FeedCategory) {
@@ -122,6 +134,18 @@ public final class CreateVoteViewModel: ObservableObject {
         selectedImageData = nil
         selectedImage = nil
     }
+
+    func didTapCancel() {
+        if isWritingInProgress {
+            showCancelAlert = true
+        }
+    }
+
+    func removePendingVoteCreateInfo() {
+        isPendingAutoSaveEnabled = false
+        anyCancellable.removeAll()
+        pendingVoteCreateInfoRepository.removePendingVoteCreateInfo()
+    }
     
     private func validatePost() {
         let isValidPrice = price.isEmpty == false
@@ -129,6 +153,24 @@ public final class CreateVoteViewModel: ObservableObject {
         let isValidImage = selectedImageData != nil && selectedImage != nil
         let isValid = isValidImage && isValidCategory && isValidPrice
         createButtonState = isValid ? .enabled : .disabled
+    }
+
+    private func bindPendingVoteCreateInfoAutoSave() {
+        Publishers.CombineLatest3($category, $price, $contents)
+            .dropFirst()
+            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+            .sink { [weak self] category, price, contents in
+                guard let self, self.isPendingAutoSaveEnabled else {
+                    return
+                }
+                let info = PendingVoteCreateInfo(
+                    category: category,
+                    price: price,
+                    content: contents
+                )
+                self.pendingVoteCreateInfoRepository.savePendingVoteCreateInfo(info)
+            }
+            .store(in: &anyCancellable)
     }
     
     @MainActor
