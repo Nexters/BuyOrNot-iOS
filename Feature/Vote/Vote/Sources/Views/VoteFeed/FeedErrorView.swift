@@ -19,9 +19,8 @@ struct FeedErrorView: View {
                 .frame(width: 140, height: 140)
                 .foregroundColor(BNColor(.type(.gray200)).color)
 
-            Text("내용을 불러오지 못했어요")
-                .font(BNFont.font(.t1b))
-                .foregroundColor(BNColor(.type(.gray800)).color)
+            BNText("내용을 불러오지 못했어요")
+                .style(style: .t1b, color: .gray800)
                 .padding(.bottom, 4)
 
             BNButton(

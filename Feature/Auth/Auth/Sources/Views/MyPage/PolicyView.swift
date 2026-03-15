@@ -9,20 +9,26 @@ import SwiftUI
 import DesignSystem
 
 public struct PolicyView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel = PolicyViewModel()
-    
+
     public init() {
-        
+
     }
-    
+
     public var body: some View {
-        ScrollView {
-            menus
+        VStack(spacing: 0) {
+            BNNavigationBar(title: "약관 및 정책", onLeadingTap: { dismiss() })
+
+            ScrollView {
+                menus
+            }
+            .scrollBounceBehavior(
+                .basedOnSize,
+                axes: .vertical
+            )
         }
-        .scrollBounceBehavior(
-            .basedOnSize,
-            axes: .vertical
-        )
+        .navigationBarHidden(true)
         .sheet(
             isPresented: Binding(
                 get: { viewModel.url != nil },

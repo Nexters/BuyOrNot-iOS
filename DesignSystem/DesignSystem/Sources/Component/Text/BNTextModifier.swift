@@ -30,8 +30,14 @@ public struct BNTextStyle: ViewModifier {
     }
     
     public func body(content: Content) -> some View {
+        let uiFont = BNFont.uiFont(style)
+        let targetLineHeight = style.config.size * style.config.lineHeightRatio
+        let lineSpacing = targetLineHeight - uiFont.lineHeight
+
         content
             .font(style)
             .foregroundStyle(color)
+            .lineSpacing(lineSpacing)
+            .padding(.vertical, lineSpacing / 2)
     }
 }
