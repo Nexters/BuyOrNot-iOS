@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 import SwiftUI
 import UIKit
 import Photos
@@ -15,25 +16,10 @@ import Core
 import Domain
 
 public final class CreateVoteViewModel: ObservableObject {
-    // TODO: - 26.02.06. 더미 데이터 사용 중 Model 정의 필요
-    // ================================
     @Published var contents: String = ""
     @Published var price: String = ""
-    @Published var category: String? = nil
-    @Published var categories: [String] = [
-        "명품∙프리미엄",
-        "패션 ∙ 잡화",
-        "화장품∙뷰티",
-        "트렌드∙가성비템",
-        "음식",
-        "전자기기",
-        "여행 쇼핑템",
-        "헬스∙운동용품",
-        "도서",
-        "기타",
-    ]
-    // ================================
-    
+    @Published var category: FeedCategory? = nil
+    @Published var categories: [FeedCategory] = FeedCategory.allCases
     
     @Published var createButtonState: BNButtonState = .disabled
     @Published var selectedImageData: Data?
@@ -41,12 +27,22 @@ public final class CreateVoteViewModel: ObservableObject {
     @Published var showPhotoPicker = false
     @Published var showCustomAlert = false
     @Published var showCategoryBottomSheet = false
+    @Published var showCancelAlert = false
+    @Published var showRestorePendingAlert = false
     
     private let uploadsRepository: UploadsRepository
     private let feedRepository: FeedRepository
+    private let pendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository
+    private var anyCancellable = Set<AnyCancellable>()
+    private var isPendingAutoSaveEnabled = true
+    private var pendingVoteCreateInfoToRestore: PendingVoteCreateInfo?
     
     var contentsLimitCount: Int {
         _contentsLimitCount
+    }
+
+    var isWritingInProgress: Bool {
+        category != nil || price.isEmpty == false || contents.isEmpty == false
     }
     
     private let _accessLevel: PHAccessLevel = .readWrite
@@ -55,13 +51,16 @@ public final class CreateVoteViewModel: ObservableObject {
 
     public init(
         uploadsRepository: UploadsRepository,
-        feedRepository: FeedRepository
+        feedRepository: FeedRepository,
+        pendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository
     ) {
         self.uploadsRepository = uploadsRepository
         self.feedRepository = feedRepository
+        self.pendingVoteCreateInfoRepository = pendingVoteCreateInfoRepository
+        bindPendingVoteCreateInfoAutoSave()
     }
     
-    func didChangeCategory(_ category: String) {
+    func didChangeCategory(_ category: FeedCategory) {
         defer {
             validatePost()
         }
@@ -137,6 +136,45 @@ public final class CreateVoteViewModel: ObservableObject {
         selectedImageData = nil
         selectedImage = nil
     }
+
+    func didTapCancel() {
+        if isWritingInProgress {
+            showCancelAlert = true
+        }
+    }
+
+    @discardableResult
+    func checkPendingVoteCreateInfoOnAppear() -> Bool {
+        guard pendingVoteCreateInfoToRestore == nil else {
+            return false
+        }
+        guard let info = pendingVoteCreateInfoRepository.getPendingVoteCreateInfo() else {
+            return false
+        }
+        guard info.category != nil || info.price.isEmpty == false || info.content.isEmpty == false else {
+            return false
+        }
+        pendingVoteCreateInfoToRestore = info
+        showRestorePendingAlert = true
+        return true
+    }
+
+    func restorePendingVoteCreateInfo() {
+        guard let info = pendingVoteCreateInfoToRestore else {
+            return
+        }
+        category = info.category
+        price = info.price
+        contents = info.content
+        validatePost()
+        showRestorePendingAlert = false
+    }
+
+    func removePendingVoteCreateInfo() {
+        isPendingAutoSaveEnabled = false
+        anyCancellable.removeAll()
+        pendingVoteCreateInfoRepository.removePendingVoteCreateInfo()
+    }
     
     private func validatePost() {
         let isValidPrice = price.isEmpty == false
@@ -145,13 +183,30 @@ public final class CreateVoteViewModel: ObservableObject {
         let isValid = isValidImage && isValidCategory && isValidPrice
         createButtonState = isValid ? .enabled : .disabled
     }
+
+    private func bindPendingVoteCreateInfoAutoSave() {
+        Publishers.CombineLatest3($category, $price, $contents)
+            .dropFirst()
+            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+            .sink { [weak self] category, price, contents in
+                guard let self, self.isPendingAutoSaveEnabled else {
+                    return
+                }
+                let info = PendingVoteCreateInfo(
+                    category: category,
+                    price: price,
+                    content: contents
+                )
+                self.pendingVoteCreateInfoRepository.savePendingVoteCreateInfo(info)
+            }
+            .store(in: &anyCancellable)
+    }
     
     @MainActor
     func postVote() async -> Bool {
         guard
             let data = selectedImageData,
-            let categoryText = category,
-            let feedCategory = mapCategory(categoryText),
+            let selectedCategory = category,
             let priceValue = price.toInt
         else {
             return false
@@ -170,7 +225,7 @@ public final class CreateVoteViewModel: ObservableObject {
             )
 
             let info = VoteCreateInfo(
-                category: feedCategory,
+                category: selectedCategory,
                 price: priceValue,
                 content: contents,
                 s3ObjectKey: imageInfo.s3ObjectKey,
@@ -184,20 +239,6 @@ public final class CreateVoteViewModel: ObservableObject {
             print("[CreateVoteViewModel] postVote error: \(error)")
             return false
         }
-    }
-
-    private func mapCategory(_ text: String) -> FeedCategory? {
-        if text.contains("명품") { return .luxury }
-        if text.contains("패션") { return .fashion }
-        if text.contains("화장품") || text.contains("뷰티") { return .beauty }
-        if text.contains("음식") { return .food }
-        if text.contains("전자기기") { return .electronics }
-        if text.contains("여행") { return .travel }
-        if text.contains("헬스") || text.contains("운동") { return .health }
-        if text.contains("도서") { return .book }
-        if text.contains("기타") { return .etc }
-        if text.contains("트렌드") || text.contains("가성비") { return .etc }
-        return nil
     }
 
     private func detectContentType(_ data: Data) -> String? {

@@ -16,7 +16,7 @@ extension FeedsResponse {
             price: self.price,
             category: FeedCategory(
                 rawValue: self.category
-            ),
+            ) ?? .etc,
             yesCount: self.yesCount,
             noCount: self.noCount,
             voteStatus: VoteStatus(
