@@ -57,7 +57,13 @@ public struct CreateVoteView: View {
             .padding(.horizontal, 20)
         }
         .onAppear {
-            self.focusState = .price
+            let shouldShowRestoreAlert = viewModel.checkPendingVoteCreateInfoOnAppear()
+            self.focusState = shouldShowRestoreAlert ? nil : .price
+        }
+        .onChange(of: viewModel.showRestorePendingAlert) { _, isPresented in
+            if isPresented {
+                focusState = nil
+            }
         }
         .interactiveDismissDisabled(true)
         .padding(.top, 20)
@@ -116,6 +122,26 @@ public struct CreateVoteView: View {
                         text: "유지하기",
                         type: .primary
                     ) { }
+                ]
+            )
+        )
+        .bnAlert(
+            isPresented: $viewModel.showRestorePendingAlert,
+            isEnableDismiss: true,
+            config: BNAlertConfig(
+                title: "이전에 작성하던 글이 있어요!",
+                message: "[닫기] 선택 시 해당 내용은 복구할 수 없어요.",
+                buttons: [
+                    .close,
+                    BNAlertButtonConfig(
+                        text: "불러오기",
+                        type: .primary
+                    ) {
+                        viewModel.restorePendingVoteCreateInfo()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            focusState = .price
+                        }
+                    }
                 ]
             )
         )
