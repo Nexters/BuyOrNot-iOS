@@ -2,7 +2,7 @@
 //  View+AuthNavigationDestination.swift
 //  App
 //
-//  Created by Codex on 2/21/26.
+//  Created by 문종식 on 2/21/26.
 //
 
 import SwiftUI

@@ -2,7 +2,7 @@
 //  PendingVoteCreateInfo.swift
 //  Domain
 //
-//  Created by Codex on 3/15/26.
+//  Created by 문종식 on 3/15/26.
 //
 
 public struct PendingVoteCreateInfo: Equatable {
