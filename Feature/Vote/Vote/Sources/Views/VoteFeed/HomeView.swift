@@ -322,6 +322,12 @@ private struct PreviewUserRepository: UserRepository {
     func deleteAccount() async throws {}
 }
 
+private struct PreviewReportFeedRepository: ReportFeedRepository {
+    func saveReportFeed(_ feed: ReportFeed) {}
+    func getReportFeed() -> ReportFeed? { nil }
+    func removeReportFeed() {}
+}
+
 private struct MockVoteNavigator: VoteNavigator {
     func navigateToNotification() {}
     func navigateToMyPage() {}
@@ -335,6 +341,7 @@ private struct MockVoteNavigator: VoteNavigator {
         viewModel: HomeViewModel(
             feedRepository: PreviewFeedRepository(),
             userRepository: PreviewUserRepository(),
+            reportFeedRepository: PreviewReportFeedRepository(),
             argument: .init(
                 navigator: MockVoteNavigator()
             )

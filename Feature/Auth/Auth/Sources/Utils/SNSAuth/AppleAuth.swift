@@ -2,7 +2,7 @@
 //  AppleAuth.swift
 //  Auth
 //
-//  Created by Codex on 2/13/26.
+//  Created by 문종식 on 2/13/26.
 //
 
 import AuthenticationServices
