@@ -32,9 +32,8 @@ public struct BNChip: View {
         Button {
             onTap()
         } label: {
-            Text(title)
-                .font(font)
-                .foregroundColor(foregroundColor)
+            BNText(title)
+                .style(style: fontStyle, color: foregroundColorType)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
                 .frame(height: 36)
@@ -45,21 +44,21 @@ public struct BNChip: View {
     }
 
     // MARK: - Computed Properties
-    private var font: Font {
+    private var fontStyle: BNFontStyle {
         switch state {
         case .selected:
-            return BNFont.font(.s5sb)
+            return .s5sb
         case .unselected, .hover:
-            return BNFont.font(.b5m)
+            return .b5m
         }
     }
 
-    private var foregroundColor: Color {
+    private var foregroundColorType: BNColorType {
         switch state {
         case .selected:
-            return .type(.gray0)
+            return .gray0
         case .unselected, .hover:
-            return .type(.gray700)
+            return .gray700
         }
     }
 

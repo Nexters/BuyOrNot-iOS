@@ -238,9 +238,8 @@ private struct TabItem: View {
 
     var body: some View {
         VStack(spacing: 9) {
-            Text(title)
-                .font(BNFont.font(isSelected ? .t3b : .b4m))
-                .foregroundColor(BNColor(.type(.gray1000)).color)
+            BNText(title)
+                .style(style: isSelected ? .t3b : .b4m, color: .gray1000)
 
             if isSelected {
                 Rectangle()

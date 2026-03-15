@@ -107,9 +107,8 @@ public struct VoteGroup: View {
     }
 
     private var footerView: some View {
-        Text("\(totalVotes)명이 투표했어요 ∙ \(statusText)")
-            .font(BNFont.font(.b7m))
-            .foregroundColor(BNColor(.type(.gray600)).color)
+        BNText("\(totalVotes)명이 투표했어요 ∙ \(statusText)")
+            .style(style: .b7m, color: .gray600)
             .padding(.top, 2)
             .padding(.leading, 6)
     }

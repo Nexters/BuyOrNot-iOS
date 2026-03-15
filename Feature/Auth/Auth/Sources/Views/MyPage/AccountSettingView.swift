@@ -10,20 +10,26 @@ import DesignSystem
 import Domain
 
 public struct AccountSettingView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: AccountSettingViewModel
-    
+
     public init(viewModel: AccountSettingViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-    
+
     public var body: some View {
-        ScrollView {
-            menus
+        VStack(spacing: 0) {
+            BNNavigationBar(title: "계정 설정", onLeadingTap: { dismiss() })
+
+            ScrollView {
+                menus
+            }
+            .scrollBounceBehavior(
+                .basedOnSize,
+                axes: .vertical
+            )
         }
-        .scrollBounceBehavior(
-            .basedOnSize,
-            axes: .vertical
-        )
+        .navigationBarHidden(true)
         .bnAlert(
             isPresented: $viewModel.showLogoutAlert,
             isEnableDismiss: true,

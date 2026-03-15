@@ -20,7 +20,7 @@ public struct FeedDetailView: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            FeedDetailNavigationBar(onBackTap: { dismiss() })
+            BNNavigationBar(onLeadingTap: { dismiss() })
 
             switch viewModel.state {
             case .loading:
@@ -30,9 +30,8 @@ public struct FeedDetailView: View {
 
             case .error:
                 Spacer()
-                Text("피드를 불러올 수 없습니다")
-                    .font(BNFont.font(.b3m))
-                    .foregroundColor(BNColor(.type(.gray600)).color)
+                BNText("피드를 불러올 수 없습니다")
+                    .style(style: .b3m, color: .gray600)
                 Spacer()
 
             case .success:
@@ -62,21 +61,3 @@ public struct FeedDetailView: View {
     }
 }
 
-private struct FeedDetailNavigationBar: View {
-    let onBackTap: () -> Void
-
-    var body: some View {
-        HStack(spacing: 0) {
-            Button(action: onBackTap) {
-                BNImage(.left)
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .foregroundColor(BNColor(.type(.gray900)).color)
-                    .padding(10)
-            }
-            Spacer()
-        }
-        .padding(.horizontal, 10)
-        .frame(height: 60)
-    }
-}

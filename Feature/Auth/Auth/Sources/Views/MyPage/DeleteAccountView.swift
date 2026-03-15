@@ -19,6 +19,8 @@ public struct DeleteAccountView: View {
     
     public var body: some View {
         VStack(spacing: 0) {
+            BNNavigationBar(title: "회원탈퇴", onLeadingTap: { dismiss() })
+
             VStack(spacing: 20) {
                 HStack {
                     BNText("\(viewModel.name)님,\n살까말까를 떠나시나요?")
@@ -42,6 +44,7 @@ public struct DeleteAccountView: View {
             }
             .padding(20)
         }
+        .navigationBarHidden(true)
         .bnAlert(
             isPresented: $viewModel.showDeleteAccountAlert,
             isEnableDismiss: true,
