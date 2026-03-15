@@ -15,25 +15,10 @@ import Core
 import Domain
 
 public final class CreateVoteViewModel: ObservableObject {
-    // TODO: - 26.02.06. 더미 데이터 사용 중 Model 정의 필요
-    // ================================
     @Published var contents: String = ""
     @Published var price: String = ""
-    @Published var category: String? = nil
-    @Published var categories: [String] = [
-        "명품∙프리미엄",
-        "패션 ∙ 잡화",
-        "화장품∙뷰티",
-        "트렌드∙가성비템",
-        "음식",
-        "전자기기",
-        "여행 쇼핑템",
-        "헬스∙운동용품",
-        "도서",
-        "기타",
-    ]
-    // ================================
-    
+    @Published var category: FeedCategory? = nil
+    @Published var categories: [FeedCategory] = FeedCategory.allCases
     
     @Published var createButtonState: BNButtonState = .disabled
     @Published var selectedImageData: Data?
@@ -61,7 +46,7 @@ public final class CreateVoteViewModel: ObservableObject {
         self.feedRepository = feedRepository
     }
     
-    func didChangeCategory(_ category: String) {
+    func didChangeCategory(_ category: FeedCategory) {
         defer {
             validatePost()
         }
@@ -150,8 +135,7 @@ public final class CreateVoteViewModel: ObservableObject {
     func postVote() async -> Bool {
         guard
             let data = selectedImageData,
-            let categoryText = category,
-            let feedCategory = mapCategory(categoryText),
+            let selectedCategory = category,
             let priceValue = price.toInt
         else {
             return false
@@ -170,7 +154,7 @@ public final class CreateVoteViewModel: ObservableObject {
             )
 
             let info = VoteCreateInfo(
-                category: feedCategory,
+                category: selectedCategory,
                 price: priceValue,
                 content: contents,
                 s3ObjectKey: imageInfo.s3ObjectKey,
@@ -184,20 +168,6 @@ public final class CreateVoteViewModel: ObservableObject {
             print("[CreateVoteViewModel] postVote error: \(error)")
             return false
         }
-    }
-
-    private func mapCategory(_ text: String) -> FeedCategory? {
-        if text.contains("명품") { return .luxury }
-        if text.contains("패션") { return .fashion }
-        if text.contains("화장품") || text.contains("뷰티") { return .beauty }
-        if text.contains("음식") { return .food }
-        if text.contains("전자기기") { return .electronics }
-        if text.contains("여행") { return .travel }
-        if text.contains("헬스") || text.contains("운동") { return .health }
-        if text.contains("도서") { return .book }
-        if text.contains("기타") { return .etc }
-        if text.contains("트렌드") || text.contains("가성비") { return .etc }
-        return nil
     }
 
     private func detectContentType(_ data: Data) -> String? {

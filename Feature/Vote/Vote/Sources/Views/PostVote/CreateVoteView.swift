@@ -110,7 +110,7 @@ public struct CreateVoteView: View {
     }
     
     @ViewBuilder
-    private func category(_ text: String?) -> some View {
+    private func category(_ selectedCategory: FeedCategory?) -> some View {
         HStack(spacing: 8) {
             BNText("투표 등록")
                 .style(style: .s3sb, color: .gray800)
@@ -119,8 +119,8 @@ public struct CreateVoteView: View {
             Button {
                 viewModel.showCategoryBottomSheet = true
             } label: {
-                if let text {
-                    BNText(text)
+                if let selectedCategory {
+                    BNText(selectedCategory.displayName)
                         .style(style: .s3sb, color: .gray800)
                 } else {
                     BNText("카테고리 추가")
