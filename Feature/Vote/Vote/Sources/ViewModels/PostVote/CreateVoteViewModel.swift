@@ -28,12 +28,14 @@ public final class CreateVoteViewModel: ObservableObject {
     @Published var showCustomAlert = false
     @Published var showCategoryBottomSheet = false
     @Published var showCancelAlert = false
+    @Published var showRestorePendingAlert = false
     
     private let uploadsRepository: UploadsRepository
     private let feedRepository: FeedRepository
     private let pendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository
     private var anyCancellable = Set<AnyCancellable>()
     private var isPendingAutoSaveEnabled = true
+    private var pendingVoteCreateInfoToRestore: PendingVoteCreateInfo?
     
     var contentsLimitCount: Int {
         _contentsLimitCount
@@ -139,6 +141,33 @@ public final class CreateVoteViewModel: ObservableObject {
         if isWritingInProgress {
             showCancelAlert = true
         }
+    }
+
+    @discardableResult
+    func checkPendingVoteCreateInfoOnAppear() -> Bool {
+        guard pendingVoteCreateInfoToRestore == nil else {
+            return false
+        }
+        guard let info = pendingVoteCreateInfoRepository.getPendingVoteCreateInfo() else {
+            return false
+        }
+        guard info.category != nil || info.price.isEmpty == false || info.content.isEmpty == false else {
+            return false
+        }
+        pendingVoteCreateInfoToRestore = info
+        showRestorePendingAlert = true
+        return true
+    }
+
+    func restorePendingVoteCreateInfo() {
+        guard let info = pendingVoteCreateInfoToRestore else {
+            return
+        }
+        category = info.category
+        price = info.price
+        contents = info.content
+        validatePost()
+        showRestorePendingAlert = false
     }
 
     func removePendingVoteCreateInfo() {
