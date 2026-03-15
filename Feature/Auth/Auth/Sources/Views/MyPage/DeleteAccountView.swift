@@ -32,6 +32,9 @@ public struct DeleteAccountView: View {
                 }
             }
             .padding(20)
+            BNImage(.delete_account)
+                .resizable()
+                .scaledToFit()
             Spacer()
             BNButton(
                 text: "탈퇴하기",
