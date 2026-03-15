@@ -7,16 +7,17 @@
 
 import SwiftUI
 import DesignSystem
+import Domain
 
 struct CategorySheetView: View {
-    let category: [String]
-    let selectedCategory: String?
-    let didTapCategory: (String) -> Void
+    let category: [FeedCategory]
+    let selectedCategory: FeedCategory?
+    let didTapCategory: (FeedCategory) -> Void
     
     init(
-        _ category: [String],
-        _ selectedCategory: String?,
-        _ didTapCategory: @escaping (String) -> Void
+        _ category: [FeedCategory],
+        _ selectedCategory: FeedCategory?,
+        _ didTapCategory: @escaping (FeedCategory) -> Void
     ) {
         self.category = category
         self.selectedCategory = selectedCategory
@@ -36,7 +37,7 @@ struct CategorySheetView: View {
                                 didTapCategory(item)
                             } label: {
                                 HStack {
-                                    BNText(item)
+                                    BNText(item.displayName)
                                         .style(
                                             style: item == selectedCategory ? .s3sb : .b3m,
                                             color: item == selectedCategory ? .gray900 : .gray700
@@ -78,20 +79,9 @@ struct CategorySheetView: View {
 
 
 #Preview {
-    let category = [
-        "명품∙프리미엄",
-        "패션 ∙ 잡화",
-        "화장품∙뷰티",
-        "트렌드∙가성비템",
-        "음식",
-        "전자기기",
-        "여행 쇼핑템",
-        "헬스∙운동용품",
-        "도서",
-        "기타",
-    ]
+    let category = FeedCategory.allCases
     CategorySheetView(
         category,
-        "여행 쇼핑템"
+        .travel
     ) { _ in }
 }
