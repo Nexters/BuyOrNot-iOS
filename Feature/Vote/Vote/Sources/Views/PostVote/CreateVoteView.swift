@@ -59,6 +59,7 @@ public struct CreateVoteView: View {
         .onAppear {
             self.focusState = .price
         }
+        .interactiveDismissDisabled(true)
         .padding(.top, 20)
         .padding(.bottom, 10)
         .sheet(isPresented: $viewModel.showPhotoPicker) {
