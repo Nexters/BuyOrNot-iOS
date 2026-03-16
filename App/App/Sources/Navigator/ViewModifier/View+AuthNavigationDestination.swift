@@ -33,6 +33,10 @@ extension View {
                         )
                     )
                 )
+            case .blockedAccounts:
+                BlockedAccountsView(
+                    viewModel: container.resolve()
+                )
             }
         }
     }

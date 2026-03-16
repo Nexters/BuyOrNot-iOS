@@ -57,6 +57,13 @@ extension DIContainer {
             )
         }
         
+        container.register(BlockedAccountsViewModel.self) { (resolver: Resolver) in
+            let userRepository: UserRepository = resolver.resolve()
+            return BlockedAccountsViewModel(
+                userRepository: userRepository
+            )
+        }
+
         container.register(SplashViewModel.self) { (resolver: Resolver, argument: SplashViewModel.Argument) in
             let tokenRepository: TokenRepository = resolver.resolve()
             return SplashViewModel(
