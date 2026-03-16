@@ -2,7 +2,7 @@
 //  BlockedAccountsViewModel.swift
 //  Auth
 //
-//  Created by Claude on 3/15/26.
+//  Created by 이조은 on 3/15/26.
 //
 
 import SwiftUI

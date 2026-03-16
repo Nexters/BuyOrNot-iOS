@@ -10,6 +10,8 @@ enum UserEndpoint: Endpoint {
     case deleteMe
     case patchFcmToken(UpdateFCMTokenRequest)
     case blockUser(Int)
+    case getBlockedUsers
+    case unblockUser(Int)
 
     var path: String {
         let prefix = "/users"
@@ -18,17 +20,19 @@ enum UserEndpoint: Endpoint {
             "/me"
         case .patchFcmToken:
             "/fcm"
-        case .blockUser(let userId):
+        case .blockUser(let userId), .unblockUser(let userId):
             "/blocks/\(userId)"
+        case .getBlockedUsers:
+            "/blocks"
         }
         return version.path + prefix + path
     }
 
     var method: HTTPMethod {
         switch self {
-        case .getMe:
+        case .getMe, .getBlockedUsers:
                 .get
-        case .deleteMe:
+        case .deleteMe, .unblockUser:
                 .delete
         case .patchFcmToken:
                 .patch

@@ -51,4 +51,13 @@ public class UserRepositoryImpl: UserRepository {
     public func blockUser(userId: Int) async throws {
         try await request(.blockUser(userId))
     }
+
+    public func getBlockedUsers() async throws -> [BlockedUser] {
+        let response: BaseResponse<[BlockedUserResponse]> = try await request(.getBlockedUsers)
+        return response.data.map { $0.toDomain() }
+    }
+
+    public func unblockUser(userId: Int) async throws {
+        try await request(.unblockUser(userId))
+    }
 }
