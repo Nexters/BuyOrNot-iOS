@@ -109,8 +109,12 @@ private final class MockUserRepository: UserRepository {
     }
 
     func updateFCMToken(_ token: String) async throws {}
-    
+
     func deleteAccount() async throws {}
+
+    func blockUser(userId: Int) async throws {}
+    func getBlockedUsers() async throws -> [BlockedUser] { [] }
+    func unblockUser(userId: Int) async throws {}
 }
 
 private final class MockTokenRepository: TokenRepository {
@@ -127,5 +131,6 @@ private struct MockAuthNavigator: AuthNavigator {
     func navigateToTerms() {}
     func navigateToAccountSetting() {}
     func navigateToDeleteAccount() {}
+    func navigateToBlockedAccounts() {}
     func navigateToLogin() {}
 }

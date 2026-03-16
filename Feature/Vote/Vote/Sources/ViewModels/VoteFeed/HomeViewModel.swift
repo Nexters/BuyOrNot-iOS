@@ -24,6 +24,7 @@ public final class HomeViewModel: ObservableObject {
 
     @Published var myVoteState: MyVoteState = .loading
     @Published var myFeeds: [VoteFeedData] = []
+    @Published var snackBar = BNSnackBarManager()
 
     private var cursor: Int?
     private var hasMorePages: Bool = true
@@ -155,6 +156,21 @@ public final class HomeViewModel: ObservableObject {
     }
 
     @MainActor
+    func blockUser(userId: Int, userName: String) async {
+        do {
+            try await userRepository.blockUser(userId: userId)
+            let item = BNSnackBarItem(
+                text: "\(userName)님이 차단되었어요."
+            )
+            snackBar.addItem(item)
+            await fetchFeeds()
+            await fetchMyFeeds()
+        } catch {
+            print("[HomeViewModel] blockUser error: \(error)")
+        }
+    }
+
+    @MainActor
     func vote(feedId: String, optionId: Int) async {
         guard let id = Int(feedId),
               let choice = voteChoice(for: optionId) else { return }
@@ -268,6 +284,7 @@ public final class HomeViewModel: ObservableObject {
             ]
             return VoteFeedData(
                 id: item.id,
+                userId: item.userId,
                 userName: item.userName,
                 userProfileImageURL: item.userProfileImageURL,
                 category: item.category,
@@ -303,6 +320,7 @@ public final class HomeViewModel: ObservableObject {
 
         return VoteFeedData(
             id: String(vote.feedId),
+            userId: vote.author.id,
             userName: vote.author.nickname,
             userProfileImageURL: vote.author.profileImage,
             category: categoryDisplayName(vote.category),

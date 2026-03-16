@@ -29,6 +29,8 @@ public final class MyPageViewModel: ObservableObject {
         switch menu {
         case .accountInfo:
             navigator.navigateToAccountSetting()
+        case .blockingAccount:
+            navigator.navigateToBlockedAccounts()
         case .terms:
             navigator.navigateToTerms()
         case .feedback:

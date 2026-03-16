@@ -44,6 +44,11 @@ public struct FeedDetailView: View {
                                     dismiss()
                                 }
                             },
+                            onBlock: {
+                                Task {
+                                    await viewModel.blockUser(userId: feed.userId, userName: feed.userName)
+                                }
+                            },
                             onVote: { optionId in
                                 Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
                             }
@@ -53,6 +58,14 @@ public struct FeedDetailView: View {
             }
 
             Spacer()
+
+            VStack {
+                Spacer()
+                BNSnackBar(
+                    item: viewModel.snackBar.currentItem,
+                    state: $viewModel.snackBar.barState
+                )
+            }
         }
         .navigationBarHidden(true)
         .task {

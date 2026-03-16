@@ -30,7 +30,11 @@ final class AppAuthNavigator: AuthNavigator {
     func navigateToDeleteAccount() {
         router.navigate(to: AuthDestination.deleteAccount)
     }
-    
+
+    func navigateToBlockedAccounts() {
+        router.navigate(to: AuthDestination.blockedAccounts)
+    }
+
     func navigateToLogin() {
         onNavigateToLogin()
     }
