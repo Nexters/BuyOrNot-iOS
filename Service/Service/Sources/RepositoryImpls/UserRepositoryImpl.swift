@@ -47,4 +47,8 @@ public class UserRepositoryImpl: UserRepository {
         try await request(.deleteMe)
         userStore.removeUser()
     }
+
+    public func blockUser(userId: Int) async throws {
+        try await request(.blockUser(userId))
+    }
 }

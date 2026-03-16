@@ -69,6 +69,14 @@ public struct HomeView: View {
                 state: .close,
                 onVoteCreate: { viewModel.didTapCreateVote() }
             )
+
+            VStack {
+                Spacer()
+                BNSnackBar(
+                    item: viewModel.snackBar.currentItem,
+                    state: $viewModel.snackBar.barState
+                )
+            }
         }
         .task {
             await viewModel.fetchFeeds()
@@ -126,6 +134,7 @@ public struct HomeView: View {
                             data: feed,
                             onDelete: { Task { await viewModel.deleteFeed(feedId: feed.id) } },
                             onReport: { Task { await viewModel.reportFeed(feedId: feed.id) } },
+                            onBlock: { Task { await viewModel.blockUser(userId: feed.userId, userName: feed.userName) } },
                             onVote: { optionId in
                                 Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
                             }
@@ -165,6 +174,7 @@ public struct HomeView: View {
                         data: feed,
                         onDelete: { Task { await viewModel.deleteFeed(feedId: feed.id) } },
                         onReport: { Task { await viewModel.reportFeed(feedId: feed.id) } },
+                        onBlock: { Task { await viewModel.blockUser(userId: feed.userId, userName: feed.userName) } },
                         onVote: { optionId in
                             Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
                         }
@@ -319,6 +329,7 @@ private struct PreviewUserRepository: UserRepository {
     }
     func updateFCMToken(_ token: String) async throws {}
     func deleteAccount() async throws {}
+    func blockUser(userId: Int) async throws {}
 }
 
 private struct MockVoteNavigator: VoteNavigator {

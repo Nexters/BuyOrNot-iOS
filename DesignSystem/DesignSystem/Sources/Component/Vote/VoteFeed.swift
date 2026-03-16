@@ -11,6 +11,7 @@ import SwiftUI
 /// TODO: 백엔드 API 응답 명세에 따라 구조 이동 및 변경 필요
 public struct VoteFeedData {
     public let id: String
+    public let userId: Int
     public let userName: String
     public let userProfileImageURL: String
     public let category: String
@@ -26,6 +27,7 @@ public struct VoteFeedData {
 
     public init(
         id: String,
+        userId: Int = 0,
         userName: String,
         userProfileImageURL: String,
         category: String,
@@ -40,6 +42,7 @@ public struct VoteFeedData {
         isVotingLocked: Bool = false
     ) {
         self.id = id
+        self.userId = userId
         self.userName = userName
         self.userProfileImageURL = userProfileImageURL
         self.category = category
@@ -60,22 +63,26 @@ public struct VoteFeed: View {
     let data: VoteFeedData
     let onDelete: () -> Void
     let onReport: () -> Void
+    let onBlock: () -> Void
     let onVote: (Int) -> Void
 
     @State private var selectedVoteId: Int?
     @State private var showMenu: Bool = false
+    @State private var showBlockAlert: Bool = false
 
     public init(
         data: VoteFeedData,
         selectedVoteId: Int? = nil,
         onDelete: @escaping () -> Void = {},
         onReport: @escaping () -> Void = {},
+        onBlock: @escaping () -> Void = {},
         onVote: @escaping (Int) -> Void = { _ in }
     ) {
         self.data = data
         self._selectedVoteId = State(initialValue: selectedVoteId ?? data.selectedVoteId)
         self.onDelete = onDelete
         self.onReport = onReport
+        self.onBlock = onBlock
         self.onVote = onVote
     }
 
@@ -112,21 +119,29 @@ public struct VoteFeed: View {
             .overlay(alignment: .topTrailing) {
                 if showMenu {
                     FloatingContextMenu(
-                        menuButtons: [
-                            data.isMine
-                            ? FloatingContextMenuButton(
+                        menuButtons: data.isMine
+                        ? [
+                            FloatingContextMenuButton(
                                 text: "삭제하기"
                             ) {
                                 showMenu = false
                                 onDelete()
                             }
-                            : FloatingContextMenuButton(
+                          ]
+                        : [
+                            FloatingContextMenuButton(
                                 text: "신고하기"
                             ) {
                                 showMenu = false
                                 onReport()
+                            },
+                            FloatingContextMenuButton(
+                                text: "차단하기"
+                            ) {
+                                showMenu = false
+                                showBlockAlert = true
                             }
-                        ]
+                          ]
                     )
                     .padding(.top, 50)
                     .padding(.trailing, 0)
@@ -134,6 +149,23 @@ public struct VoteFeed: View {
             }
             BNDivider(size: .s)
         }
+        .bnAlert(
+            isPresented: $showBlockAlert,
+            isEnableDismiss: true,
+            config: BNAlertConfig(
+                title: "\(data.userName)님을 차단하시겠어요?",
+                message: "차단한 사용자의 게시글은 더 이상 보이지 않아요.",
+                buttons: [
+                    .cancel,
+                    BNAlertButtonConfig(
+                        text: "차단하기",
+                        type: .primary
+                    ) {
+                        onBlock()
+                    }
+                ]
+            )
+        )
     }
 }
 
