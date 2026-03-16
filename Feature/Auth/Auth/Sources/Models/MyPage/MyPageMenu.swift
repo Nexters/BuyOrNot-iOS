@@ -9,6 +9,7 @@ import SwiftUI
 
 public enum MyPageMenu: Hashable, CaseIterable, MenuTileItem {
     case accountInfo
+    case blockingAccount
     case terms
     case feedback
     
@@ -16,6 +17,8 @@ public enum MyPageMenu: Hashable, CaseIterable, MenuTileItem {
         switch self {
         case .accountInfo:
             "계정 정보"
+        case .blockingAccount:
+            "차단된 계정"
         case .terms:
             "약관 및 정책"
         case .feedback:

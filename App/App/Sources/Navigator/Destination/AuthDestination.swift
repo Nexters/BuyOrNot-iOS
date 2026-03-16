@@ -9,4 +9,5 @@ enum AuthDestination: Hashable {
     case terms
     case accountSetting
     case deleteAccount
+    case blockedAccounts
 }
