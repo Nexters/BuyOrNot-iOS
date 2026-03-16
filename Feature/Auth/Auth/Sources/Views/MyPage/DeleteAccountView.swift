@@ -126,5 +126,6 @@ private struct MockAuthNavigator: AuthNavigator {
     func navigateToTerms() {}
     func navigateToAccountSetting() {}
     func navigateToDeleteAccount() {}
+    func navigateToBlockedAccounts() {}
     func navigateToLogin() {}
 }
