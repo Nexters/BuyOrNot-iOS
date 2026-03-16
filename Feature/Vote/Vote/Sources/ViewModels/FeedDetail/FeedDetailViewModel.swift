@@ -16,6 +16,7 @@ public final class FeedDetailViewModel: ObservableObject {
 
     @Published var state: VoteFeedState = .loading
     @Published var feed: VoteFeedData?
+    @Published var snackBar = BNSnackBarManager()
 
     public init(feedRepository: FeedRepository, userRepository: UserRepository) {
         self.feedRepository = feedRepository
@@ -70,6 +71,20 @@ public final class FeedDetailViewModel: ObservableObject {
         }
     }
 
+    @MainActor
+    func blockUser(userId: Int, userName: String) async {
+        do {
+            try await userRepository.blockUser(userId: userId)
+            feed = nil
+            let item = BNSnackBarItem(
+                text: "\(userName)님이 차단되었어요."
+            )
+            snackBar.addItem(item)
+        } catch {
+            print("[FeedDetailViewModel] blockUser error: \(error)")
+        }
+    }
+
     private func voteChoice(for optionId: Int) -> VoteChoice? {
         switch optionId {
         case 0: return .yes
@@ -96,6 +111,7 @@ public final class FeedDetailViewModel: ObservableObject {
         ]
         feed = VoteFeedData(
             id: item.id,
+            userId: item.userId,
             userName: item.userName,
             userProfileImageURL: item.userProfileImageURL,
             category: item.category,
@@ -123,6 +139,7 @@ public final class FeedDetailViewModel: ObservableObject {
 
         return VoteFeedData(
             id: String(vote.feedId),
+            userId: vote.author.id,
             userName: vote.author.nickname,
             userProfileImageURL: vote.author.profileImage,
             category: categoryDisplayName(vote.category),

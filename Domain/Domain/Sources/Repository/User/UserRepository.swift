@@ -10,4 +10,5 @@ public protocol UserRepository {
     func getCachedUser() -> User?
     func updateFCMToken(_ token: String) async throws
     func deleteAccount() async throws
+    func blockUser(userId: Int) async throws
 }
