@@ -19,10 +19,10 @@ struct AlarmEmptyView: View {
 
             VStack(spacing: 6) {
                 BNText("새로운 알림이 없어요")
-                    .style(style: .t1b, color: .gray800)
+                    .style(style: .t1b, color: ColorPalette.gray800)
 
                 BNText("투표에 참여하고 소식을 받아보세요!")
-                    .style(style: .b5m, color: .gray600)
+                    .style(style: .b5m, color: ColorPalette.gray600)
             }
         }
         .frame(maxWidth: .infinity)

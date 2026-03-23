@@ -61,7 +61,7 @@ public struct MyPageView: View {
             BNImage(.camera)
                 .frame(width: 42, height: 42)
             BNText(viewModel.name)
-                .style(style: .s1sb, color: .gray900)
+                .style(style: .s1sb, color: ColorPalette.gray900)
             Spacer()
         }
         .padding(.top, 10)
@@ -84,10 +84,10 @@ public struct MyPageView: View {
     private var appVersion: some View {
         HStack {
             BNText("앱버전")
-                .style(style: .p4m, color: .gray600)
+                .style(style: .p4m, color: ColorPalette.gray600)
             Spacer()
             BNText("v \(viewModel.appVersion)")
-                .style(style: .p4m, color: .gray600)
+                .style(style: .p4m, color: ColorPalette.gray600)
         }
         .padding(20)
     }

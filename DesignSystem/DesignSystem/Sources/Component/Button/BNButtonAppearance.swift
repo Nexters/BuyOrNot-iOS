@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct BNButtonAppearance {
-    let backgroundColor: BNColor.Source
-    let textColor: BNColor.Source
+    let backgroundColor: Color
+    let textColor: Color
     let textStyle: BNFontStyle
     let cornerRadius: CGFloat
     let borderWidth: CGFloat

@@ -29,12 +29,12 @@ public struct BNText: View {
         BNText("Display1 Green200")
             .style(
                 style: .d1b,
-                color: .green200
+                color: ColorPalette.green200
             )
         BNText("Heading3 Red100")
             .style(
                 style: .h3b,
-                color: .red100
+                color: ColorPalette.red100
             )
         BNText("Body1 Color.yellow")
             .style(
@@ -44,12 +44,12 @@ public struct BNText: View {
         BNText("Body4 Gray600")
             .style(
                 style: .b4m,
-                color: .gray600
+                color: ColorPalette.gray600
             )
         BNText("Paragraph Medium2 Blue100")
             .style(
                 style: .p2m,
-                color: .blue100
+                color: ColorPalette.blue100
             )
     }
 }

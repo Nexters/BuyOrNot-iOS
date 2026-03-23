@@ -20,7 +20,7 @@ struct FeedErrorView: View {
                 .foregroundColor(ColorPalette.gray200)
 
             BNText("내용을 불러오지 못했어요")
-                .style(style: .t1b, color: .gray800)
+                .style(style: .t1b, color: ColorPalette.gray800)
                 .padding(.bottom, 4)
 
             BNButton(

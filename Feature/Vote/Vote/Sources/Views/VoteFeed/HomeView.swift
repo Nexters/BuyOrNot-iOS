@@ -84,7 +84,7 @@ public struct HomeView: View {
         .onReceive(NotificationCenter.default.publisher(for: .voteFeedDidCreate)) { _ in
             Task { await viewModel.fetchFeeds() }
         }
-        .onChange(of: viewModel.selectedFilter) { _ in
+        .onChange(of: viewModel.selectedFilter) { _, _ in
             switch selectedTab {
             case .voteFeed:
                 Task { await viewModel.fetchFeeds() }
@@ -92,8 +92,8 @@ public struct HomeView: View {
                 Task { await viewModel.fetchMyFeeds() }
             }
         }
-        .onChange(of: selectedTab) { tab in
-            if tab == .myVotes {
+        .onChange(of: selectedTab) { oldValue, newValue in
+            if newValue == .myVotes {
                 Task { await viewModel.fetchMyFeeds() }
             }
         }
@@ -249,7 +249,10 @@ private struct TabItem: View {
     var body: some View {
         VStack(spacing: 9) {
             BNText(title)
-                .style(style: isSelected ? .t3b : .b4m, color: .gray1000)
+                .style(
+                    style: isSelected ? .t3b : .b4m,
+                    color: ColorPalette.gray1000
+                )
 
             if isSelected {
                 Rectangle()

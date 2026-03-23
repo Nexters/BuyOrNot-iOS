@@ -36,7 +36,7 @@ public struct BNSnackBar: View {
             BNText(item.text)
                 .style(
                     style: .b5m,
-                    color: .gray50
+                    color: ColorPalette.gray50
                 )
             Spacer()
         }

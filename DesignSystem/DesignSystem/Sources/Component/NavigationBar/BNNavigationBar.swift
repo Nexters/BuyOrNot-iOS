@@ -39,7 +39,7 @@ public struct BNNavigationBar: View {
 
             if let title {
                 BNText(title)
-                    .style(style: .t1b, color: .gray900)
+                    .style(style: .t1b, color: ColorPalette.gray900)
             }
 
             Spacer()

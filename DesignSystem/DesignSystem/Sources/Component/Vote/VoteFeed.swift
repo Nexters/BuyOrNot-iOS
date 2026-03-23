@@ -193,7 +193,7 @@ private struct FeedHeader: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 4) {
                     BNText(userName)
-                        .style(style: .b6m, color: .gray800)
+                        .style(style: .b6m, color: ColorPalette.gray800)
 
                     BNImage(.right)
                         .resizable()
@@ -201,7 +201,7 @@ private struct FeedHeader: View {
                         .foregroundStyle(ColorPalette.gray600)
 
                     BNText(category)
-                        .style(style: .b6m, color: .gray800)
+                        .style(style: .b6m, color: ColorPalette.gray800)
 
                     Spacer()
 
@@ -217,7 +217,7 @@ private struct FeedHeader: View {
                 }
 
                 BNText(timeAgo)
-                    .style(style: .b7m, color: .gray600)
+                    .style(style: .b7m, color: ColorPalette.gray600)
             }
         }
     }
@@ -241,7 +241,7 @@ private struct FeedContent: View {
         VStack {
             VStack(spacing: 12) {
                 BNText(content)
-                    .style(style: .p4m, color: .gray900)
+                    .style(style: .p4m, color: ColorPalette.gray900)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 ProductImageCard(
@@ -293,7 +293,7 @@ private struct ProductImageCard: View {
                 .overlay(
                     LinearGradient(
                         stops: [
-                            Gradient.Stop(color: .black.opacity(0), location: 0.00),
+                            Gradient.Stop(color: ColorPalette.black.opacity(0), location: 0.00),
                             Gradient.Stop(color: Color(red: 0.1, green: 0.1, blue: 0.1), location: 1.00),
                         ],
                         startPoint: UnitPoint(x: 0.5, y: 0.61),
@@ -305,7 +305,7 @@ private struct ProductImageCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
                 BNText(price)
-                    .style(style: .t1b, color: .gray0)
+                    .style(style: .t1b, color: ColorPalette.gray0)
                     .padding(.leading, 14)
                     .padding(.bottom, 16)
 
