@@ -233,7 +233,7 @@ struct FeedSegmentedControl: View {
             .padding(.horizontal, 20)
 
             Rectangle()
-                .fill(BNColor(.type(.gray100)).color)
+                .fill(ColorPalette.gray100)
                 .frame(height: 2)
         }
         .padding(.top, 12)
@@ -253,7 +253,7 @@ private struct TabItem: View {
 
             if isSelected {
                 Rectangle()
-                    .fill(BNColor(.type(.gray1000)).color)
+                    .fill(ColorPalette.gray1000)
                     .frame(height: 3)
                     .padding(.horizontal, -4)
                     .matchedGeometryEffect(id: "indicator", in: namespace)

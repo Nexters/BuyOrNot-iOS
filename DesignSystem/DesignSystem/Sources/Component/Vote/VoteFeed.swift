@@ -198,7 +198,7 @@ private struct FeedHeader: View {
                     BNImage(.right)
                         .resizable()
                         .frame(width: 10, height: 10)
-                        .foregroundStyle(BNColor(.type(.gray600)).color)
+                        .foregroundStyle(ColorPalette.gray600)
 
                     BNText(category)
                         .style(style: .b6m, color: .gray800)
@@ -212,7 +212,7 @@ private struct FeedHeader: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
-                            .foregroundStyle(BNColor(.type(.gray500)).color)
+                            .foregroundStyle(ColorPalette.gray500)
                     }
                 }
 
@@ -260,7 +260,7 @@ private struct FeedContent: View {
             .padding(.vertical, 16)
             .padding(.horizontal, horizontalPadding)
         }
-        .background(BNColor(.type(.gray100)).color)
+        .background(ColorPalette.gray100)
         .cornerRadius(16)
     }
 }
@@ -318,9 +318,9 @@ private struct ProductImageCard: View {
                             BNImage(.extend)
                                 .resizable()
                                 .scaledToFill()
-                                .foregroundColor(BNColor(.type(.gray300)).color)
+                                .foregroundColor(ColorPalette.gray300)
                                 .padding(8)
-                                .background(BNColor(.type(.gray1000)).color.opacity(0.5))
+                                .background(ColorPalette.gray1000.opacity(0.5))
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .frame(width: 30, height: 30)
                         }

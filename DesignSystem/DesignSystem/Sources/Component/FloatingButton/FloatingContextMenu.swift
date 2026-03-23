@@ -28,7 +28,7 @@ public struct FloatingContextMenu: View {
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
                         .stroke(
-                            .type(.gray100),
+                            ColorPalette.gray100,
                             lineWidth: 1
                         )
                 )

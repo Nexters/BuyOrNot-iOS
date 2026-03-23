@@ -29,7 +29,7 @@ struct NavigationBar: View {
                     BNImage(.notification_fill)
                         .resizable()
                         .frame(width: 20, height: 20)
-                        .foregroundColor(BNColor(.type(.gray500)).color)
+                        .foregroundColor(ColorPalette.gray500)
                 }
 
                 Button {
@@ -38,7 +38,7 @@ struct NavigationBar: View {
                     BNImage(.my)
                         .resizable()
                         .frame(width: 20, height: 20)
-                        .foregroundColor(BNColor(.type(.gray500)).color)
+                        .foregroundColor(ColorPalette.gray500)
                 }
             }
         }

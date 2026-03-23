@@ -65,11 +65,11 @@ public struct BNChip: View {
     private var backgroundColor: Color {
         switch state {
         case .selected:
-            return .type(.gray900)
+            return ColorPalette.gray900
         case .unselected:
-            return .type(.gray200)
+            return ColorPalette.gray200
         case .hover:
-            return .type(.gray300)
+            return ColorPalette.gray300
         }
     }
 }

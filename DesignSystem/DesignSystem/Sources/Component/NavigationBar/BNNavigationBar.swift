@@ -33,7 +33,7 @@ public struct BNNavigationBar: View {
                 leadingIcon
                     .resizable()
                     .frame(width: 20, height: 20)
-                    .foregroundColor(BNColor(.type(.gray900)).color)
+                    .foregroundColor(ColorPalette.gray900)
                     .padding(10)
             }
 

@@ -62,8 +62,8 @@ struct CategorySheetView: View {
                     Spacer()
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            BNColor(.type(.gray0)).color.opacity(0),
-                            BNColor(.type(.gray0)).color
+                            ColorPalette.gray0.opacity(0),
+                            ColorPalette.gray0
                         ]),
                         startPoint: .top,
                         endPoint: .bottom

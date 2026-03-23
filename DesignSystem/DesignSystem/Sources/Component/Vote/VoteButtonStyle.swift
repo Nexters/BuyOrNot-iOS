@@ -14,17 +14,17 @@ public enum VoteButtonStyle {
 
     var backgroundColor: Color {
         switch self {
-        case .black: return BNColor(.type(.gray900)).color
-        case .gray: return BNColor(.type(.gray400)).color
-        case .plain: return BNColor(.type(.gray0)).color
+        case .black: return ColorPalette.gray900
+        case .gray: return ColorPalette.gray400
+        case .plain: return ColorPalette.gray0
         }
     }
 
     var textColor: Color {
         switch self {
-        case .black: return BNColor(.type(.gray0)).color
-        case .gray: return BNColor(.type(.gray700)).color
-        case .plain: return BNColor(.type(.gray900)).color
+        case .black: return ColorPalette.gray0
+        case .gray: return ColorPalette.gray700
+        case .plain: return ColorPalette.gray900
         }
     }
 }

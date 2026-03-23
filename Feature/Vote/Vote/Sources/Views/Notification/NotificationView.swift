@@ -65,7 +65,7 @@ public struct NotificationView: View {
                 }
             }
         }
-        .background(BNColor(.type(.gray0)).color)
+        .background(ColorPalette.gray0)
         .navigationBarHidden(true)
         .task {
             viewModel.onAppear()
@@ -121,7 +121,7 @@ private struct NotificationPermissionBanner: View {
             BNImage(.notification_fill)
                 .resizable()
                 .frame(width: 16, height: 16)
-                .foregroundColor(BNColor(.type(.gray600)).color)
+                .foregroundColor(ColorPalette.gray600)
 
             BNText("투표 종료 및 결과 소식을 받아보세요")
                 .style(style: .b5m, color: .gray700)
@@ -137,10 +137,10 @@ private struct NotificationPermissionBanner: View {
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 12)
-        .background(BNColor(.type(.gray0)).color)
+        .background(ColorPalette.gray0)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(BNColor(.type(.gray200)).color, lineWidth: 1)
+                .stroke(ColorPalette.gray200, lineWidth: 1)
         )
     }
 }
@@ -179,7 +179,7 @@ private struct NotificationCell: View {
                             .resizable()
                             .scaledToFill()
                     } placeholder: {
-                        BNColor(.type(.gray200)).color
+                        ColorPalette.gray200
                     }
                     .frame(width: 48, height: 48)
                     .cornerRadius(10)
@@ -202,7 +202,7 @@ private struct NotificationCell: View {
                 }
 
                 Rectangle()
-                    .fill(BNColor(.type(.gray100)).color)
+                    .fill(ColorPalette.gray100)
                     .frame(height: 2)
                     .padding(.top, 19)
             }
@@ -216,6 +216,6 @@ private struct NotificationCell: View {
 private struct PressableButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(configuration.isPressed ? BNColor(.type(.gray50)).color : Color.clear)
+            .background(configuration.isPressed ? ColorPalette.gray50 : Color.clear)
     }
 }

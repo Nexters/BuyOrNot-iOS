@@ -55,14 +55,14 @@ public final class LoginViewModel: ObservableObject {
             }
             text[range].underlineStyle = .single
         }
-        text.foregroundColor = BNColor(.type(.gray600)).color
+        text.foregroundColor = ColorPalette.gray600
         return text
     }
     
     var guestLoginText: AttributedString {
         var text = AttributedString("비회원으로 시작하기")
         text.underlineStyle = .single
-        text.foregroundColor = BNColor(.type(.gray700)).color
+        text.foregroundColor = ColorPalette.gray700
         return text
     }
     
@@ -172,7 +172,7 @@ public final class LoginViewModel: ObservableObject {
         let item = BNSnackBarItem(
             text: "오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
             icon: .close,
-            color: .type(.red100),
+            color: ColorPalette.red100,
         )
         snackBar.addItem(item)
     }
