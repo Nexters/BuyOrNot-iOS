@@ -81,7 +81,7 @@ public struct FullScreenImageView: View {
                     dismiss()
                 } label: {
                     BNImage(.close)
-                        .style(color: .gray0, size: 16)
+                        .style(color: ColorPalette.gray0, size: 16)
                 }
             }
         }

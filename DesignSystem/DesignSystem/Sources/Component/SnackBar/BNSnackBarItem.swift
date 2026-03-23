@@ -5,15 +5,15 @@
 //  Created by 문종식 on 2/1/26.
 //
 
-import Foundation
+import SwiftUI
 
 struct BNSnackBarIconConfig {
     let icon: BNImageAsset
-    let color: BNColor.Source
+    let color: Color
     
     init(
         icon: BNImageAsset,
-        color: BNColor.Source,
+        color: Color,
     ) {
         self.icon = icon
         self.color = color
@@ -27,7 +27,7 @@ public struct BNSnackBarItem {
     public init(
         text: String,
         icon: BNImageAsset? = nil,
-        color: BNColor.Source? = nil
+        color: Color? = nil
     ) {
         self.text = text
         if let icon, let color {

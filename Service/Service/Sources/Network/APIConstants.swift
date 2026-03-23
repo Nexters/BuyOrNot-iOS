@@ -21,7 +21,7 @@ public enum APIConstants {
         }
     }
     private static var buildScheme: BuildScheme {
-        .d
+        .debug
     }
     
     public static var baseURL: String? {

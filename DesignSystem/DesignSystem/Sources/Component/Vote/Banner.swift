@@ -60,7 +60,7 @@ public struct Banner: View {
                 onAction()
             } label: {
                 BNText(text)
-                    .style(style: .s4sb, color: .gray0)
+                    .style(style: .s4sb, color: ColorPalette.gray0)
                     .frame(height: 44)
                     .padding(.horizontal, 82)
                     .background(

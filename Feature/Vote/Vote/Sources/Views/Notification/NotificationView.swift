@@ -124,7 +124,7 @@ private struct NotificationPermissionBanner: View {
                 .foregroundColor(ColorPalette.gray600)
 
             BNText("투표 종료 및 결과 소식을 받아보세요")
-                .style(style: .b5m, color: .gray700)
+                .style(style: .b5m, color: ColorPalette.gray700)
 
             Spacer()
 
@@ -132,7 +132,7 @@ private struct NotificationPermissionBanner: View {
                 onTap()
             } label: {
                 BNText("알림 켜기")
-                    .style(style: .s5sb, color: .gray800)
+                    .style(style: .s5sb, color: ColorPalette.gray800)
             }
         }
         .padding(.horizontal, 18)
@@ -156,7 +156,7 @@ private struct NotificationListContent: View {
             }
 
             BNText("30일 전 알림까지 보여줘요")
-                .style(style: .b5m, color: .gray600)
+                .style(style: .b5m, color: ColorPalette.gray600)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 20)
         }
@@ -187,16 +187,16 @@ private struct NotificationCell: View {
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
                             BNText(item.status)
-                                .style(style: .b5m, color: .gray600)
+                                .style(style: .b5m, color: ColorPalette.gray600)
 
                             Spacer()
 
                             BNText(item.timeAgo)
-                                .style(style: .b6m, color: .gray600)
+                                .style(style: .b6m, color: ColorPalette.gray600)
                         }
 
                         BNText(item.message)
-                            .style(style: .s3sb, color: .gray900)
+                            .style(style: .s3sb, color: ColorPalette.gray900)
                             .lineLimit(1)
                     }
                 }

@@ -17,15 +17,4 @@ public extension View {
     func font(_ style: BNFontStyle) -> some View {
         self.font(BNFont.font(style))
     }
-    
-    /// @inlinable nonisolated public func background<S>(_ style: S, ignoresSafeAreaEdges edges: Edge.Set = .all) -> some View where S : ShapeStyle
-    func background(_ source: BNColor.Source) -> some View {
-        self.background(.source(source))
-    }
-    func background(_ type: BNColorType) -> some View {
-        self.background(.type(type))
-    }
-    func background(_ hex: String) -> some View {
-        self.background(.hex(hex))
-    }
 }

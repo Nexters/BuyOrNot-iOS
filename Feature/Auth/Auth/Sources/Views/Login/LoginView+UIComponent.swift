@@ -19,7 +19,7 @@ extension LoginView {
     @ViewBuilder
     func loginTitle() -> some View {
         BNText("현명한 소비를 위한\n집단지성 비교 방법")
-            .style(style: .h1sb, color: .gray900)
+            .style(style: .h1sb, color: ColorPalette.gray900)
             .padding(.top, 30)
             .padding(.bottom, 60)
     }
@@ -82,7 +82,7 @@ extension LoginView {
             viewModel.guestLogin()
         } label: {
             BNText("비회원으로 시작하기")
-                .style(style: .c2m, color: .gray700)
+                .style(style: .c2m, color: ColorPalette.gray700)
                 .underline(color: ColorPalette.gray700)
                 .multilineTextAlignment(.center)
         }
@@ -93,7 +93,7 @@ extension LoginView {
     @ViewBuilder
     func termText() -> some View {
         BNText(viewModel.policyText)
-            .style(style: .c2m, color: .gray600)
+            .style(style: .c2m, color: ColorPalette.gray600)
             .multilineTextAlignment(.center)
             .environment(\.openURL, OpenURLAction { url in
                 viewModel.url = url

@@ -73,7 +73,7 @@ public struct AccountSettingView: View {
         switch menu {
         case .email:
             BNText(viewModel.email)
-                .style(style: .p2m, color: .gray600)
+                .style(style: .p2m, color: ColorPalette.gray600)
         default:
             EmptyView()
         }
