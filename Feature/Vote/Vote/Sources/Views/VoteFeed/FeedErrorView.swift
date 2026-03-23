@@ -17,7 +17,7 @@ struct FeedErrorView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 140, height: 140)
-                .foregroundColor(BNColor(.type(.gray200)).color)
+                .foregroundColor(ColorPalette.gray200)
 
             BNText("내용을 불러오지 못했어요")
                 .style(style: .t1b, color: .gray800)

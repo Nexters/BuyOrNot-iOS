@@ -195,8 +195,8 @@ public struct CreateVoteView: View {
             .focused($focusState, equals: .price)
             .keyboardType(.numberPad)
             .font(.s3sb)
-            .foregroundStyle(.type(.gray800))
-            .tint(.type(.gray900))
+            .foregroundStyle(ColorPalette.gray800)
+            .tint(ColorPalette.gray900)
             .onChange(of: viewModel.price) { oldValue, newValue in
                 viewModel.didChangePrice(previous: oldValue, text: newValue)
             }
@@ -220,8 +220,8 @@ public struct CreateVoteView: View {
                 axis: .vertical
             )
             .font(.p2m)
-            .foregroundStyle(.type(.gray900))
-            .tint(.type(.gray900))
+            .foregroundStyle(ColorPalette.gray900)
+            .tint(ColorPalette.gray900)
             .focused($focusState, equals: .contents)
             .lineLimit(nil)
             .scrollContentBackground(.hidden)
@@ -291,7 +291,7 @@ public struct CreateVoteView: View {
                                     viewModel.didTapDeleteImage()
                                 } label: {
                                     Circle()
-                                        .fill(.type(.black).opacity(0.4))
+                                        .fill(ColorPalette.black.opacity(0.4))
                                         .overlay {
                                             BNImage(.close)
                                                 .style(color: .gray0, size: 10)

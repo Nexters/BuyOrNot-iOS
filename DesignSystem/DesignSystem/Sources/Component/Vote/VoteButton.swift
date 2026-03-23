@@ -133,7 +133,7 @@ public struct VoteButton: View {
 
     private var strokeBorder: some View {
         RoundedRectangle(cornerRadius: Layout.cornerRadius)
-            .stroke(BNColor(.type(.gray300)).color, lineWidth: 1)
+            .stroke(ColorPalette.gray300, lineWidth: 1)
     }
 
     // MARK: - Methods

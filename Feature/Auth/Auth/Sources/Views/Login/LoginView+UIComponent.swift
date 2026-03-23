@@ -83,7 +83,7 @@ extension LoginView {
         } label: {
             BNText("비회원으로 시작하기")
                 .style(style: .c2m, color: .gray700)
-                .underline(color: .type(.gray700))
+                .underline(color: ColorPalette.gray700)
                 .multilineTextAlignment(.center)
         }
         .padding(.top, 18)

@@ -23,7 +23,7 @@ public struct BNDivider: View {
 
 #Preview {
     ZStack {
-        Color.type(.gray700)
+        ColorColorPalette.gray700
         VStack(spacing: 20) {
             BNDivider(size: .l)
             BNDivider(size: .s)

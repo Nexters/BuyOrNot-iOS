@@ -15,7 +15,7 @@ struct FeedEmptyView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 140, height: 140)
-                .foregroundColor(BNColor(.type(.gray200)).color)
+                .foregroundColor(ColorPalette.gray200)
 
             VStack(spacing: 6) {
                 BNText("아직 올린 투표가 없어요")

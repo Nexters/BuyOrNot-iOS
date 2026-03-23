@@ -61,7 +61,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
     
     private var dimView: some View {
         Color
-            .type(.gray1000)
+            ColorPalette.gray1000
             .opacity(0.5)
             .ignoresSafeArea()
             .onTapGesture {

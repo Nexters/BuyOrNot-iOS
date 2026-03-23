@@ -67,7 +67,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     
     private var dimView: some View {
         Color
-            .type(.gray1000)
+            ColorPalette.gray1000
             .opacity(0.5)
             .ignoresSafeArea()
             .onTapGesture {
@@ -100,7 +100,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     @ViewBuilder
     private var handleView: some View {
         Capsule()
-            .fill(isEnableDismiss ? .hex("#D9D9D9"): .type(.gray0))
+            .fill(isEnableDismiss ? .hex("#D9D9D9"): ColorPalette.gray0)
             .frame(width: 40, height: 4)
     }
     
