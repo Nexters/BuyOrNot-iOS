@@ -22,7 +22,7 @@ public struct BNButton: View {
     }
     
     private var backgroundColor: Color {
-        BNColor(appearance.backgroundColor).color
+        appearance.backgroundColor
     }
     
     public init(

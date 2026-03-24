@@ -31,11 +31,11 @@ extension LoginType {
     var backgroundColor: Color {
         switch self {
         case .google:
-            BNColor.init(.type(.google)).color
+            ColorPalette.google
         case .apple:
-            BNColor.init(.type(.apple)).color
+            ColorPalette.apple
         case .kakao:
-            BNColor.init(.type(.kakao)).color
+            ColorPalette.kakao
         }
     }
     
@@ -43,11 +43,11 @@ extension LoginType {
     var borderColor: Color {
         switch self {
         case .google:
-            BNColor.init(.type(.gray300)).color
+            ColorPalette.gray300
         case .apple:
-            BNColor.init(.type(.apple)).color
+            ColorPalette.apple
         case .kakao:
-            BNColor.init(.type(.kakao)).color
+            ColorPalette.kakao
         }
     }
     
@@ -67,11 +67,11 @@ extension LoginType {
     var fontColor: Color {
         switch self {
         case .google:
-            BNColor.init(.type(.gray1000)).color
+            ColorPalette.gray1000
         case .apple:
-            BNColor.init(.type(.gray0)).color
+            ColorPalette.gray0
         case .kakao:
-            BNColor.init(.type(.gray1000)).color
+            ColorPalette.gray1000
         }
     }
     

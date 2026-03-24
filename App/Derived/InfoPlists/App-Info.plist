@@ -38,7 +38,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>3</string>
 	<key>CLIENT_ID</key>
 	<string>$(CLIENT_ID)</string>
 	<key>DEV_BASE_URL</key>

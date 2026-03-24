@@ -22,7 +22,7 @@ public struct FloatingButton: View {
     @ViewBuilder
     var dimColor: Color {
         (state == .open)
-        ? Color.type(.gray1000)
+        ? ColorPalette.gray1000
         : Color.clear
     }
     

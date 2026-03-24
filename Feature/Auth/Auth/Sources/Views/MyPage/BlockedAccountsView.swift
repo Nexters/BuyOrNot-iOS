@@ -29,7 +29,7 @@ public struct BlockedAccountsView: View {
                 } else if viewModel.blockedUsers.isEmpty {
                     Spacer()
                     BNText("차단된 계정이 없어요.")
-                        .style(style: .b3m, color: .gray600)
+                        .style(style: .b3m, color: ColorPalette.gray600)
                     Spacer()
                 } else {
                     ScrollView {
@@ -79,7 +79,7 @@ private struct BlockedUserRow: View {
             HStack(spacing: 12) {
                 profileImage
                 BNText(user.nickname)
-                    .style(style: .p2m, color: .gray900)
+                    .style(style: .p2m, color: ColorPalette.gray900)
             }
 
             Spacer()
@@ -96,17 +96,17 @@ private struct BlockedUserRow: View {
     private var profileImage: some View {
         if user.profileImage.isEmpty {
             Circle()
-                .fill(Color.type(.gray100))
+                .fill(ColorPalette.gray100)
                 .overlay(
                     Circle()
-                        .stroke(Color.type(.gray300), lineWidth: 1.3)
+                        .stroke(ColorPalette.gray300, lineWidth: 1.3)
                 )
                 .overlay(
                     BNImage(.camera)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 20, height: 20)
-                        .foregroundStyle(Color.type(.gray500))
+                        .foregroundStyle(ColorPalette.gray500)
                 )
                 .frame(width: 42, height: 42)
         } else {
@@ -116,10 +116,10 @@ private struct BlockedUserRow: View {
                     .scaledToFill()
             } placeholder: {
                 Circle()
-                    .fill(Color.type(.gray100))
+                    .fill(ColorPalette.gray100)
                     .overlay(
                         Circle()
-                            .stroke(Color.type(.gray300), lineWidth: 1.3)
+                            .stroke(ColorPalette.gray300, lineWidth: 1.3)
                     )
             }
             .frame(width: 42, height: 42)

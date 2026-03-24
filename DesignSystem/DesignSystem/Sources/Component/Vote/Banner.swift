@@ -35,7 +35,7 @@ public struct Banner: View {
                     BNImage(.close)
                         .resizable()
                         .frame(width: 16, height: 16)
-                        .foregroundColor(BNColor(.type(.gray500)).color)
+                        .foregroundColor(ColorPalette.gray500)
                 }
             }
             .padding(.top, 8)
@@ -60,7 +60,7 @@ public struct Banner: View {
                 onAction()
             } label: {
                 BNText(text)
-                    .style(style: .s4sb, color: .gray0)
+                    .style(style: .s4sb, color: ColorPalette.gray0)
                     .frame(height: 44)
                     .padding(.horizontal, 82)
                     .background(
@@ -78,7 +78,7 @@ public struct Banner: View {
         .frame(height: 174)
         .padding(.top, 12)
         .padding(.bottom, 16)
-        .background(BNColor(.type(.gray0)).color)
+        .background(ColorPalette.gray0)
         .clipShape(RoundedRectangle(cornerRadius: 20))
         .shadow(color: Color.black.opacity(0.1), radius: 20, x: 0, y: 4)
         .overlay(

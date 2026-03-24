@@ -14,9 +14,8 @@ public extension BNImage {
         self = Image(asset.rawValue, bundle: .module)
     }
     
-    /// BNImage 전용 Style Modifier  - 정방향, BNColor.Source
     func style(
-        color: BNColor.Source,
+        color: Color,
         size: CGFloat,
         contentMode: ContentMode = .fit
     ) -> some View {
@@ -27,35 +26,9 @@ public extension BNImage {
         )
     }
     
-    /// BNImage 전용 Style Modifier  - 정방향, Hex String
-    func style(
-        color: String,
-        size: CGFloat,
-        contentMode: ContentMode = .fit
-    ) -> some View {
-        self.style(
-            color: BNColor.Source.hex(color),
-            size: BNImageSize(size),
-            contentMode: contentMode
-        )
-    }
-    
-    /// BNImage 전용 Style Modifier  - 정방향, BNColorType
-    func style(
-        color: BNColorType,
-        size: CGFloat,
-        contentMode: ContentMode = .fit
-    ) -> some View {
-        self.style(
-            color: BNColor.Source.type(color),
-            size: BNImageSize(size),
-            contentMode: contentMode
-        )
-    }
-    
     /// BNImage 전용 Style Modifier
     func style(
-        color: BNColor.Source,
+        color: Color,
         size: BNImageSize? = nil,
         contentMode: ContentMode = .fit
     ) -> some View {
@@ -64,11 +37,11 @@ public extension BNImage {
             case .some(let size):
                 self.resizable()
                     .aspectRatio(contentMode: contentMode)
-                    .foregroundStyle(BNColor(color).color)
+                    .foregroundStyle(color)
                     .frame(width: size.width, height: size.height)
             case .none:
                 self.aspectRatio(contentMode: contentMode)
-                    .foregroundStyle(BNColor(color).color)
+                    .foregroundStyle(color)
             }
         }
         return image
@@ -79,19 +52,18 @@ public extension BNImage {
     VStack(spacing: 10) {
         BNImage(.notification)
             .style(
-                color: .red100,
+                color: ColorPalette.red100,
                 size: 30,
             )
         BNImage(.product)
             .style(
-                color: .blue100,
+                color: ColorPalette.blue100,
                 size: 10
             )
         BNImage(.completed)
             .style(
-                color: .gray800,
+                color: ColorPalette.gray800,
                 size: 20
             )
     }
 }
-

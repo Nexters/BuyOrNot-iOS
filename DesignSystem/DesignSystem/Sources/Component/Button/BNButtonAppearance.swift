@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct BNButtonAppearance {
-    let backgroundColor: BNColor.Source
-    let textColor: BNColor.Source
+    let backgroundColor: Color
+    let textColor: Color
     let textStyle: BNFontStyle
     let cornerRadius: CGFloat
     let borderWidth: CGFloat
@@ -31,11 +31,11 @@ struct BNButtonAppearance {
             self.horizontalPadding = 0
             switch state {
             case .enabled:
-                self.backgroundColor = .type(.gray900)
-                self.textColor = .type(.gray0)
+                self.backgroundColor = ColorPalette.gray900
+                self.textColor = ColorPalette.gray0
             case .disabled:
-                self.backgroundColor = .type(.gray200)
-                self.textColor = .type(.gray600)
+                self.backgroundColor = ColorPalette.gray200
+                self.textColor = ColorPalette.gray600
             }
         case .secondaryLarge:
             self.textStyle = .t2b
@@ -46,11 +46,11 @@ struct BNButtonAppearance {
             self.horizontalPadding = 0
             switch state {
             case .enabled:
-                self.backgroundColor = .type(.gray300)
-                self.textColor = .type(.gray700)
+                self.backgroundColor = ColorPalette.gray300
+                self.textColor = ColorPalette.gray700
             case .disabled:
-                self.backgroundColor = .type(.gray200)
-                self.textColor = .type(.gray600)
+                self.backgroundColor = ColorPalette.gray200
+                self.textColor = ColorPalette.gray600
             }
         case .secondarySmall:
             self.textStyle = .s5sb
@@ -61,26 +61,26 @@ struct BNButtonAppearance {
             self.horizontalPadding = 12
             switch state {
             case .enabled:
-                self.backgroundColor = .type(.gray100)
-                self.textColor = .type(.gray700)
+                self.backgroundColor = ColorPalette.gray100
+                self.textColor = ColorPalette.gray700
             case .disabled:
-                self.backgroundColor = .type(.gray100)
-                self.textColor = .type(.gray500)
+                self.backgroundColor = ColorPalette.gray100
+                self.textColor = ColorPalette.gray500
             }
         case .outline:
             self.textStyle = .s5sb
             self.cornerRadius = 10
             self.borderWidth = 1
-            self.borderColor = BNColor(.type(.gray300)).color
+            self.borderColor = ColorPalette.gray300
             self.verticalPadding = 12
             self.horizontalPadding = 12
             switch state {
             case .enabled:
-                self.backgroundColor = .type(.gray0)
-                self.textColor = .type(.gray800)
+                self.backgroundColor = ColorPalette.gray0
+                self.textColor = ColorPalette.gray800
             case .disabled:
-                self.backgroundColor = .type(.gray0)
-                self.textColor = .type(.gray500)
+                self.backgroundColor = ColorPalette.gray0
+                self.textColor = ColorPalette.gray500
             }
         case .capsule:
             self.textStyle = .s5sb
@@ -91,11 +91,11 @@ struct BNButtonAppearance {
             self.horizontalPadding = 12
             switch state {
             case .enabled:
-                self.backgroundColor = .type(.gray900)
-                self.textColor = .type(.gray0)
+                self.backgroundColor = ColorPalette.gray900
+                self.textColor = ColorPalette.gray0
             case .disabled:
-                self.backgroundColor = .type(.gray300)
-                self.textColor = .type(.gray700)
+                self.backgroundColor = ColorPalette.gray300
+                self.textColor = ColorPalette.gray700
             }
         }
     }
