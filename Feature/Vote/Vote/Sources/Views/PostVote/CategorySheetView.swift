@@ -27,7 +27,7 @@ struct CategorySheetView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             BNText("카테고리")
-                .style(style: .s1sb, color: .gray900)
+                .style(style: .s1sb, color: ColorPalette.gray900)
             
             ZStack {
                 ScrollView {
@@ -40,12 +40,12 @@ struct CategorySheetView: View {
                                     BNText(item.displayName)
                                         .style(
                                             style: item == selectedCategory ? .s3sb : .b3m,
-                                            color: item == selectedCategory ? .gray900 : .gray700
+                                            color: item == selectedCategory ? ColorPalette.gray900 : ColorPalette.gray700
                                         )
                                     Spacer()
                                     if item == selectedCategory {
                                         BNImage(.check)
-                                            .style(color: .gray900, size: 20)
+                                            .style(color: ColorPalette.gray900, size: 20)
                                     }
                                 }
                                 .padding(.top, 10)
@@ -62,8 +62,8 @@ struct CategorySheetView: View {
                     Spacer()
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            BNColor(.type(.gray0)).color.opacity(0),
-                            BNColor(.type(.gray0)).color
+                            ColorPalette.gray0.opacity(0),
+                            ColorPalette.gray0
                         ]),
                         startPoint: .top,
                         endPoint: .bottom

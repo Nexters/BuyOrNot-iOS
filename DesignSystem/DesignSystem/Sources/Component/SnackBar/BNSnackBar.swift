@@ -11,7 +11,7 @@ public struct BNSnackBar: View {
     private let item: BNSnackBarItem
     private let iconSize: CGFloat = 16
     private var backgroundColor: Color {
-        BNColor(.type(.gray900)).color
+        ColorPalette.gray900
     }
     
     @Binding var state: BNSnackBarState
@@ -36,7 +36,7 @@ public struct BNSnackBar: View {
             BNText(item.text)
                 .style(
                     style: .b5m,
-                    color: .gray50
+                    color: ColorPalette.gray50
                 )
             Spacer()
         }
@@ -70,7 +70,7 @@ private struct BNSnackBarPreview: View {
                     let item = BNSnackBarItem(
                         text: "스낵바입니다. 안내 메세지를 작성해주세요. \(count)",
                         icon: .completed,
-                        color: .type(.green200),
+                        color: ColorPalette.green200,
                     )
                     count += 1
                     manager.addItem(item)
@@ -82,7 +82,7 @@ private struct BNSnackBarPreview: View {
                     let item = BNSnackBarItem(
                         text: "신고가 완료되었습니다.",
                         icon: .completed,
-                        color: .type(.red100),
+                        color: ColorPalette.red100,
                     )
                     count += 1
                     manager.addItem(item)
@@ -94,7 +94,7 @@ private struct BNSnackBarPreview: View {
                     let item = BNSnackBarItem(
                         text: "삭제가 완료되었습니다.",
                         icon: .completed,
-                        color: .type(.green100),
+                        color: ColorPalette.green100,
                     )
                     count += 1
                     manager.addItem(item)

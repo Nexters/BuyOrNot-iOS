@@ -157,7 +157,7 @@ public struct CreateVoteView: View {
             }
         } label: {
             BNText("취소")
-                .style(style: .s4sb, color: .gray700)
+                .style(style: .s4sb, color: ColorPalette.gray700)
         }
     }
     
@@ -165,18 +165,18 @@ public struct CreateVoteView: View {
     private func category(_ selectedCategory: FeedCategory?) -> some View {
         HStack(spacing: 8) {
             BNText("투표 등록")
-                .style(style: .s3sb, color: .gray800)
+                .style(style: .s3sb, color: ColorPalette.gray800)
             BNImage(.right)
-                .style(color: .gray600, size: 14)
+                .style(color: ColorPalette.gray600, size: 14)
             Button {
                 viewModel.showCategoryBottomSheet = true
             } label: {
                 if let selectedCategory {
                     BNText(selectedCategory.displayName)
-                        .style(style: .s3sb, color: .gray800)
+                        .style(style: .s3sb, color: ColorPalette.gray800)
                 } else {
                     BNText("카테고리 추가")
-                        .style(style: .s3sb, color: .gray600)
+                        .style(style: .s3sb, color: ColorPalette.gray600)
                 }
             }
             Spacer()
@@ -187,16 +187,16 @@ public struct CreateVoteView: View {
     private var price: some View {
         HStack(spacing: 6) {
             BNImage(.won)
-                .style(color: .gray600, size: 18)
+                .style(color: ColorPalette.gray600, size: 18)
             TextField(text: $viewModel.price) {
                 BNText("상품 가격을 입력해주세요.")
-                    .style(style: .s3sb, color: .gray600)
+                    .style(style: .s3sb, color: ColorPalette.gray600)
             }
             .focused($focusState, equals: .price)
             .keyboardType(.numberPad)
             .font(.s3sb)
-            .foregroundStyle(.type(.gray800))
-            .tint(.type(.gray900))
+            .foregroundStyle(ColorPalette.gray800)
+            .tint(ColorPalette.gray900)
             .onChange(of: viewModel.price) { oldValue, newValue in
                 viewModel.didChangePrice(previous: oldValue, text: newValue)
             }
@@ -220,8 +220,8 @@ public struct CreateVoteView: View {
                 axis: .vertical
             )
             .font(.p2m)
-            .foregroundStyle(.type(.gray900))
-            .tint(.type(.gray900))
+            .foregroundStyle(ColorPalette.gray900)
+            .tint(ColorPalette.gray900)
             .focused($focusState, equals: .contents)
             .lineLimit(nil)
             .scrollContentBackground(.hidden)
@@ -234,7 +234,7 @@ public struct CreateVoteView: View {
                     VStack {
                         HStack {
                             BNText(placeHolder)
-                                .style(style: .p2m, color: .gray600)
+                                .style(style: .p2m, color: ColorPalette.gray600)
                             Spacer()
                         }
                         Spacer()
@@ -245,7 +245,7 @@ public struct CreateVoteView: View {
             HStack {
                 Spacer()
                 BNText("\(viewModel.contents.count)/\(viewModel.contentsLimitCount)")
-                    .style(style: .c1m, color: .gray600)
+                    .style(style: .c1m, color: ColorPalette.gray600)
             }
             .padding(.vertical, 10)
         }
@@ -266,15 +266,15 @@ public struct CreateVoteView: View {
             } label: {
                 VStack(spacing: 2) {
                     BNImage(.camera)
-                        .style(color: .gray600, size: 20)
+                        .style(color: ColorPalette.gray600, size: 20)
                     BNText("\(viewModel.selectedImage == nil ? 0 : 1)/1")
-                        .style(style: .s5sb, color: .gray600)
+                        .style(style: .s5sb, color: ColorPalette.gray600)
                 }
                 .padding(.horizontal, 24)
                 .padding(.vertical, 15)
                 .background {
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(.gray100)
+                        .fill(ColorPalette.gray100)
                 }
             }
             if let image = viewModel.selectedImage {
@@ -291,10 +291,10 @@ public struct CreateVoteView: View {
                                     viewModel.didTapDeleteImage()
                                 } label: {
                                     Circle()
-                                        .fill(.type(.black).opacity(0.4))
+                                        .fill(ColorPalette.black.opacity(0.4))
                                         .overlay {
                                             BNImage(.close)
-                                                .style(color: .gray0, size: 10)
+                                                .style(color: ColorPalette.gray0, size: 10)
                                         }
                                         .frame(width: 20, height: 20)
                                         .padding(4)

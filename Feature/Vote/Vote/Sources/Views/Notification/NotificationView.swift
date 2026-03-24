@@ -65,7 +65,7 @@ public struct NotificationView: View {
                 }
             }
         }
-        .background(BNColor(.type(.gray0)).color)
+        .background(ColorPalette.gray0)
         .navigationBarHidden(true)
         .task {
             viewModel.onAppear()
@@ -121,10 +121,10 @@ private struct NotificationPermissionBanner: View {
             BNImage(.notification_fill)
                 .resizable()
                 .frame(width: 16, height: 16)
-                .foregroundColor(BNColor(.type(.gray600)).color)
+                .foregroundColor(ColorPalette.gray600)
 
             BNText("투표 종료 및 결과 소식을 받아보세요")
-                .style(style: .b5m, color: .gray700)
+                .style(style: .b5m, color: ColorPalette.gray700)
 
             Spacer()
 
@@ -132,15 +132,15 @@ private struct NotificationPermissionBanner: View {
                 onTap()
             } label: {
                 BNText("알림 켜기")
-                    .style(style: .s5sb, color: .gray800)
+                    .style(style: .s5sb, color: ColorPalette.gray800)
             }
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 12)
-        .background(BNColor(.type(.gray0)).color)
+        .background(ColorPalette.gray0)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(BNColor(.type(.gray200)).color, lineWidth: 1)
+                .stroke(ColorPalette.gray200, lineWidth: 1)
         )
     }
 }
@@ -156,7 +156,7 @@ private struct NotificationListContent: View {
             }
 
             BNText("30일 전 알림까지 보여줘요")
-                .style(style: .b5m, color: .gray600)
+                .style(style: .b5m, color: ColorPalette.gray600)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 20)
         }
@@ -179,7 +179,7 @@ private struct NotificationCell: View {
                             .resizable()
                             .scaledToFill()
                     } placeholder: {
-                        BNColor(.type(.gray200)).color
+                        ColorPalette.gray200
                     }
                     .frame(width: 48, height: 48)
                     .cornerRadius(10)
@@ -187,22 +187,22 @@ private struct NotificationCell: View {
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
                             BNText(item.status)
-                                .style(style: .b5m, color: .gray600)
+                                .style(style: .b5m, color: ColorPalette.gray600)
 
                             Spacer()
 
                             BNText(item.timeAgo)
-                                .style(style: .b6m, color: .gray600)
+                                .style(style: .b6m, color: ColorPalette.gray600)
                         }
 
                         BNText(item.message)
-                            .style(style: .s3sb, color: .gray900)
+                            .style(style: .s3sb, color: ColorPalette.gray900)
                             .lineLimit(1)
                     }
                 }
 
                 Rectangle()
-                    .fill(BNColor(.type(.gray100)).color)
+                    .fill(ColorPalette.gray100)
                     .frame(height: 2)
                     .padding(.top, 19)
             }
@@ -216,6 +216,6 @@ private struct NotificationCell: View {
 private struct PressableButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(configuration.isPressed ? BNColor(.type(.gray50)).color : Color.clear)
+            .background(configuration.isPressed ? ColorPalette.gray50 : Color.clear)
     }
 }

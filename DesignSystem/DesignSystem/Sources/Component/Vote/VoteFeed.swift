@@ -193,15 +193,15 @@ private struct FeedHeader: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 4) {
                     BNText(userName)
-                        .style(style: .b6m, color: .gray800)
+                        .style(style: .b6m, color: ColorPalette.gray800)
 
                     BNImage(.right)
                         .resizable()
                         .frame(width: 10, height: 10)
-                        .foregroundStyle(BNColor(.type(.gray600)).color)
+                        .foregroundStyle(ColorPalette.gray600)
 
                     BNText(category)
-                        .style(style: .b6m, color: .gray800)
+                        .style(style: .b6m, color: ColorPalette.gray800)
 
                     Spacer()
 
@@ -212,12 +212,12 @@ private struct FeedHeader: View {
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)
-                            .foregroundStyle(BNColor(.type(.gray500)).color)
+                            .foregroundStyle(ColorPalette.gray500)
                     }
                 }
 
                 BNText(timeAgo)
-                    .style(style: .b7m, color: .gray600)
+                    .style(style: .b7m, color: ColorPalette.gray600)
             }
         }
     }
@@ -241,7 +241,7 @@ private struct FeedContent: View {
         VStack {
             VStack(spacing: 12) {
                 BNText(content)
-                    .style(style: .p4m, color: .gray900)
+                    .style(style: .p4m, color: ColorPalette.gray900)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 ProductImageCard(
@@ -260,7 +260,7 @@ private struct FeedContent: View {
             .padding(.vertical, 16)
             .padding(.horizontal, horizontalPadding)
         }
-        .background(BNColor(.type(.gray100)).color)
+        .background(ColorPalette.gray100)
         .cornerRadius(16)
     }
 }
@@ -293,7 +293,7 @@ private struct ProductImageCard: View {
                 .overlay(
                     LinearGradient(
                         stops: [
-                            Gradient.Stop(color: .black.opacity(0), location: 0.00),
+                            Gradient.Stop(color: ColorPalette.black.opacity(0), location: 0.00),
                             Gradient.Stop(color: Color(red: 0.1, green: 0.1, blue: 0.1), location: 1.00),
                         ],
                         startPoint: UnitPoint(x: 0.5, y: 0.61),
@@ -305,7 +305,7 @@ private struct ProductImageCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
                 BNText(price)
-                    .style(style: .t1b, color: .gray0)
+                    .style(style: .t1b, color: ColorPalette.gray0)
                     .padding(.leading, 14)
                     .padding(.bottom, 16)
 
@@ -318,9 +318,9 @@ private struct ProductImageCard: View {
                             BNImage(.extend)
                                 .resizable()
                                 .scaledToFill()
-                                .foregroundColor(BNColor(.type(.gray300)).color)
+                                .foregroundColor(ColorPalette.gray300)
                                 .padding(8)
-                                .background(BNColor(.type(.gray1000)).color.opacity(0.5))
+                                .background(ColorPalette.gray1000.opacity(0.5))
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .frame(width: 30, height: 30)
                         }

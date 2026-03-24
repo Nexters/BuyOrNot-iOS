@@ -24,11 +24,11 @@ public struct FloatingContextMenu: View {
         .padding(.vertical, 14)
         .background {
             RoundedRectangle(cornerRadius: 14)
-                .fill(.gray0)
+                .fill(ColorPalette.gray0)
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
                         .stroke(
-                            .type(.gray100),
+                            ColorPalette.gray100,
                             lineWidth: 1
                         )
                 )
