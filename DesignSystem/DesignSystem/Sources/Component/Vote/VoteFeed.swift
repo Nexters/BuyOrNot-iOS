@@ -247,7 +247,7 @@ private struct FeedContent: View {
         VStack {
             VStack(spacing: 12) {
                 BNText(content)
-                    .style(style: .p4m, color: ColorPalette.gray900)
+                    .style(style: .p4m, color: ColorPalette.gray950)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 ProductImageCard(

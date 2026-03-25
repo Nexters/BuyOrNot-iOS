@@ -81,7 +81,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
                         BNText(title)
                             .style(
                                 style: .s2sb,
-                                color: ColorPalette.gray900
+                                color: ColorPalette.gray950
                             )
                         Spacer()
                     }

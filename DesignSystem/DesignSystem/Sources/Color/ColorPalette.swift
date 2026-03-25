@@ -27,7 +27,7 @@ public enum ColorPalette {
     public static let gray600 = Color("gray600", bundle: .module)
     public static let gray700 = Color("gray700", bundle: .module)
     public static let gray800 = Color("gray800", bundle: .module)
-    public static let gray900 = Color("gray900", bundle: .module)
+    public static let gray950 = Color("gray950", bundle: .module)
     public static let gray1000 = Color("gray1000", bundle: .module)
     
     /// Green
