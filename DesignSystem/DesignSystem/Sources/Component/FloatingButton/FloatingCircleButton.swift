@@ -13,6 +13,9 @@ struct FloatingCircleButton: View {
     
     @Binding var state: FloatingButtonState
     
+    // TODO: 투표 등록 외 다른 메뉴 추가전까지 사용 (26.03.25) - 종식
+    let onVoteCreate: () -> Void
+    
     var body: some View {
         ZStack {
             Circle()
@@ -45,12 +48,14 @@ struct FloatingCircleButton: View {
         }
         .frame(width: buttonSize, height: buttonSize)
         .onTapGesture {
-            switch (state) {
-            case .open:
-                state = .close
-            case .close:
-                state = .open
-            }
+//            switch (state) {
+//            case .open:
+//                state = .close
+//            case .close:
+//                state = .open
+//            }
+            // TODO: 투표 등록 외 다른 메뉴 추가전까지 사용 (26.03.25) - 종식
+            onVoteCreate()
         }
     }
 }
