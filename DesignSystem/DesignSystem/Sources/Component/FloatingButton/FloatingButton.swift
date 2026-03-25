@@ -62,7 +62,8 @@ public struct FloatingButton: View {
                         )
                     }
                     FloatingCircleButton(
-                        state: $state
+                        state: $state,
+                        onVoteCreate: onVoteCreate
                     )
                 }
             }
