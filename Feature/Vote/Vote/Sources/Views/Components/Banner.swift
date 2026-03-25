@@ -1,18 +1,19 @@
 //
 //  Banner.swift
-//  DesignSystem
+//  Vote
 //
 //  Created by 이조은 on 2/6/26.
 //
 
 import SwiftUI
+import DesignSystem
 
 public struct Banner: View {
     private let image: BNImageAsset
     private let text: String
     private let onClose: () -> Void
     private let onAction: () -> Void
-    
+
     public init(
         image: BNImageAsset,
         text: String,
@@ -24,7 +25,7 @@ public struct Banner: View {
         self.onClose = onClose
         self.onAction = onAction
     }
-    
+
     public var body: some View {
         VStack(spacing: 10) {
             HStack {
@@ -40,7 +41,7 @@ public struct Banner: View {
             }
             .padding(.top, 8)
             .padding(.trailing, 24)
-            
+
             ZStack {
                 BNImage(image)
                     .resizable()
@@ -55,7 +56,7 @@ public struct Banner: View {
             }
             .frame(width: 168, height: 92)
             .padding(.top, -14)
-            
+
             Button {
                 onAction()
             } label: {
@@ -93,7 +94,7 @@ public struct Banner: View {
 
 #Preview {
     let _ = BNFont.loadFonts()
-    
+
     ZStack {
         Banner(
             image: .feed_banner,

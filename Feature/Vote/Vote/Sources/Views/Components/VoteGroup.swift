@@ -1,11 +1,12 @@
 //
 //  VoteGroup.swift
-//  DesignSystem
+//  Vote
 //
 //  Created by 이조은 on 1/28/26.
 //
 
 import SwiftUI
+import DesignSystem
 
 public struct VoteGroup: View {
 

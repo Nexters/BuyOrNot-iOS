@@ -1,11 +1,12 @@
 //
 //  FullScreenImage.swift
-//  DesignSystem
+//  Vote
 //
 //  Created by 이조은 on 2/2/26.
 //
 
 import SwiftUI
+import DesignSystem
 
 public struct FullScreenImageView: View {
     let imageURL: String
