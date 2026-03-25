@@ -79,7 +79,7 @@ private struct BlockedUserRow: View {
             HStack(spacing: 12) {
                 profileImage
                 BNText(user.nickname)
-                    .style(style: .p2m, color: ColorPalette.gray900)
+                    .style(style: .p2m, color: ColorPalette.gray950)
             }
 
             Spacer()

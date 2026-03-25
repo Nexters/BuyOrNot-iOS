@@ -196,7 +196,7 @@ private struct NotificationCell: View {
                         }
 
                         BNText(item.message)
-                            .style(style: .s3sb, color: ColorPalette.gray900)
+                            .style(style: .s3sb, color: ColorPalette.gray950)
                             .lineLimit(1)
                     }
                 }

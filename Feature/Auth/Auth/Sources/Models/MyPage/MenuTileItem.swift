@@ -20,6 +20,6 @@ extension MenuTileItem {
     }
     
     var textColor: Color {
-        ColorPalette.gray900
+        ColorPalette.gray950
     }
 }

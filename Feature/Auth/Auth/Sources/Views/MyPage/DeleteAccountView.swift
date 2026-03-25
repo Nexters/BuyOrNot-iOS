@@ -24,7 +24,7 @@ public struct DeleteAccountView: View {
             VStack(spacing: 20) {
                 HStack {
                     BNText("\(viewModel.name)님,\n살까말까를 떠나시나요?")
-                        .style(style: .h3b, color: ColorPalette.gray900)
+                        .style(style: .h3b, color: ColorPalette.gray950)
                     Spacer()
                 }
                 HStack {

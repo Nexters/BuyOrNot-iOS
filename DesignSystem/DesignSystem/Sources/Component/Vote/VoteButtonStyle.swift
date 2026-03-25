@@ -14,7 +14,7 @@ public enum VoteButtonStyle {
 
     var backgroundColor: Color {
         switch self {
-        case .black: return ColorPalette.gray900
+        case .black: return ColorPalette.gray950
         case .gray: return ColorPalette.gray400
         case .plain: return ColorPalette.gray0
         }
@@ -24,7 +24,7 @@ public enum VoteButtonStyle {
         switch self {
         case .black: return ColorPalette.gray0
         case .gray: return ColorPalette.gray700
-        case .plain: return ColorPalette.gray900
+        case .plain: return ColorPalette.gray950
         }
     }
 }
