@@ -22,9 +22,13 @@ public struct SplashView: View {
             BNLottie(
                 asset: .splash,
                 size: CGSize(width: 152, height: 152)
-            ) { isComplete in
-                viewModel.didSplashEnded()
-            }
+            ) { _ in }
+                .onAppear {
+                    Task {
+                        try await Task.sleep(for: .milliseconds(2300))
+                        viewModel.didSplashEnded()
+                    }
+                }
             
             BNImage(.logo)
                 .resizable()
