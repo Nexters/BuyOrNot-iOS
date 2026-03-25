@@ -1,16 +1,17 @@
 //
 //  VoteButton.swift
-//  DesignSystem
+//  Vote
 //
 //  Created by 이조은 on 1/26/26.
 //
 
 import SwiftUI
+import DesignSystem
 
 public struct VoteButton: View {
 
     // MARK: - Properties
-    
+
     let text: String
     let imageURL: String?
     let percent: Int
