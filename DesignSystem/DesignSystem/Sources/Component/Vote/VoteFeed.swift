@@ -179,7 +179,10 @@ private struct FeedHeader: View {
     @Binding var showMenu: Bool
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(
+            alignment: .top,
+            spacing: 10
+        ) {
             AsyncImage(url: URL(string: userProfileImageURL)) { image in
                 image
                     .resizable()
@@ -190,7 +193,10 @@ private struct FeedHeader: View {
             .frame(width: 32, height: 32)
             .clipShape(Circle())
 
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(
+                alignment: .leading,
+                spacing: 3
+            ) {
                 HStack(spacing: 4) {
                     BNText(userName)
                         .style(style: .b6m, color: ColorPalette.gray800)
@@ -204,20 +210,20 @@ private struct FeedHeader: View {
                         .style(style: .b6m, color: ColorPalette.gray800)
 
                     Spacer()
-
-                    Button {
-                        showMenu.toggle()
-                    } label: {
-                        BNImage(.combined_shape)
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 20, height: 20)
-                            .foregroundStyle(ColorPalette.gray500)
-                    }
                 }
 
                 BNText(timeAgo)
                     .style(style: .b7m, color: ColorPalette.gray600)
+            }
+            
+            Button {
+                showMenu.toggle()
+            } label: {
+                BNImage(.combined_shape)
+                    .resizable()
+                    .renderingMode(.template)
+                    .frame(width: 20, height: 20)
+                    .foregroundStyle(ColorPalette.gray500)
             }
         }
     }
