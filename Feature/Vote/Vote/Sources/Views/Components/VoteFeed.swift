@@ -313,8 +313,8 @@ private struct ProductImageCard: View {
                 VStack {
                     HStack {
                         Spacer()
-                        NavigationLink {
-                            FullScreenImageView(imageURL: imageURL)
+                        Button {
+                            presentFullScreenImage(imageURL: imageURL)
                         } label: {
                             BNImage(.extend)
                                 .resizable()
