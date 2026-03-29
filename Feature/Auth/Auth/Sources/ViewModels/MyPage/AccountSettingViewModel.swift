@@ -55,20 +55,29 @@ public final class AccountSettingViewModel: ObservableObject {
     
     func logout() {
         Task { @MainActor [weak self] in
+            guard let self else { return }
+            let token = tokenRepository.getToken()
+
+            if token.refreshToken.isEmpty {
+                performLocalLogout()
+                return
+            }
+
             do {
-                guard let token = self?.tokenRepository.getToken() else {
-                    return
-                }
-                try await self?.authRepository.logout(refreshToken: token.refreshToken)
-                self?.tokenRepository.removeToken()
-                self?.userRepository.clearCachedUser()
-                self?.navigator.navigateToLogin()
+                try await authRepository.logout(refreshToken: token.refreshToken)
             } catch(let error) {
 #if DEBUG
                 print("🚨 Failed Logout: \(error)")
 #endif
             }
+            performLocalLogout()
         }
+    }
+
+    private func performLocalLogout() {
+        tokenRepository.removeToken()
+        userRepository.clearCachedUser()
+        navigator.navigateToLogin()
     }
     
     private func toggleLogoutAlert() {

@@ -20,17 +20,20 @@ final class NetworkClient: NetworkClientProtocol {
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
     private let tokenStore: TokenStore
+    private let userStore: UserStore
 
     public init(
         session: URLSession = .shared,
         decoder: JSONDecoder = JSONDecoder(),
         encoder: JSONEncoder = JSONEncoder(),
-        tokenStore: TokenStore = TokenStore()
+        tokenStore: TokenStore = TokenStore(),
+        userStore: UserStore = UserStore()
     ) {
         self.session = session
         self.decoder = decoder
         self.encoder = encoder
         self.tokenStore = tokenStore
+        self.userStore = userStore
     }
 
     public func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
@@ -122,14 +125,31 @@ final class NetworkClient: NetworkClientProtocol {
 
     private func refreshAccessToken() async throws {
         let refreshToken = tokenStore.getToken()?.refreshToken ?? ""
+        guard refreshToken.isNotEmpty else {
+            invalidateAuthSession()
+            throw NetworkError.unauthorized
+        }
         let endpoint = AuthEndpoint.postRefreshToken(
             RefreshTokenRequest(refreshToken: refreshToken)
         )
-        let response: BaseResponse<AuthSessionResponse> = try await request(
-            endpoint,
-            didRetryAfterRefresh: false
-        )
-        tokenStore.saveToken(response.data.toDomain().token)
+        do {
+            let response: BaseResponse<AuthSessionResponse> = try await request(
+                endpoint,
+                didRetryAfterRefresh: false
+            )
+            let session = response.data.toDomain()
+            tokenStore.saveToken(session.token)
+            userStore.saveUser(session.user)
+        } catch {
+            invalidateAuthSession()
+            throw error
+        }
+    }
+
+    private func invalidateAuthSession() {
+        tokenStore.removeToken()
+        userStore.removeUser()
+        NotificationCenter.default.post(name: .authSessionDidExpire, object: nil)
     }
 
     private func buildRequest(from endpoint: Endpoint) throws -> URLRequest {
