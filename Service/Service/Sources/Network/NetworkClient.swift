@@ -129,7 +129,7 @@ final class NetworkClient: NetworkClientProtocol {
             endpoint,
             didRetryAfterRefresh: false
         )
-        tokenStore.saveToken(response.data.toToken())
+        tokenStore.saveToken(response.data.toDomain().token)
     }
 
     private func buildRequest(from endpoint: Endpoint) throws -> URLRequest {

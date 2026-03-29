@@ -18,13 +18,19 @@ import KakaoSDKCommon
 
 public final class LoginViewModel: ObservableObject {
     private let authRepository: AuthRepository
+    private let tokenRepository: TokenRepository
+    private let userRepository: UserRepository
     private let delegate: LoginDelegate?
     
     public init(
         authRepository: AuthRepository,
+        tokenRepository: TokenRepository,
+        userRepository: UserRepository,
         argument: LoginViewModel.Argument
     ) {
         self.authRepository = authRepository
+        self.tokenRepository = tokenRepository
+        self.userRepository = userRepository
         self.delegate = argument.delegate
     }
 
@@ -92,9 +98,11 @@ public final class LoginViewModel: ObservableObject {
                 }
                 guard let self else { return }
                 do {
-                    _ = try await authRepository.loginWithGoogle(
+                    let session = try await authRepository.loginWithGoogle(
                         idToken: idToken
                     )
+                    tokenRepository.saveToken(session.token)
+                    userRepository.saveUser(session.user)
                     delegate?.completeLogin(.member)
                 } catch { }
             }
@@ -117,9 +125,11 @@ public final class LoginViewModel: ObservableObject {
                 }
                 guard let self else { return }
                 do {
-                    _ = try await authRepository.loginWithApple(
+                    let session = try await authRepository.loginWithApple(
                         authorizationCode: authorizationCode
                     )
+                    tokenRepository.saveToken(session.token)
+                    userRepository.saveUser(session.user)
                     delegate?.completeLogin(.member)
                 } catch { }
             }
@@ -140,9 +150,11 @@ public final class LoginViewModel: ObservableObject {
                 }
                 guard let self else { return }
                 do {
-                    _ = try await authRepository.loginWithKakao(
+                    let session = try await authRepository.loginWithKakao(
                         accessToken: oauthToken.accessToken
                     )
+                    tokenRepository.saveToken(session.token)
+                    userRepository.saveUser(session.user)
                     delegate?.completeLogin(.member)
                 } catch { }
             }

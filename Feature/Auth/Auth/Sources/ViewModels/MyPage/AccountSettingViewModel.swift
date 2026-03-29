@@ -60,6 +60,8 @@ public final class AccountSettingViewModel: ObservableObject {
                     return
                 }
                 try await self?.authRepository.logout(refreshToken: token.refreshToken)
+                self?.tokenRepository.removeToken()
+                self?.userRepository.removeCachedUser()
                 self?.navigator.navigateToLogin()
             } catch(let error) {
 #if DEBUG
