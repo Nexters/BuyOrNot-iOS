@@ -14,6 +14,7 @@ public final class MyPageViewModel: ObservableObject {
     private let navigator: AuthNavigator
     
     @Published var name: String = "이름입니다최대열자임"
+    @Published var profileImageURL: String = ""
     @Published var appVersion: String = "0.0.1"
     @Published var url: URL?
     
@@ -42,10 +43,9 @@ public final class MyPageViewModel: ObservableObject {
         Task { @MainActor [weak self] in
             do {
                 let user = try await self?.userRepository.getMe()
-                guard let nickname = user?.nickname else {
-                    return
-                }
-                self?.name = nickname
+                guard let user else { return }
+                self?.name = user.nickname
+                self?.profileImageURL = user.profileImage
             } catch {
             }
         }

@@ -34,8 +34,10 @@ public struct HomeView: View {
             VStack(spacing: 0) {
                 if showNavigationBar {
                     NavigationBar(
+                        isGuest: !viewModel.isAuthenticated,
                         onNotificationTap: { viewModel.didTapNotification() },
-                        onProfileTap: { viewModel.didTapProfile() }
+                        onProfileTap: { viewModel.didTapProfile() },
+                        onLoginTap: { viewModel.didTapLogin() }
                     )
                 }
 

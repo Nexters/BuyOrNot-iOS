@@ -1,11 +1,12 @@
 //
 //  VoteFeed.swift
-//  DesignSystem
+//  Vote
 //
 //  Created by 이조은 on 1/31/26.
 //
 
 import SwiftUI
+import DesignSystem
 
 // MARK: - Models
 /// TODO: 백엔드 API 응답 명세에 따라 구조 이동 및 변경 필요
@@ -325,8 +326,8 @@ private struct ProductImageCard: View {
                 VStack {
                     HStack {
                         Spacer()
-                        NavigationLink {
-                            FullScreenImageView(imageURL: imageURL)
+                        Button {
+                            presentFullScreenImage(imageURL: imageURL)
                         } label: {
                             BNImage(.extend)
                                 .resizable()
