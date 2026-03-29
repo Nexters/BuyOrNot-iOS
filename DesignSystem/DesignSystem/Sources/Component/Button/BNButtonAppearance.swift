@@ -31,7 +31,7 @@ struct BNButtonAppearance {
             self.horizontalPadding = 0
             switch state {
             case .enabled:
-                self.backgroundColor = ColorPalette.gray900
+                self.backgroundColor = ColorPalette.gray950
                 self.textColor = ColorPalette.gray0
             case .disabled:
                 self.backgroundColor = ColorPalette.gray200
@@ -91,7 +91,7 @@ struct BNButtonAppearance {
             self.horizontalPadding = 12
             switch state {
             case .enabled:
-                self.backgroundColor = ColorPalette.gray900
+                self.backgroundColor = ColorPalette.gray950
                 self.textColor = ColorPalette.gray0
             case .disabled:
                 self.backgroundColor = ColorPalette.gray300

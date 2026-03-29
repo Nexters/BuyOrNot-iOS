@@ -10,6 +10,7 @@ import Vote
 import Auth
 import Splash
 import Domain
+import Core
 
 struct AppView: View {
     @EnvironmentObject var container: DIContainer
@@ -92,13 +93,21 @@ struct AppView: View {
         .task {
             await PushNotificationService.shared.requestAuthorizationIfNeeded()
         }
-        .onChange(of: scenePhase) { phase in
+        .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
             Task {
                 let userRepository: UserRepository = container.resolve()
                 await PushNotificationService.shared.syncFCMTokenIfPossible(
                     userRepository: userRepository
                 )
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .authSessionDidExpire)) { _ in
+            Task { @MainActor in
+                router.popToRoot()
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    viewModel.appDestination = .login
+                }
             }
         }
     }

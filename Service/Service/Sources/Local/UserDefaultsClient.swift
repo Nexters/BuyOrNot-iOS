@@ -32,7 +32,17 @@ final class UserDefaultsClient: UserDefaultsClientProtocol {
         guard let data = userDefaults.data(forKey: key.rawValue) else {
             return nil
         }
-        return try? decoder.decode(T.self, from: data)
+        do {
+            return try decoder.decode(T.self, from: data)
+        } catch(let error) {
+#if DEBUG
+            print("🚨 UserDefaultsClient Decoding failed: \(error)")
+            if let jsonString = data.prettyPrintedJSON {
+                print("📦 Data:\n\(jsonString)")
+            }
+#endif
+            return nil
+        }
     }
     
     func set<T: Codable>(_ value: T?, for key: UserDefaultsKey) {
@@ -40,10 +50,20 @@ final class UserDefaultsClient: UserDefaultsClientProtocol {
             remove(for: key)
             return
         }
-        guard let data = try? encoder.encode(value) else {
-            return
+        do {
+            let data = try encoder.encode(value)
+            userDefaults.set(data, forKey: key.rawValue)
+#if DEBUG
+            if let jsonString = data.prettyPrintedJSON {
+                print("✅ UserDefaultsClient Save Success: \(key) \n\(jsonString)")
+            }
+            
+#endif
+        } catch(let error) {
+#if DEBUG
+            print("🚨 UserDefaultsClient Encoding failed: \(error)")
+#endif
         }
-        userDefaults.set(data, forKey: key.rawValue)
     }
     
     func remove(for key: UserDefaultsKey) {

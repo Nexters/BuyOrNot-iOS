@@ -32,7 +32,7 @@ public struct BNLottie: View {
         } placeholder: {
             LoadingIndicator()
         }
-        .playing(loopMode: .playOnce)
+        .playing(loopMode: .loop)
         .animationDidFinish{ completed in
             if let animationCompletionHandler {
                 animationCompletionHandler(completed)

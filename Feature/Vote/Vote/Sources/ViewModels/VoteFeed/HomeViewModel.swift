@@ -22,7 +22,6 @@ public final class HomeViewModel: ObservableObject {
     @Published var selectedFilter: FeedFilter = .all
     @Published var isLoadingMore: Bool = false
 
-    @Published var isGuest: Bool = false
     @Published var myVoteState: MyVoteState = .loading
     @Published var myFeeds: [VoteFeedData] = []
     @Published var snackBar = BNSnackBarManager()
@@ -43,12 +42,8 @@ public final class HomeViewModel: ObservableObject {
         self.reportFeedRepository = reportFeedRepository
         self.navigator = argument.navigator
         self.currentUserId = userRepository.getCachedUser()?.id
-        self.isGuest = self.currentUserId == nil
         self.reportedFeedIds = reportFeedRepository.getReportFeed()?.ids ?? []
         self.removedFeedIds = reportedFeedIds
-        #if DEBUG
-        print("🔍 [HomeViewModel] currentUserId: \(String(describing: self.currentUserId))")
-        #endif
     }
 
     func didTapNotification() {
@@ -56,7 +51,9 @@ public final class HomeViewModel: ObservableObject {
     }
 
     func didTapProfile() {
-        navigator.navigateToMyPage()
+        guardAuthenticated {
+            navigator.navigateToMyPage()
+        }
     }
 
     func didTapLogin() {
@@ -64,7 +61,13 @@ public final class HomeViewModel: ObservableObject {
     }
 
     func didTapCreateVote() {
-        navigator.presentCreateVote()
+        guardAuthenticated {
+            navigator.presentCreateVote()
+        }
+    }
+
+    var isAuthenticated: Bool {
+        currentUserId != nil
     }
 
     @MainActor
@@ -254,6 +257,14 @@ public final class HomeViewModel: ObservableObject {
         }
     }
 
+    private func guardAuthenticated(_ action: () -> Void) {
+        guard userRepository.getCachedUser() != nil else {
+            navigator.navigateToLogin()
+            return
+        }
+        action()
+    }
+
     private func feedStatusParam(for filter: FeedFilter) -> String? {
         switch filter {
         case .all: return nil
@@ -302,7 +313,8 @@ public final class HomeViewModel: ObservableObject {
                 selectedVoteId: selectedOptionId,
                 isPeriodDone: item.isPeriodDone,
                 isMine: item.isMine,
-                isVotingLocked: item.isVotingLocked
+                isVotingLocked: item.isVotingLocked,
+                canShowMenu: item.canShowMenu
             )
         }
 
@@ -343,7 +355,8 @@ public final class HomeViewModel: ObservableObject {
             selectedVoteId: selectedVoteId,
             isPeriodDone: vote.voteStatus == .closed,
             isMine: isMyFeed,
-            isVotingLocked: isMyFeed
+            isVotingLocked: isMyFeed,
+            canShowMenu: isAuthenticated
         )
     }
 
