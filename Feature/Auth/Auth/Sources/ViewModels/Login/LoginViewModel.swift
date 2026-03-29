@@ -19,18 +19,21 @@ import KakaoSDKCommon
 public final class LoginViewModel: ObservableObject {
     private let authRepository: AuthRepository
     private let tokenRepository: TokenRepository
+    private let userRepository: UserRepository
     private let delegate: LoginDelegate?
     
     public init(
         authRepository: AuthRepository,
         tokenRepository: TokenRepository,
+        userRepository: UserRepository,
         argument: LoginViewModel.Argument
     ) {
         self.authRepository = authRepository
         self.tokenRepository = tokenRepository
+        self.userRepository = userRepository
         self.delegate = argument.delegate
     }
-
+    
     @Published var url: URL?
     @Published var loginErrorMessage: String?
     @Published var snackBar = BNSnackBarManager()
@@ -85,22 +88,25 @@ public final class LoginViewModel: ObservableObject {
     private func loginWithGoogle() {
         let googleAuth = GoogleAuth()
         googleAuth.requestLogin { [weak self] gidSignInResult in
-            guard let idToken = gidSignInResult?.user.idToken?.tokenString else {
-                self?.showErrorSnackBar()
-                return
-            }
             Task { [weak self] in
-                defer {
+                guard let idToken = gidSignInResult?.user.idToken?.tokenString,
+                      let self else {
                     self?.showErrorSnackBar()
+                    return
                 }
-                guard let self else { return }
                 do {
-                    let result = try await authRepository.loginWithGoogle(
+                    let session = try await authRepository.loginWithGoogle(
                         idToken: idToken
                     )
-                    tokenRepository.saveToken(result)
+                    tokenRepository.saveToken(session.token)
+                    userRepository.cacheUser(session.user)
                     delegate?.completeLogin(.member)
-                } catch { }
+                } catch(let error) {
+#if DEBUG
+                    print("🚨 Login failed: \(error)")
+#endif
+                    showErrorSnackBar()
+                }
             }
         }
     }
@@ -109,24 +115,26 @@ public final class LoginViewModel: ObservableObject {
     private func loginWithApple() {
         let appleAuth = AppleAuth()
         appleAuth.requestLogin { [weak self] authorizationCode in
-            guard let authorizationCode else {
-                self?.showErrorSnackBar()
-                appleAuth.clearDelegate()
-                return
-            }
             Task { [weak self] in
-                defer {
+                guard let authorizationCode, let self else {
                     self?.showErrorSnackBar()
                     appleAuth.clearDelegate()
+                    return
                 }
-                guard let self else { return }
                 do {
-                    let result = try await authRepository.loginWithApple(
+                    let session = try await authRepository.loginWithApple(
                         authorizationCode: authorizationCode
                     )
-                    tokenRepository.saveToken(result)
+                    tokenRepository.saveToken(session.token)
+                    userRepository.cacheUser(session.user)
                     delegate?.completeLogin(.member)
-                } catch { }
+                } catch(let error) {
+#if DEBUG
+                    print("🚨 Login failed: \(error)")
+#endif
+                    showErrorSnackBar()
+                }
+                appleAuth.clearDelegate()
             }
         }
     }
@@ -135,22 +143,24 @@ public final class LoginViewModel: ObservableObject {
     private func loginWithKakao() {
         let kakaoAuth = KakaoAuth()
         kakaoAuth.requestLogin { [weak self] oauthToken in
-            guard let oauthToken else {
-                self?.showErrorSnackBar()
-                return
-            }
             Task { [weak self] in
-                defer {
+                guard let oauthToken, let self else {
                     self?.showErrorSnackBar()
+                    return
                 }
-                guard let self else { return }
                 do {
-                    let result = try await authRepository.loginWithKakao(
+                    let session = try await authRepository.loginWithKakao(
                         accessToken: oauthToken.accessToken
                     )
-                    tokenRepository.saveToken(result)
+                    tokenRepository.saveToken(session.token)
+                    userRepository.cacheUser(session.user)
                     delegate?.completeLogin(.member)
-                } catch { }
+                } catch(let error) {
+#if DEBUG
+                    print("🚨 Login failed: \(error)")
+#endif
+                    showErrorSnackBar()
+                }
             }
         }
     }

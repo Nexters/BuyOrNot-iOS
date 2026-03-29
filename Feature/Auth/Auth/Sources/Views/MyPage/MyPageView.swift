@@ -60,7 +60,7 @@ public struct MyPageView: View {
         HStack(spacing: 10) {
             profileImage
             BNText(viewModel.name)
-                .style(style: .s1sb, color: ColorPalette.gray900)
+                .style(style: .s1sb, color: ColorPalette.gray950)
             Spacer()
         }
         .padding(.top, 10)
@@ -148,6 +148,9 @@ private struct MockAuthNavigator: AuthNavigator {
 }
 
 private final class MockUserRepository: UserRepository {
+    func cacheUser(_ user: User) {}
+    func clearCachedUser() {}
+
     func getCachedUser() -> User? {
         User(
             id: 0,

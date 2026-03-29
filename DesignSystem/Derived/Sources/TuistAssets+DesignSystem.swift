@@ -46,6 +46,7 @@ public enum DesignSystemAsset: Sendable {
     public static let gray700 = DesignSystemColors(name: "gray700")
     public static let gray800 = DesignSystemColors(name: "gray800")
     public static let gray900 = DesignSystemColors(name: "gray900")
+    public static let gray950 = DesignSystemColors(name: "gray950")
   }
   public enum Icon {
   public static let camera = DesignSystemImages(name: "camera")

@@ -19,7 +19,7 @@ extension LoginView {
     @ViewBuilder
     func loginTitle() -> some View {
         BNText("현명한 소비를 위한\n집단지성 비교 방법")
-            .style(style: .h1sb, color: ColorPalette.gray900)
+            .style(style: .h1sb, color: ColorPalette.gray950)
             .padding(.top, 30)
             .padding(.bottom, 60)
     }

@@ -79,7 +79,7 @@ private struct BlockedUserRow: View {
             HStack(spacing: 12) {
                 profileImage
                 BNText(user.nickname)
-                    .style(style: .p2m, color: ColorPalette.gray900)
+                    .style(style: .p2m, color: ColorPalette.gray950)
             }
 
             Spacer()
@@ -140,6 +140,9 @@ private struct BlockedUserRow: View {
 }
 
 private final class MockBlockedUserRepository: UserRepository {
+    func cacheUser(_ user: User) {}
+    func clearCachedUser() {}
+
     func getMe() async throws -> User {
         User(id: 0, nickname: "테스트", profileImage: "", socialAccount: "", email: "")
     }

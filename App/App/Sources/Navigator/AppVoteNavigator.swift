@@ -27,15 +27,15 @@ final class AppVoteNavigator: VoteNavigator {
         router.navigate(to: VoteDestination.myPage)
     }
 
+    func navigateToLogin() {
+        onNavigateToLogin()
+    }
+
     func presentCreateVote() {
         router.showCreateVote = true
     }
 
     func navigateToFeedDetail(feedId: Int) {
         router.navigate(to: VoteDestination.feedDetail(feedId: feedId))
-    }
-
-    func navigateToLogin() {
-        onNavigateToLogin()
     }
 }

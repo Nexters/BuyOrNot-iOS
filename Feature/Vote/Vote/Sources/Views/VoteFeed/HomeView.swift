@@ -34,14 +34,17 @@ public struct HomeView: View {
             VStack(spacing: 0) {
                 if showNavigationBar {
                     NavigationBar(
-                        isGuest: viewModel.isGuest,
+                        isGuest: !viewModel.isAuthenticated,
                         onNotificationTap: { viewModel.didTapNotification() },
                         onProfileTap: { viewModel.didTapProfile() },
                         onLoginTap: { viewModel.didTapLogin() }
                     )
                 }
 
-                FeedSegmentedControl(selectedTab: $selectedTab, isGuest: viewModel.isGuest)
+                FeedSegmentedControl(
+                    selectedTab: $selectedTab,
+                    tabs: viewModel.isAuthenticated ? FeedTab.allCases : [.voteFeed]
+                )
 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -94,7 +97,7 @@ public struct HomeView: View {
                 Task { await viewModel.fetchMyFeeds() }
             }
         }
-        .onChange(of: selectedTab) { oldValue, newValue in
+        .onChange(of: selectedTab) { _, newValue in
             if newValue == .myVotes {
                 Task { await viewModel.fetchMyFeeds() }
             }
@@ -212,17 +215,13 @@ enum FeedFilter: String, CaseIterable {
 
 struct FeedSegmentedControl: View {
     @Binding var selectedTab: FeedTab
-    var isGuest: Bool = false
+    let tabs: [FeedTab]
     @Namespace private var namespace
-
-    private var visibleTabs: [FeedTab] {
-        isGuest ? [.voteFeed] : FeedTab.allCases
-    }
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 18) {
-                ForEach(visibleTabs, id: \.self) { tab in
+                ForEach(tabs, id: \.self) { tab in
                     TabItem(
                         title: tab.rawValue,
                         isSelected: selectedTab == tab,
@@ -331,6 +330,9 @@ private struct PreviewFeedRepository: FeedRepository {
 }
 
 private struct PreviewUserRepository: UserRepository {
+    func cacheUser(_ user: User) {}
+    func clearCachedUser() {}
+
     func getMe() async throws -> User {
         User(id: 1, nickname: "preview", profileImage: "", socialAccount: "KAKAO", email: "")
     }
@@ -353,9 +355,9 @@ private struct PreviewReportFeedRepository: ReportFeedRepository {
 private struct MockVoteNavigator: VoteNavigator {
     func navigateToNotification() {}
     func navigateToMyPage() {}
+    func navigateToLogin() {}
     func presentCreateVote() {}
     func navigateToFeedDetail(feedId: Int) {}
-    func navigateToLogin() {}
 }
 
 #Preview {

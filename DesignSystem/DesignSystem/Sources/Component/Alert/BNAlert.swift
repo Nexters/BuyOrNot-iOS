@@ -80,8 +80,8 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
                     HStack {
                         BNText(title)
                             .style(
-                                style: .s2sb,
-                                color: ColorPalette.gray900
+                                style: .s1sb,
+                                color: ColorPalette.gray950
                             )
                         Spacer()
                     }
@@ -90,7 +90,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
                     HStack {
                         BNText(message)
                             .style(
-                                style: .p2m,
+                                style: .b4m,
                                 color: ColorPalette.gray700
                             )
                         Spacer()
