@@ -61,7 +61,7 @@ public struct MyPageView: View {
             BNImage(.camera)
                 .frame(width: 42, height: 42)
             BNText(viewModel.name)
-                .style(style: .s1sb, color: ColorPalette.gray900)
+                .style(style: .s1sb, color: ColorPalette.gray950)
             Spacer()
         }
         .padding(.top, 10)

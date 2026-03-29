@@ -33,13 +33,13 @@ public struct BNNavigationBar: View {
                 leadingIcon
                     .resizable()
                     .frame(width: 20, height: 20)
-                    .foregroundColor(ColorPalette.gray900)
+                    .foregroundColor(ColorPalette.gray950)
                     .padding(10)
             }
 
             if let title {
                 BNText(title)
-                    .style(style: .t1b, color: ColorPalette.gray900)
+                    .style(style: .t1b, color: ColorPalette.gray950)
             }
 
             Spacer()
