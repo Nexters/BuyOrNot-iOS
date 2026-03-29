@@ -324,8 +324,8 @@ private struct PreviewFeedRepository: FeedRepository {
 }
 
 private struct PreviewUserRepository: UserRepository {
-    func saveUser(_ user: User) {}
-    func removeCachedUser() {}
+    func cacheUser(_ user: User) {}
+    func clearCachedUser() {}
 
     func getMe() async throws -> User {
         User(id: 1, nickname: "preview", profileImage: "", socialAccount: "KAKAO", email: "")
