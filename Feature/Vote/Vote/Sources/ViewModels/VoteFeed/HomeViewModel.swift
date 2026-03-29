@@ -44,9 +44,6 @@ public final class HomeViewModel: ObservableObject {
         self.currentUserId = userRepository.getCachedUser()?.id
         self.reportedFeedIds = reportFeedRepository.getReportFeed()?.ids ?? []
         self.removedFeedIds = reportedFeedIds
-        #if DEBUG
-        print("🔍 [HomeViewModel] currentUserId: \(String(describing: self.currentUserId))")
-        #endif
     }
 
     func didTapNotification() {
@@ -54,11 +51,19 @@ public final class HomeViewModel: ObservableObject {
     }
 
     func didTapProfile() {
-        navigator.navigateToMyPage()
+        guardAuthenticated {
+            navigator.navigateToMyPage()
+        }
     }
 
     func didTapCreateVote() {
-        navigator.presentCreateVote()
+        guardAuthenticated {
+            navigator.presentCreateVote()
+        }
+    }
+
+    var isAuthenticated: Bool {
+        currentUserId != nil
     }
 
     @MainActor
@@ -248,6 +253,14 @@ public final class HomeViewModel: ObservableObject {
         }
     }
 
+    private func guardAuthenticated(_ action: () -> Void) {
+        guard userRepository.getCachedUser() != nil else {
+            navigator.navigateToLogin()
+            return
+        }
+        action()
+    }
+
     private func feedStatusParam(for filter: FeedFilter) -> String? {
         switch filter {
         case .all: return nil
@@ -296,7 +309,8 @@ public final class HomeViewModel: ObservableObject {
                 selectedVoteId: selectedOptionId,
                 isPeriodDone: item.isPeriodDone,
                 isMine: item.isMine,
-                isVotingLocked: item.isVotingLocked
+                isVotingLocked: item.isVotingLocked,
+                canShowMenu: item.canShowMenu
             )
         }
 
@@ -337,7 +351,8 @@ public final class HomeViewModel: ObservableObject {
             selectedVoteId: selectedVoteId,
             isPeriodDone: vote.voteStatus == .closed,
             isMine: isMyFeed,
-            isVotingLocked: isMyFeed
+            isVotingLocked: isMyFeed,
+            canShowMenu: isAuthenticated
         )
     }
 
