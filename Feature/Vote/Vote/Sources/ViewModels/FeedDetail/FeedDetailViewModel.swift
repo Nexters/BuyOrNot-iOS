@@ -123,7 +123,8 @@ public final class FeedDetailViewModel: ObservableObject {
             selectedVoteId: selectedOptionId,
             isPeriodDone: item.isPeriodDone,
             isMine: item.isMine,
-            isVotingLocked: item.isVotingLocked
+            isVotingLocked: item.isVotingLocked,
+            canShowMenu: item.canShowMenu
         )
     }
 
@@ -156,7 +157,8 @@ public final class FeedDetailViewModel: ObservableObject {
             selectedVoteId: selectedVoteId,
             isPeriodDone: vote.voteStatus == .closed,
             isMine: isMyFeed,
-            isVotingLocked: isMyFeed
+            isVotingLocked: isMyFeed,
+            canShowMenu: currentUserId != nil
         )
     }
 
