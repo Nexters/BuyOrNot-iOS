@@ -125,7 +125,7 @@ final class NetworkClient: NetworkClientProtocol {
         let endpoint = AuthEndpoint.postRefreshToken(
             RefreshTokenRequest(refreshToken: refreshToken)
         )
-        let response: BaseResponse<TokenResponse> = try await request(
+        let response: BaseResponse<AuthSessionResponse> = try await request(
             endpoint,
             didRetryAfterRefresh: false
         )
@@ -197,6 +197,7 @@ final class NetworkClient: NetworkClientProtocol {
         if let headers = endpoint.headers {
             print("📋 Custom Headers: \(headers)")
         }
+        print("🔑 Bearer Token: \(accessToken.isEmpty ? "Null" : accessToken)")
         #endif
 
         return request

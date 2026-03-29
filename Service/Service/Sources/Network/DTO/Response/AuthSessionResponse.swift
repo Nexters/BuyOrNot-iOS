@@ -1,11 +1,11 @@
 //
-//  TokenResponse.swift
+//  AuthSessionResponse.swift
 //  Service
 //
 //  Created by 문종식 on 2/14/26.
 //
 
-struct TokenResponse: Decodable {
+struct AuthSessionResponse: Decodable {
     let accessToken: String
     let refreshToken: String
     let tokenType: String
