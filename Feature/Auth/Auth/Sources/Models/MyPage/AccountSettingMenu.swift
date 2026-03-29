@@ -36,7 +36,7 @@ enum AccountSettingMenu: Hashable, CaseIterable, MenuTileItem {
     var textColor: Color {
         switch self {
         case .email, .logout:
-                ColorPalette.gray900
+                ColorPalette.gray950
         case  .deleteAccount:
                 ColorPalette.red100
         }

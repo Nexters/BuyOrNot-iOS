@@ -196,7 +196,7 @@ public struct CreateVoteView: View {
             .keyboardType(.numberPad)
             .font(.s3sb)
             .foregroundStyle(ColorPalette.gray800)
-            .tint(ColorPalette.gray900)
+            .tint(ColorPalette.gray950)
             .onChange(of: viewModel.price) { oldValue, newValue in
                 viewModel.didChangePrice(previous: oldValue, text: newValue)
             }
@@ -220,8 +220,8 @@ public struct CreateVoteView: View {
                 axis: .vertical
             )
             .font(.p2m)
-            .foregroundStyle(ColorPalette.gray900)
-            .tint(ColorPalette.gray900)
+            .foregroundStyle(ColorPalette.gray950)
+            .tint(ColorPalette.gray950)
             .focused($focusState, equals: .contents)
             .lineLimit(nil)
             .scrollContentBackground(.hidden)
