@@ -6,6 +6,8 @@
 //
 
 public protocol UserRepository {
+    func saveUser(_ user: User)
+    func removeCachedUser()
     func getMe() async throws -> User
     func getCachedUser() -> User?
     func updateFCMToken(_ token: String) async throws

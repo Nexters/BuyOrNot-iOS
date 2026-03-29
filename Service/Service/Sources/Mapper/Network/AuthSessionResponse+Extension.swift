@@ -10,26 +10,18 @@ import Domain
 extension AuthSessionResponse {
     func toDomain() -> AuthSession {
         AuthSession(
-            token: toToken(),
-            user: toUser()
-        )
-    }
-
-    func toToken() -> Token {
-        Token(
-            refreshToken: self.refreshToken,
-            accessToken: self.accessToken,
-            tokenType: self.tokenType
-        )
-    }
-    
-    func toUser() -> User {
-        User(
-            id: self.user.id,
-            nickname: self.user.nickname,
-            profileImage: self.user.profileImage,
-            socialAccount: self.user.socialAccount ?? "",
-            email: self.user.email ?? ""
+            token: Token(
+                refreshToken: refreshToken,
+                accessToken: accessToken,
+                tokenType: tokenType
+            ),
+            user: User(
+                id: user.id,
+                nickname: user.nickname,
+                profileImage: user.profileImage,
+                socialAccount: user.socialAccount ?? "",
+                email: user.email ?? ""
+            )
         )
     }
 }

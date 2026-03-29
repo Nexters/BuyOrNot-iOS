@@ -114,6 +114,9 @@ private struct MockAuthNavigator: AuthNavigator {
 }
 
 private final class MockUserRepository: UserRepository {
+    func saveUser(_ user: User) {}
+    func removeCachedUser() {}
+
     func getCachedUser() -> User? {
         User(
             id: 0,
