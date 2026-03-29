@@ -19,23 +19,30 @@ public struct FeedDetailView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            BNNavigationBar(onLeadingTap: { dismiss() })
+        ZStack(alignment: .bottom) {
+            VStack(spacing: 0) {
+                BNNavigationBar(onLeadingTap: { dismiss() })
 
-            switch viewModel.state {
-            case .loading:
-                Spacer()
-                ProgressView()
-                Spacer()
+                switch viewModel.state {
+                case .loading:
+                    VStack {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            case .error:
-                Spacer()
-                BNText("피드를 불러올 수 없습니다")
-                    .style(style: .b3m, color: ColorPalette.gray600)
-                Spacer()
+                case .error:
+                    VStack {
+                        Spacer()
+                        BNText("피드를 불러올 수 없습니다")
+                            .style(style: .b3m, color: ColorPalette.gray600)
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            case .success:
-                if let feed = viewModel.feed {
+                case .success:
+                    if let feed = viewModel.feed {
                         VoteFeed(
                             data: feed,
                             onDelete: {
@@ -54,11 +61,11 @@ public struct FeedDetailView: View {
                             }
                         )
                         .padding(.horizontal, 20)
+                        .frame(maxWidth: .infinity, alignment: .top)
+                    }
                 }
             }
-
-            Spacer()
-
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             VStack {
                 Spacer()
                 BNSnackBar(
@@ -67,10 +74,10 @@ public struct FeedDetailView: View {
                 )
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationBarHidden(true)
         .task {
             await viewModel.fetchFeed(feedId: feedId)
         }
     }
 }
-

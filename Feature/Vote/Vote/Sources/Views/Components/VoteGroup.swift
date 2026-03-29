@@ -1,11 +1,12 @@
 //
 //  VoteGroup.swift
-//  DesignSystem
+//  Vote
 //
 //  Created by 이조은 on 1/28/26.
 //
 
 import SwiftUI
+import DesignSystem
 
 public struct VoteGroup: View {
 
@@ -96,7 +97,7 @@ public struct VoteGroup: View {
             text: option.text,
             imageURL: isSelected ? option.imageURL : nil,
             percent: percent,
-            style: getStyle(for: option.id),
+            style: style(for: option.id),
             showPercent: showResults,
             isPeriodDone: isPeriodDone
         ) {
@@ -120,7 +121,7 @@ public struct VoteGroup: View {
         return Int(round(Double(option.voteCount) / Double(totalVotes) * 100))
     }
 
-    private func getStyle(for optionId: Int) -> VoteButtonStyle {
+    private func style(for optionId: Int) -> VoteButtonStyle {
         if isPeriodDone || isVotingLocked {
             return optionId == winnerOptionId ? .black : .gray
         } else if let selected = selectedOptionId {

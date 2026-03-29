@@ -58,14 +58,48 @@ public struct MyPageView: View {
     @ViewBuilder
     private var profile: some View {
         HStack(spacing: 10) {
-            BNImage(.camera)
-                .frame(width: 42, height: 42)
+            profileImage
             BNText(viewModel.name)
                 .style(style: .s1sb, color: ColorPalette.gray950)
             Spacer()
         }
         .padding(.top, 10)
         .padding(.horizontal, 20)
+    }
+
+    @ViewBuilder
+    private var profileImage: some View {
+        if viewModel.profileImageURL.isEmpty {
+            Circle()
+                .fill(ColorPalette.gray100)
+                .overlay(
+                    Circle()
+                        .stroke(ColorPalette.gray300, lineWidth: 1.3)
+                )
+                .overlay(
+                    BNImage(.camera)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(ColorPalette.gray500)
+                )
+                .frame(width: 42, height: 42)
+        } else {
+            AsyncImage(url: URL(string: viewModel.profileImageURL)) { image in
+                image
+                    .resizable()
+                    .scaledToFill()
+            } placeholder: {
+                Circle()
+                    .fill(ColorPalette.gray100)
+                    .overlay(
+                        Circle()
+                            .stroke(ColorPalette.gray300, lineWidth: 1.3)
+                    )
+            }
+            .frame(width: 42, height: 42)
+            .clipShape(Circle())
+        }
     }
     
     @ViewBuilder

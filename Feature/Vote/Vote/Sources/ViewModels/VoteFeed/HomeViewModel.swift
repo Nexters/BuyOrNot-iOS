@@ -56,6 +56,10 @@ public final class HomeViewModel: ObservableObject {
         }
     }
 
+    func didTapLogin() {
+        navigator.navigateToLogin()
+    }
+
     func didTapCreateVote() {
         guardAuthenticated {
             navigator.presentCreateVote()
