@@ -26,7 +26,7 @@ public class AuthRepositoryImpl: AuthRepository {
         let body = AppleAuthRequest(
             authorizationCode: authorizationCode
         )
-        let response: BaseResponse<TokenResponse> = try await request(
+        let response: BaseResponse<AuthSessionResponse> = try await request(
             .postAppleLogin(body)
         )
         saveToStore(response.data)
@@ -37,7 +37,7 @@ public class AuthRepositoryImpl: AuthRepository {
         let body = GoogleAuthRequest(
             idToken: idToken
         )
-        let response: BaseResponse<TokenResponse> = try await request(
+        let response: BaseResponse<AuthSessionResponse> = try await request(
             .postGoogleLogin(body)
         )
         saveToStore(response.data)
@@ -48,7 +48,7 @@ public class AuthRepositoryImpl: AuthRepository {
         let body = KakaoAuthRequest(
             accessToken: accessToken
         )
-        let response: BaseResponse<TokenResponse> = try await request(
+        let response: BaseResponse<AuthSessionResponse> = try await request(
             .postKakaoLogin(body)
         )
         saveToStore(response.data)
@@ -59,7 +59,7 @@ public class AuthRepositoryImpl: AuthRepository {
         let body = RefreshTokenRequest(
             refreshToken: refreshToken
         )
-        let response: BaseResponse<TokenResponse> = try await request(
+        let response: BaseResponse<AuthSessionResponse> = try await request(
             .postRefreshToken(body)
         )
         saveToStore(response.data)
@@ -77,7 +77,7 @@ public class AuthRepositoryImpl: AuthRepository {
         userStore.removeUser()
     }
     
-    private func saveToStore(_ data: TokenResponse) {
+    private func saveToStore(_ data: AuthSessionResponse) {
         tokenStore.saveToken(data.toToken())
         userStore.saveUser(data.toUser())
     }

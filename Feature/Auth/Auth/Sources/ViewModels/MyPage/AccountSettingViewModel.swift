@@ -60,9 +60,11 @@ public final class AccountSettingViewModel: ObservableObject {
                     return
                 }
                 try await self?.authRepository.logout(refreshToken: token.refreshToken)
-                self?.tokenRepository.removeToken()
                 self?.navigator.navigateToLogin()
-            } catch {
+            } catch(let error) {
+#if DEBUG
+                print("🚨 Failed Logout: \(error)")
+#endif
             }
         }
     }

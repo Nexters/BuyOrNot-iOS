@@ -84,7 +84,7 @@ struct AppView: View {
         .task {
             await PushNotificationService.shared.requestAuthorizationIfNeeded()
         }
-        .onChange(of: scenePhase) { phase in
+        .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
             Task {
                 let userRepository: UserRepository = container.resolve()

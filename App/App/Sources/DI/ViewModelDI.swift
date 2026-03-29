@@ -15,10 +15,8 @@ extension DIContainer {
     func registerViewModels(_ container: Container) {
         container.register(LoginViewModel.self) { (resolver: Resolver, argument: LoginViewModel.Argument) in
             let authRepository: AuthRepository = resolver.resolve()
-            let tokenRepository: TokenRepository = resolver.resolve()
             return LoginViewModel(
                 authRepository: authRepository,
-                tokenRepository: tokenRepository,
                 argument: argument
             )
         }
