@@ -8,6 +8,13 @@
 import Domain
 
 extension AuthSessionResponse {
+    func toDomain() -> AuthSession {
+        AuthSession(
+            token: toToken(),
+            user: toUser()
+        )
+    }
+
     func toToken() -> Token {
         Token(
             refreshToken: self.refreshToken,

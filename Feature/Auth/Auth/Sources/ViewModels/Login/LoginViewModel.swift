@@ -92,7 +92,7 @@ public final class LoginViewModel: ObservableObject {
                 }
                 guard let self else { return }
                 do {
-                    let result = try await authRepository.loginWithGoogle(
+                    _ = try await authRepository.loginWithGoogle(
                         idToken: idToken
                     )
                     delegate?.completeLogin(.member)
@@ -117,7 +117,7 @@ public final class LoginViewModel: ObservableObject {
                 }
                 guard let self else { return }
                 do {
-                    let result = try await authRepository.loginWithApple(
+                    _ = try await authRepository.loginWithApple(
                         authorizationCode: authorizationCode
                     )
                     delegate?.completeLogin(.member)
@@ -140,7 +140,7 @@ public final class LoginViewModel: ObservableObject {
                 }
                 guard let self else { return }
                 do {
-                    let _ = try await authRepository.loginWithKakao(
+                    _ = try await authRepository.loginWithKakao(
                         accessToken: oauthToken.accessToken
                     )
                     delegate?.completeLogin(.member)
