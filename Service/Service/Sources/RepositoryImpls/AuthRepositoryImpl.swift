@@ -22,48 +22,52 @@ public class AuthRepositoryImpl: AuthRepository {
         try await apiClient.request(endpoint)
     }
     
-    public func loginWithApple(authorizationCode: String) async throws -> Token {
+    public func loginWithApple(authorizationCode: String) async throws -> AuthSession {
         let body = AppleAuthRequest(
             authorizationCode: authorizationCode
         )
         let response: BaseResponse<AuthSessionResponse> = try await request(
             .postAppleLogin(body)
         )
-        saveToStore(response.data)
-        return response.data.toToken()
+        let session = response.data.toDomain()
+        saveToStore(session)
+        return session
     }
     
-    public func loginWithGoogle(idToken: String) async throws -> Token {
+    public func loginWithGoogle(idToken: String) async throws -> AuthSession {
         let body = GoogleAuthRequest(
             idToken: idToken
         )
         let response: BaseResponse<AuthSessionResponse> = try await request(
             .postGoogleLogin(body)
         )
-        saveToStore(response.data)
-        return response.data.toToken()
+        let session = response.data.toDomain()
+        saveToStore(session)
+        return session
     }
     
-    public func loginWithKakao(accessToken: String) async throws -> Token {
+    public func loginWithKakao(accessToken: String) async throws -> AuthSession {
         let body = KakaoAuthRequest(
             accessToken: accessToken
         )
         let response: BaseResponse<AuthSessionResponse> = try await request(
             .postKakaoLogin(body)
         )
-        saveToStore(response.data)
-        return response.data.toToken()
+        let session = response.data.toDomain()
+        saveToStore(session)
+        return session
     }
     
-    public func refreshToken(refreshToken: String) async throws -> Token {
+    public func refreshToken(refreshToken: String) async throws -> AuthSession {
         let body = RefreshTokenRequest(
             refreshToken: refreshToken
         )
         let response: BaseResponse<AuthSessionResponse> = try await request(
             .postRefreshToken(body)
         )
-        saveToStore(response.data)
-        return response.data.toToken()
+        let session = response.data.toDomain()
+        saveToStore(session)
+        return session
     }
     
     public func logout(refreshToken: String) async throws {
@@ -77,8 +81,8 @@ public class AuthRepositoryImpl: AuthRepository {
         userStore.removeUser()
     }
     
-    private func saveToStore(_ data: AuthSessionResponse) {
-        tokenStore.saveToken(data.toToken())
-        userStore.saveUser(data.toUser())
+    private func saveToStore(_ session: AuthSession) {
+        tokenStore.saveToken(session.token)
+        userStore.saveUser(session.user)
     }
 }
