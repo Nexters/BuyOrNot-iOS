@@ -22,6 +22,7 @@ public final class HomeViewModel: ObservableObject {
     @Published var selectedFilter: FeedFilter = .all
     @Published var isLoadingMore: Bool = false
 
+    @Published var isGuest: Bool = false
     @Published var myVoteState: MyVoteState = .loading
     @Published var myFeeds: [VoteFeedData] = []
     @Published var snackBar = BNSnackBarManager()
@@ -42,6 +43,7 @@ public final class HomeViewModel: ObservableObject {
         self.reportFeedRepository = reportFeedRepository
         self.navigator = argument.navigator
         self.currentUserId = userRepository.getCachedUser()?.id
+        self.isGuest = self.currentUserId == nil
         self.reportedFeedIds = reportFeedRepository.getReportFeed()?.ids ?? []
         self.removedFeedIds = reportedFeedIds
         #if DEBUG
@@ -55,6 +57,10 @@ public final class HomeViewModel: ObservableObject {
 
     func didTapProfile() {
         navigator.navigateToMyPage()
+    }
+
+    func didTapLogin() {
+        navigator.navigateToLogin()
     }
 
     func didTapCreateVote() {

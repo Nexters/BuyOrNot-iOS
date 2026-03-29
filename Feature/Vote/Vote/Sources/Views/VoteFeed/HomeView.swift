@@ -34,12 +34,14 @@ public struct HomeView: View {
             VStack(spacing: 0) {
                 if showNavigationBar {
                     NavigationBar(
+                        isGuest: viewModel.isGuest,
                         onNotificationTap: { viewModel.didTapNotification() },
-                        onProfileTap: { viewModel.didTapProfile() }
+                        onProfileTap: { viewModel.didTapProfile() },
+                        onLoginTap: { viewModel.didTapLogin() }
                     )
                 }
 
-                FeedSegmentedControl(selectedTab: $selectedTab)
+                FeedSegmentedControl(selectedTab: $selectedTab, isGuest: viewModel.isGuest)
 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -210,12 +212,17 @@ enum FeedFilter: String, CaseIterable {
 
 struct FeedSegmentedControl: View {
     @Binding var selectedTab: FeedTab
+    var isGuest: Bool = false
     @Namespace private var namespace
+
+    private var visibleTabs: [FeedTab] {
+        isGuest ? [.voteFeed] : FeedTab.allCases
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 18) {
-                ForEach(FeedTab.allCases, id: \.self) { tab in
+                ForEach(visibleTabs, id: \.self) { tab in
                     TabItem(
                         title: tab.rawValue,
                         isSelected: selectedTab == tab,
@@ -348,6 +355,7 @@ private struct MockVoteNavigator: VoteNavigator {
     func navigateToMyPage() {}
     func presentCreateVote() {}
     func navigateToFeedDetail(feedId: Int) {}
+    func navigateToLogin() {}
 }
 
 #Preview {
