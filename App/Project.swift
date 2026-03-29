@@ -8,8 +8,8 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let version = "0.0.1"
-let build = 3
+let version = "0.0.2"
+let build = 0
 
 let project = Module.app.project(
     dependencies: [
