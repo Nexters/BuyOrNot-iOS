@@ -102,7 +102,7 @@ public final class LoginViewModel: ObservableObject {
                         idToken: idToken
                     )
                     tokenRepository.saveToken(session.token)
-                    userRepository.saveUser(session.user)
+                    userRepository.cacheUser(session.user)
                     delegate?.completeLogin(.member)
                 } catch { }
             }
@@ -129,7 +129,7 @@ public final class LoginViewModel: ObservableObject {
                         authorizationCode: authorizationCode
                     )
                     tokenRepository.saveToken(session.token)
-                    userRepository.saveUser(session.user)
+                    userRepository.cacheUser(session.user)
                     delegate?.completeLogin(.member)
                 } catch { }
             }
@@ -154,7 +154,7 @@ public final class LoginViewModel: ObservableObject {
                         accessToken: oauthToken.accessToken
                     )
                     tokenRepository.saveToken(session.token)
-                    userRepository.saveUser(session.user)
+                    userRepository.cacheUser(session.user)
                     delegate?.completeLogin(.member)
                 } catch { }
             }

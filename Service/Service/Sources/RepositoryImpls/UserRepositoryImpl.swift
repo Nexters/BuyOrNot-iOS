@@ -24,11 +24,11 @@ public class UserRepositoryImpl: UserRepository {
         try await apiClient.request(endpoint)
     }
     
-    public func saveUser(_ user: User) {
+    public func cacheUser(_ user: User) {
         userStore.saveUser(user)
     }
 
-    public func removeCachedUser() {
+    public func clearCachedUser() {
         userStore.removeUser()
     }
 

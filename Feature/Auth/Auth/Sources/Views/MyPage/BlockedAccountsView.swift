@@ -140,8 +140,8 @@ private struct BlockedUserRow: View {
 }
 
 private final class MockBlockedUserRepository: UserRepository {
-    func saveUser(_ user: User) {}
-    func removeCachedUser() {}
+    func cacheUser(_ user: User) {}
+    func clearCachedUser() {}
 
     func getMe() async throws -> User {
         User(id: 0, nickname: "테스트", profileImage: "", socialAccount: "", email: "")
