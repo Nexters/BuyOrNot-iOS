@@ -9,9 +9,14 @@ import Vote
 
 final class AppVoteNavigator: VoteNavigator {
     private let router: Router
+    private let onNavigateToLogin: () -> Void
 
-    init(router: Router) {
+    init(
+        router: Router,
+        onNavigateToLogin: @escaping () -> Void
+    ) {
         self.router = router
+        self.onNavigateToLogin = onNavigateToLogin
     }
 
     func navigateToNotification() {
@@ -20,6 +25,10 @@ final class AppVoteNavigator: VoteNavigator {
 
     func navigateToMyPage() {
         router.navigate(to: VoteDestination.myPage)
+    }
+
+    func navigateToLogin() {
+        onNavigateToLogin()
     }
 
     func presentCreateVote() {

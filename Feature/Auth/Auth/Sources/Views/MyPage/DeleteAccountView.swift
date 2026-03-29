@@ -88,6 +88,9 @@ public struct DeleteAccountView: View {
 }
 
 private final class MockUserRepository: UserRepository {
+    func cacheUser(_ user: User) {}
+    func clearCachedUser() {}
+
     func getCachedUser() -> User? {
         User(
             id: 0,

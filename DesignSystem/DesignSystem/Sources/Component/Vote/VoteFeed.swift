@@ -24,6 +24,7 @@ public struct VoteFeedData {
     public let isPeriodDone: Bool
     public let isMine: Bool
     public let isVotingLocked: Bool
+    public let canShowMenu: Bool
 
     public init(
         id: String,
@@ -39,7 +40,8 @@ public struct VoteFeedData {
         selectedVoteId: Int? = nil,
         isPeriodDone: Bool = false,
         isMine: Bool = false,
-        isVotingLocked: Bool = false
+        isVotingLocked: Bool = false,
+        canShowMenu: Bool = true
     ) {
         self.id = id
         self.userId = userId
@@ -55,6 +57,7 @@ public struct VoteFeedData {
         self.isPeriodDone = isPeriodDone
         self.isMine = isMine
         self.isVotingLocked = isVotingLocked
+        self.canShowMenu = canShowMenu
     }
 }
 
@@ -94,6 +97,7 @@ public struct VoteFeed: View {
                     userName: data.userName,
                     category: data.category,
                     timeAgo: data.timeAgo,
+                    canShowMenu: data.canShowMenu,
                     showMenu: $showMenu
                 )
                 .padding(.top, 20)
@@ -176,6 +180,7 @@ private struct FeedHeader: View {
     let userName: String
     let category: String
     let timeAgo: String
+    let canShowMenu: Bool
     @Binding var showMenu: Bool
 
     var body: some View {
@@ -216,14 +221,16 @@ private struct FeedHeader: View {
                     .style(style: .b7m, color: ColorPalette.gray600)
             }
             
-            Button {
-                showMenu.toggle()
-            } label: {
-                BNImage(.combined_shape)
-                    .resizable()
-                    .renderingMode(.template)
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(ColorPalette.gray500)
+            if canShowMenu {
+                Button {
+                    showMenu.toggle()
+                } label: {
+                    BNImage(.combined_shape)
+                        .resizable()
+                        .renderingMode(.template)
+                        .frame(width: 20, height: 20)
+                        .foregroundStyle(ColorPalette.gray500)
+                }
             }
         }
     }
