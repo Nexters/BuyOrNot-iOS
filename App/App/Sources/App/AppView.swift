@@ -31,7 +31,15 @@ struct AppView: View {
     }
     
     private var voteNavigator: VoteNavigator {
-        AppVoteNavigator(router: router)
+        AppVoteNavigator(
+            router: router,
+            onNavigateToLogin: {
+                router.popToRoot()
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    viewModel.appDestination = .login
+                }
+            }
+        )
     }
     
     init(viewModel: AppViewModel) {
