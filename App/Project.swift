@@ -8,7 +8,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let version = "0.0.2"
+let version = "0.0.3"
 let build = 0
 
 let project = Module.app.project(
@@ -20,6 +20,7 @@ let project = Module.app.project(
         .external(name: "Swinject"),
         .external(name: "KakaoSDKAuth"),
         .external(name: "FirebaseMessaging"),
+        .external(name: "FirebaseRemoteConfig"),
     ],
     infoPlist: .extendingDefault(
         with: [
