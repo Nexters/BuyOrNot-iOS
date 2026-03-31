@@ -68,8 +68,10 @@ extension DIContainer {
 
         container.register(SplashViewModel.self) { (resolver: Resolver, argument: SplashViewModel.Argument) in
             let tokenRepository: TokenRepository = resolver.resolve()
+            let remoteConfigRepository: RemoteConfigRepository = resolver.resolve()
             return SplashViewModel(
                 tokenRepository: tokenRepository,
+                remoteConfigRepository: remoteConfigRepository,
                 argument: argument
             )
         }

@@ -21,6 +21,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         /// Load DesignSystem Resource
         BNFont.loadFonts()
         
+        setupRemoteConfig()
+        
         return true
     }
     
@@ -30,5 +32,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Messaging.messaging().apnsToken = deviceToken
+    }
+}
+
+extension AppDelegate {
+    private func setupRemoteConfig() {
+        let remoteConfig = RemoteConfig.remoteConfig()
+        let settings = RemoteConfigSettings()
+        settings.minimumFetchInterval = 0
+        remoteConfig.configSettings = settings
     }
 }

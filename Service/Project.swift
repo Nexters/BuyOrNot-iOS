@@ -12,5 +12,6 @@ let project = Module.service.project(
     dependencies: [
         Module.domain.toDependency,
         Module.core.toDependency,
+        .external(name: "FirebaseRemoteConfig"),
     ]
 )
