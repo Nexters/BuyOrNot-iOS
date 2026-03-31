@@ -10,17 +10,25 @@ import Domain
 
 public final class SplashViewModel: ObservableObject {
     private let tokenRepository: TokenRepository
+    private let remoteConfigRepository: RemoteConfigRepository
     private let delegate: SplashDelegate?
     
     public init(
         tokenRepository: TokenRepository,
+        remoteConfigRepository: RemoteConfigRepository,
         argument: SplashViewModel.Argument
     ) {
         self.tokenRepository = tokenRepository
+        self.remoteConfigRepository = remoteConfigRepository
         self.delegate = argument.delegate
     }
     
+    func didSplashStarted() {
+        remoteConfigRepository.fetchAndActivate()
+    }
+    
     func didSplashEnded() {
+        let version = remoteConfigRepository.getString(forKey: .iosMinSupportedVersion)
         let token = tokenRepository.getToken()
         let authState: AuthState = token.isEmpty ? .guest : .member
         delegate?.completeSplash(authState)
