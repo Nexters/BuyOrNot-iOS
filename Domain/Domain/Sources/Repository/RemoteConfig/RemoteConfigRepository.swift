@@ -10,9 +10,9 @@ public enum RemoteConfigKey {
 }
 
 public protocol RemoteConfigRepository {
-    func fetchAndActivate()
-    func getString(forKey key: RemoteConfigKey) -> String
-    func getBool(forKey key: RemoteConfigKey) -> Bool
-    func getInt(forKey key: RemoteConfigKey) -> Int
-    func getDouble(forKey key: RemoteConfigKey) -> Double
+    func fetchAndActivate() async throws
+    func getString(forKey key: RemoteConfigKey) async -> String
+    func getBool(forKey key: RemoteConfigKey) async -> Bool
+    func getInt(forKey key: RemoteConfigKey) async -> Int
+    func getDouble(forKey key: RemoteConfigKey) async -> Double
 }

@@ -15,27 +15,35 @@ public final class RemoteConfigRepositoryImpl: RemoteConfigRepository {
         self.remoteConfig = remoteConfig
     }
     
-    public func fetchAndActivate() {
-        remoteConfig.fetchAndActivate()
+    public func fetchAndActivate() async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            remoteConfig.fetchAndActivate { _, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: ())
+            }
+        }
     }
 
-    public func getString(forKey key: RemoteConfigKey) -> String {
-        remoteConfig.fetchAndActivate()
+    public func getString(forKey key: RemoteConfigKey) async -> String {
+        try? await fetchAndActivate()
         return remoteConfig.configValue(forKey: key.remoteKey).stringValue
     }
 
-    public func getBool(forKey key: RemoteConfigKey) -> Bool {
-        remoteConfig.fetchAndActivate()
+    public func getBool(forKey key: RemoteConfigKey) async -> Bool {
+        try? await fetchAndActivate()
         return remoteConfig.configValue(forKey: key.remoteKey).boolValue
     }
 
-    public func getInt(forKey key: RemoteConfigKey) -> Int {
-        remoteConfig.fetchAndActivate()
+    public func getInt(forKey key: RemoteConfigKey) async -> Int {
+        try? await fetchAndActivate()
         return remoteConfig.configValue(forKey: key.remoteKey).numberValue.intValue
     }
 
-    public func getDouble(forKey key: RemoteConfigKey) -> Double {
-        remoteConfig.fetchAndActivate()
+    public func getDouble(forKey key: RemoteConfigKey) async -> Double {
+        try? await fetchAndActivate()
         return remoteConfig.configValue(forKey: key.remoteKey).numberValue.doubleValue
     }
 }
