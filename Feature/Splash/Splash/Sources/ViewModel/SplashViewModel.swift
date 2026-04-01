@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
+import UIKit
+import Core
 import Domain
 
 public final class SplashViewModel: ObservableObject {
+    @Published var isRequireUpdate = false
+
     private let tokenRepository: TokenRepository
     private let remoteConfigRepository: RemoteConfigRepository
     private let delegate: SplashDelegate?
+    
+    
     
     public init(
         tokenRepository: TokenRepository,
@@ -28,18 +34,50 @@ public final class SplashViewModel: ObservableObject {
     }
     
     func didSplashEnded() {
-        let minSupportedVersion = remoteConfigRepository.getString(forKey: .iosMinSupportedVersion)
-        let isRequireUpdate = shouldRequireUpdate(minSupportedVersion: minSupportedVersion)
+        routeAfterVersionCheck()
+    }
 
+    func didBecomeActive() {
+        guard isRequireUpdate else {
+            return
+        }
+        routeAfterVersionCheck()
+    }
+
+    private func routeAfterVersionCheck() {
+        let minSupportedVersion = remoteConfigRepository.getString(forKey: .iosMinSupportedVersion)
+        let requireUpdate = shouldRequireUpdate(minSupportedVersion: minSupportedVersion)
+
+        // 앱 재진입 시 동일 alert를 다시 표시하기 위해 presentation 상태를 재트리거한다.
+        if requireUpdate {
+            isRequireUpdate = false
+            Task { @MainActor [weak self] in
+                self?.isRequireUpdate = true
+            }
+            return
+        }
+
+        isRequireUpdate = false
         let token = tokenRepository.getToken()
         let authState: AuthState = token.isEmpty ? .guest : .member
         delegate?.completeSplash(authState)
     }
     
+    func openAppStore() {
+        let urlString = Constants.getValue(with: .appStoreURL)
+        guard let url = URL(string: urlString),
+              UIApplication.shared.canOpenURL(url)
+        else {
+            return
+        }
+        UIApplication.shared.open(url)
+    }
+    
     // App 버전/최소 지원 버전 중 하나라도 파싱 실패하면 강제 업데이트로 처리한다.
-    func shouldRequireUpdate(minSupportedVersion: String) -> Bool {
+    private func shouldRequireUpdate(minSupportedVersion: String) -> Bool {
+        let versionKey = "CFBundleShortVersionString"
         guard
-            let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
+            let currentVersion = Bundle.main.infoDictionary?[versionKey] as? String,
             let current = parseVersion(currentVersion),
             let minimum = parseVersion(minSupportedVersion)
         else {
