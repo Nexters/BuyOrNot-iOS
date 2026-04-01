@@ -29,23 +29,16 @@ public final class SplashViewModel: ObservableObject {
         self.delegate = argument.delegate
     }
     
-    func didSplashStarted() {
-        remoteConfigRepository.fetchAndActivate()
+    func didSplashStarted() async {
+        try? await remoteConfigRepository.fetchAndActivate()
     }
     
-    func didSplashEnded() {
-        routeAfterVersionCheck()
+    func didSplashEnded() async {
+        await routeAfterVersionCheck()
     }
 
-    func didBecomeActive() {
-        guard isRequireUpdate else {
-            return
-        }
-        routeAfterVersionCheck()
-    }
-
-    private func routeAfterVersionCheck() {
-        let minSupportedVersion = remoteConfigRepository.getString(forKey: .iosMinSupportedVersion)
+    private func routeAfterVersionCheck() async {
+        let minSupportedVersion = await remoteConfigRepository.getString(forKey: .iosMinSupportedVersion)
         isRequireUpdate = shouldRequireUpdate(minSupportedVersion: minSupportedVersion)
 
         if isRequireUpdate {
