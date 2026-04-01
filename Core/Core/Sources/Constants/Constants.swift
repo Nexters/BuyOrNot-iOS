@@ -12,6 +12,7 @@ public struct Constants {
         case serviceTermsURL = "SERVICE_TERMS_URL"
         case privacyPolicyURL = "PRIVACY_POLICY_URL"
         case userFeedbackURL = "USER_FEEDBACK_URL"
+        case appStoreURL = "APP_STORE_URL"
     }
     
     public static func getValue(with key: ConstantsKey) -> String {

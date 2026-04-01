@@ -25,8 +25,9 @@ public struct SplashView: View {
             ) { _ in }
                 .onAppear {
                     Task {
+                        await viewModel.didSplashStarted()
                         try await Task.sleep(for: .milliseconds(2300))
-                        viewModel.didSplashEnded()
+                        await viewModel.didSplashEnded()
                     }
                 }
             
@@ -36,5 +37,21 @@ public struct SplashView: View {
                 .frame(height: 40)
         }
         .padding(.bottom, 320)
+        .bnAlert(
+            isPresented: $viewModel.isRequireUpdate,
+            isEnableDismiss: false,
+            config: BNAlertConfig(
+                title: "업데이트가 필요합니다.",
+                message: "원활한 앱 사용을 위해 업데이트를 진행해주세요.",
+                withClose: false,
+                buttons: [
+                    .init(
+                        text: "업데이트",
+                        type: .primary,
+                        action: viewModel.openAppStore
+                    )
+                ]
+            )
+        )
     }
 }

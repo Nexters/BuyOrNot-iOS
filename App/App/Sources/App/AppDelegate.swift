@@ -10,6 +10,7 @@ import DesignSystem
 import UserNotifications
 import FirebaseCore
 import FirebaseMessaging
+import FirebaseRemoteConfig
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
@@ -20,6 +21,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         /// Load DesignSystem Resource
         BNFont.loadFonts()
         
+        setupRemoteConfig()
+        
         return true
     }
     
@@ -29,5 +32,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Messaging.messaging().apnsToken = deviceToken
+    }
+}
+
+extension AppDelegate {
+    private func setupRemoteConfig() {
+        let remoteConfig = RemoteConfig.remoteConfig()
+        let settings = RemoteConfigSettings()
+        settings.minimumFetchInterval = 0
+        remoteConfig.configSettings = settings
     }
 }
