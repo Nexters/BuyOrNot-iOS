@@ -46,18 +46,12 @@ public final class SplashViewModel: ObservableObject {
 
     private func routeAfterVersionCheck() {
         let minSupportedVersion = remoteConfigRepository.getString(forKey: .iosMinSupportedVersion)
-        let requireUpdate = shouldRequireUpdate(minSupportedVersion: minSupportedVersion)
+        isRequireUpdate = shouldRequireUpdate(minSupportedVersion: minSupportedVersion)
 
-        // 앱 재진입 시 동일 alert를 다시 표시하기 위해 presentation 상태를 재트리거한다.
-        if requireUpdate {
-            isRequireUpdate = false
-            Task { @MainActor [weak self] in
-                self?.isRequireUpdate = true
-            }
+        if isRequireUpdate {
             return
         }
-
-        isRequireUpdate = false
+        
         let token = tokenRepository.getToken()
         let authState: AuthState = token.isEmpty ? .guest : .member
         delegate?.completeSplash(authState)

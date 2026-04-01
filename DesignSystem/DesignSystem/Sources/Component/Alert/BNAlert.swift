@@ -135,12 +135,15 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
         BNAlertConfig(
             title: config.title,
             message: config.message,
+            withClose: config.withClose,
             buttons: config.buttons.map { button in
                 BNAlertButtonConfig(
                     text: button.text,
                     type: button.type
                 ) {
-                    dismiss()
+                    if config.withClose {
+                        dismiss()
+                    }
                     button.action()
                 }
             }

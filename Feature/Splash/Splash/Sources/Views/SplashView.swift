@@ -43,6 +43,7 @@ public struct SplashView: View {
             config: BNAlertConfig(
                 title: "업데이트가 필요합니다.",
                 message: "원활한 앱 사용을 위해 업데이트를 진행해주세요.",
+                withClose: false,
                 buttons: [
                     .init(
                         text: "업데이트",
