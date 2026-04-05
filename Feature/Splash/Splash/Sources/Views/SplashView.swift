@@ -41,14 +41,33 @@ public struct SplashView: View {
             isPresented: $viewModel.isRequireUpdate,
             isEnableDismiss: false,
             config: BNAlertConfig(
-                title: "업데이트가 필요합니다.",
-                message: "원활한 앱 사용을 위해 업데이트를 진행해주세요.",
+                title: "필수 업데이트가 있어요",
+                message: "서비스 이용을 위해 업데이트가 필요해요.",
                 withClose: false,
                 buttons: [
                     .init(
                         text: "업데이트",
                         type: .primary,
                         action: viewModel.openAppStore
+                    )
+                ]
+            )
+        )
+        .bnAlert(
+            isPresented: $viewModel.isSoftUpdate,
+            config: BNAlertConfig(
+                title: "새 버전이 출시됐어요",
+                message: "더 나은 경험을 위해 업데이트를 권장해요.",
+                buttons: [
+                    .init(
+                        text: "나중에",
+                        type: .secondaryLarge,
+                        action: viewModel.didTapSoftUpdateLater
+                    ),
+                    .init(
+                        text: "업데이트",
+                        type: .primary,
+                        action: viewModel.didTapSoftUpdateNow
                     )
                 ]
             )

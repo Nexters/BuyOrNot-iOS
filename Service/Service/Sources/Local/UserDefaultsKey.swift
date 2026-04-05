@@ -10,4 +10,5 @@ public enum UserDefaultsKey: String, CaseIterable {
     case user = "USER"
     case pendingVoteCreateInfo = "PENDING_VOTE_CREATE_INFO"
     case reportFeed = "REPORT_FEED"
+    case appUpdate = "APP_UPDATE"
 }

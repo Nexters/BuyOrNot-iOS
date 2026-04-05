@@ -13,6 +13,5 @@ let project = Module.Feature.splash.project(
         Module.core.toDependency,
         Module.domain.toDependency,
         Module.designSystem.toDependency,
-        .external(name: "FirebaseRemoteConfig"),
     ]
 )

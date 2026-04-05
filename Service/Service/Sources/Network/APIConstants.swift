@@ -25,9 +25,8 @@ public enum APIConstants {
     }
     
     public static var baseURL: String? {
-        Bundle.main.object(
-            forInfoDictionaryKey: buildScheme.value
-        ) as? String
+        let baseURL = Bundle.main.object(forInfoDictionaryKey: buildScheme.value)
+        return baseURL as? String
     }
 
     public static var defaultHeaders: [String: String] {
