@@ -20,9 +20,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         
         /// Load DesignSystem Resource
         BNFont.loadFonts()
-        Task {
-            await setupRemoteConfig()
-        }
+        
+        setupRemoteConfig()
         
         return true
     }
@@ -37,15 +36,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 }
 
 extension AppDelegate {
-    private func setupRemoteConfig() async {
+    private func setupRemoteConfig() {
         let remoteConfig = RemoteConfig.remoteConfig()
         let settings = RemoteConfigSettings()
         settings.minimumFetchInterval = 3600
         remoteConfig.configSettings = settings
-        do {
-            _ = try await remoteConfig.fetchAndActivate()
-        } catch(let e) {
-            /// TODO
-        }
     }
 }

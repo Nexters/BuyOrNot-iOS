@@ -10,7 +10,6 @@ import SwiftUI
 public struct BNAlertModifier<AlertContent: View>: ViewModifier {
     @Binding private var isPresented: Bool
     @State private var isFullScreenViewVisible = false
-    private let isEnableDismiss: Bool
     private let config: BNAlertConfig
     private let alertContent: () -> AlertContent
     
@@ -21,12 +20,10 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
     
     public init(
         isPresented: Binding<Bool>,
-        isEnableDismiss: Bool,
         config: BNAlertConfig,
         @ViewBuilder content: @escaping () -> AlertContent
     ) {
         self._isPresented = isPresented
-        self.isEnableDismiss = isEnableDismiss
         self.config = config
         self.alertContent = content
     }
@@ -64,7 +61,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
             .opacity(0.5)
             .ignoresSafeArea()
             .onTapGesture {
-                guard isEnableDismiss else { return }
+                guard config.isEnableDismiss else { return }
                 dismiss()
             }
     }
@@ -136,6 +133,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
             title: config.title,
             message: config.message,
             withClose: config.withClose,
+            isEnableDismiss: config.isEnableDismiss,
             buttons: config.buttons.map { button in
                 BNAlertButtonConfig(
                     text: button.text,
@@ -170,8 +168,7 @@ public extension View {
         modifier(
             BNAlertModifier(
                 isPresented: isPresented,
-                isEnableDismiss: isEnableDismiss,
-                config: config,
+                config: config.with(isEnableDismiss: isEnableDismiss),
                 content: content
             )
         )
@@ -185,11 +182,26 @@ public extension View {
         modifier(
             BNAlertModifier(
                 isPresented: isPresented,
-                isEnableDismiss: isEnableDismiss,
-                config: config
+                config: config.with(isEnableDismiss: isEnableDismiss)
             ) {
                 EmptyView()
             }
+        )
+    }
+
+    func bnAlert(config: Binding<BNAlertConfig?>) -> some View {
+        let isPresented = Binding<Bool>(
+            get: { config.wrappedValue != nil },
+            set: { isPresented in
+                if !isPresented {
+                    config.wrappedValue = nil
+                }
+            }
+        )
+
+        return bnAlert(
+            isPresented: isPresented,
+            config: config.wrappedValue ?? .empty
         )
     }
 }

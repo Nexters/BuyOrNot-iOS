@@ -36,7 +36,7 @@ public final class AppUpdateRepositoryImpl: AppUpdateRepository {
             rawValue: remoteConfig.configValue(forKey: "ios_latest_version").stringValue
         )
         let minimumVersion = AppVersion(
-            rawValue: remoteConfig.configValue(forKey: "ios_min_supported_version").stringValue
+            rawValue: remoteConfig.configValue(forKey: "ios_minimum_version").stringValue
         )
         let strategyString = remoteConfig.configValue(forKey: "ios_update_strategy").stringValue
 
