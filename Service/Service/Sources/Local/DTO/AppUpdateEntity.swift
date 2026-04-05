@@ -2,7 +2,7 @@
 //  AppUpdateEntity.swift
 //  Service
 //
-//  Created by Codex on 4/5/26.
+//  Created by 문종식 on 4/5/26.
 //
 
 import Foundation

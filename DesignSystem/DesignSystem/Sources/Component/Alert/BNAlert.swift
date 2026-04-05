@@ -199,9 +199,13 @@ public extension View {
             }
         )
 
-        return bnAlert(
-            isPresented: isPresented,
-            config: config.wrappedValue ?? .empty
+        return modifier(
+            BNAlertModifier(
+                isPresented: isPresented,
+                config: config.wrappedValue ?? .empty
+            ) {
+                EmptyView()
+            }
         )
     }
 }
