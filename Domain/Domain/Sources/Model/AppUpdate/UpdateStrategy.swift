@@ -9,4 +9,15 @@ public enum UpdateStrategy {
     case force
     case soft
     case none
+
+    public init(remoteValue: String) {
+        switch remoteValue.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() {
+        case "FORCE":
+            self = .force
+        case "SOFT":
+            self = .soft
+        default:
+            self = .none
+        }
+    }
 }
