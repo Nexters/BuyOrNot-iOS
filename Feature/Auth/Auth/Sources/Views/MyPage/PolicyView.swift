@@ -27,6 +27,7 @@ public struct PolicyView: View {
                 .basedOnSize,
                 axes: .vertical
             )
+            .padding(.top, 10)
         }
         .navigationBarHidden(true)
         .sheet(
