@@ -39,7 +39,7 @@ extension AppDelegate {
     private func setupRemoteConfig() {
         let remoteConfig = RemoteConfig.remoteConfig()
         let settings = RemoteConfigSettings()
-        settings.minimumFetchInterval = 0
+        settings.minimumFetchInterval = 3600
         remoteConfig.configSettings = settings
     }
 }
