@@ -9,10 +9,10 @@ import SwiftUI
 import UIKit
 import Core
 import Domain
+import DesignSystem
 
 public final class SplashViewModel: ObservableObject {
-    @Published var isRequireUpdate = false
-    @Published var isSoftUpdate = false
+    @Published var alertConfig: BNAlertConfig?
 
     private let tokenRepository: TokenRepository
     private let appUpdateRepository: AppUpdateRepository
@@ -35,18 +35,20 @@ public final class SplashViewModel: ObservableObject {
     func didSplashEnded() async {
         await routeAfterVersionCheck()
     }
-
+    
+    @MainActor
     private func routeAfterVersionCheck() async {
         let updateInfo = await appUpdateRepository.getAppUpdateInfo()
         let currentVersion = AppVersion(rawValue: Bundle.main.appVersionString)
+        print(updateInfo, currentVersion)
 
         if currentVersion < updateInfo.minimumVersion {
-            isRequireUpdate = true
+            alertConfig = forceUpdateAlertConfig()
             return
         }
 
         if updateInfo.updateStrategy == .force {
-            isRequireUpdate = true
+            alertConfig = forceUpdateAlertConfig()
             return
         }
 
@@ -54,7 +56,7 @@ public final class SplashViewModel: ObservableObject {
            currentVersion < updateInfo.latestVersion,
            appUpdateRepository.shouldShowSoftUpdateToday() {
             appUpdateRepository.markSoftUpdateShown()
-            isSoftUpdate = true
+            alertConfig = softUpdateAlertConfig()
             return
         }
 
@@ -71,11 +73,11 @@ public final class SplashViewModel: ObservableObject {
         UIApplication.shared.open(url)
     }
     
-    func didTapSoftUpdateLater() {
+    private func didTapSoftUpdateLater() {
         completeSplash()
     }
 
-    func didTapSoftUpdateNow() {
+    private func didTapSoftUpdateNow() {
         openAppStore()
         completeSplash()
     }
@@ -84,6 +86,44 @@ public final class SplashViewModel: ObservableObject {
         let token = tokenRepository.getToken()
         let authState: AuthState = token.isEmpty ? .guest : .member
         delegate?.completeSplash(authState)
+    }
+
+    private func forceUpdateAlertConfig() -> BNAlertConfig {
+        BNAlertConfig(
+            title: "필수 업데이트가 있어요",
+            message: "서비스 이용을 위해 업데이트가 필요해요.",
+            withClose: false,
+            isEnableDismiss: false,
+            buttons: [
+                .init(
+                    text: "업데이트",
+                    type: .primary
+                ) { [weak self] in
+                    self?.openAppStore()
+                }
+            ]
+        )
+    }
+
+    private func softUpdateAlertConfig() -> BNAlertConfig {
+        BNAlertConfig(
+            title: "새 버전이 출시됐어요",
+            message: "더 나은 경험을 위해 업데이트를 권장해요.",
+            buttons: [
+                .init(
+                    text: "나중에",
+                    type: .secondaryLarge
+                ) { [weak self] in
+                    self?.didTapSoftUpdateLater()
+                },
+                .init(
+                    text: "업데이트",
+                    type: .primary
+                ) { [weak self] in
+                    self?.didTapSoftUpdateNow()
+                }
+            ]
+        )
     }
 }
 
