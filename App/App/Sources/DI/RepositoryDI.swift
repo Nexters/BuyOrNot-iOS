@@ -43,8 +43,8 @@ extension DIContainer {
             NotificationRepositoryImpl()
         }
 
-        container.register(RemoteConfigRepository.self) { _ in
-            RemoteConfigRepositoryImpl()
+        container.register(AppUpdateRepository.self) { _ in
+            AppUpdateRepositoryImpl()
         }
     }
 }
