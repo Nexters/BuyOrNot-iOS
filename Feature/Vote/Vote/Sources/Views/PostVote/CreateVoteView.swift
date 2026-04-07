@@ -318,7 +318,7 @@ private struct VotePostTooltip: View {
             HStack(spacing: 4) {
                 BNImage(.clock)
                     .style(color: ColorPalette.gray700, size: 16)
-
+                
                 BNText("투표는 48시간동안 진행돼요.")
                     .style(style: .p4m, color: ColorPalette.gray700)
             }
@@ -328,11 +328,19 @@ private struct VotePostTooltip: View {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(ColorPalette.gray0)
             )
-
+            
             VotePostTooltipTrail()
                 .fill(ColorPalette.gray0)
                 .frame(width: 5, height: 10)
         }
+        .shadow(
+            color: ColorPalette
+                .fromHex("#3670DB")
+                .opacity(0.2),
+            radius: 25,
+            x: 40,
+            y: 4
+        )
     }
 }
 
