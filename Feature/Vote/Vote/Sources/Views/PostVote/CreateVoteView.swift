@@ -37,8 +37,11 @@ public struct CreateVoteView: View {
                 contents
                 addPhoto
                 Spacer()
-                HStack {
+                HStack(spacing: 6) {
                     Spacer()
+                    if viewModel.createButtonState == .enabled {
+                        VotePostTooltip()
+                    }
                     BNButton(
                         text: "투표 게시!",
                         type: .capsule,
@@ -306,6 +309,41 @@ public struct CreateVoteView: View {
             }
             Spacer()
         }
+    }
+}
+
+private struct VotePostTooltip: View {
+    var body: some View {
+        HStack(spacing: 0) {
+            HStack(spacing: 4) {
+                BNImage(.clock)
+                    .style(color: ColorPalette.gray700, size: 16)
+
+                BNText("투표는 48시간동안 진행돼요.")
+                    .style(style: .p4m, color: ColorPalette.gray700)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(ColorPalette.gray0)
+            )
+
+            VotePostTooltipTrail()
+                .fill(ColorPalette.gray0)
+                .frame(width: 5, height: 10)
+        }
+    }
+}
+
+private struct VotePostTooltipTrail: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: 0, y: 0))
+        path.addLine(to: CGPoint(x: 0, y: rect.height))
+        path.addLine(to: CGPoint(x: rect.width, y: rect.midY))
+        path.closeSubpath()
+        return path
     }
 }
 
