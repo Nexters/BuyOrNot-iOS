@@ -18,5 +18,6 @@ let project = Module.Feature.auth.project(
         .external(name: "KakaoSDKCommon"),
         .external(name: "KakaoSDKAuth"),
         .external(name: "KakaoSDKUser"),
+        .external(name: "Kingfisher"),
     ],
 )

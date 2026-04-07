@@ -23,6 +23,7 @@ let package = Package(
         .package(url: "https://github.com/google/GoogleSignIn-iOS", exact: "9.1.0"),
         .package(url: "https://github.com/firebase/firebase-ios-sdk", branch: "main"),
         .package(url: "https://github.com/devxoul/Then", from: "3.0.0"),
-        .package(url: "https://github.com/airbnb/lottie-spm.git", from: "4.6.0")
+        .package(url: "https://github.com/airbnb/lottie-spm.git", from: "4.6.0"),
+        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.0.0")
     ]
 )

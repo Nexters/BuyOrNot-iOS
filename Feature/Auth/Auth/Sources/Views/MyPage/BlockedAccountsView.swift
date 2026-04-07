@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import Domain
+import Kingfisher
 
 public struct BlockedAccountsView: View {
     @Environment(\.dismiss) private var dismiss
@@ -110,18 +111,17 @@ private struct BlockedUserRow: View {
                 )
                 .frame(width: 42, height: 42)
         } else {
-            AsyncImage(url: URL(string: user.profileImage)) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
-                Circle()
-                    .fill(ColorPalette.gray100)
-                    .overlay(
-                        Circle()
-                            .stroke(ColorPalette.gray300, lineWidth: 1.3)
-                    )
-            }
+            KFImage.url(URL(string: user.profileImage))
+                .placeholder {
+                    Circle()
+                        .fill(ColorPalette.gray100)
+                        .overlay(
+                            Circle()
+                                .stroke(ColorPalette.gray300, lineWidth: 1.3)
+                        )
+                }
+                .resizable()
+                .scaledToFill()
             .frame(width: 42, height: 42)
             .clipShape(Circle())
         }

@@ -8,7 +8,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let version = "0.0.4"
+let version = "0.0.5"
 let build = 0
 
 let project = Module.app.project(
