@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DesignSystem
+import Kingfisher
 
 // MARK: - Models
 /// TODO: 백엔드 API 응답 명세에 따라 구조 이동 및 변경 필요
@@ -26,7 +27,7 @@ public struct VoteFeedData {
     public let isMine: Bool
     public let isVotingLocked: Bool
     public let canShowMenu: Bool
-
+    
     public init(
         id: String,
         userId: Int = 0,
@@ -69,11 +70,11 @@ public struct VoteFeed: View {
     let onReport: () -> Void
     let onBlock: () -> Void
     let onVote: (Int) -> Void
-
+    
     @State private var selectedVoteId: Int?
     @State private var showMenu: Bool = false
     @State private var showBlockAlert: Bool = false
-
+    
     public init(
         data: VoteFeedData,
         selectedVoteId: Int? = nil,
@@ -89,7 +90,7 @@ public struct VoteFeed: View {
         self.onBlock = onBlock
         self.onVote = onVote
     }
-
+    
     public var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 0) {
@@ -102,7 +103,7 @@ public struct VoteFeed: View {
                     showMenu: $showMenu
                 )
                 .padding(.top, 20)
-
+                
                 FeedContent(
                     content: data.content,
                     productImageURL: data.productImageURL,
@@ -132,7 +133,7 @@ public struct VoteFeed: View {
                                 showMenu = false
                                 onDelete()
                             }
-                          ]
+                        ]
                         : [
                             FloatingContextMenuButton(
                                 text: "신고하기"
@@ -146,7 +147,7 @@ public struct VoteFeed: View {
                                 showMenu = false
                                 showBlockAlert = true
                             }
-                          ]
+                        ]
                     )
                     .padding(.top, 50)
                     .padding(.trailing, 0)
@@ -183,22 +184,21 @@ private struct FeedHeader: View {
     let timeAgo: String
     let canShowMenu: Bool
     @Binding var showMenu: Bool
-
+    
     var body: some View {
         HStack(
             alignment: .top,
             spacing: 10
         ) {
-            AsyncImage(url: URL(string: userProfileImageURL)) { image in
-                image
-                    .resizable()
-                    .scaledToFill()
-            } placeholder: {
-                ProgressView()
-            }
-            .frame(width: 32, height: 32)
-            .clipShape(Circle())
-
+            KFImage.url(URL(string: userProfileImageURL))
+                .placeholder {
+                    ProgressView()
+                }
+                .resizable()
+                .scaledToFill()
+                .frame(width: 32, height: 32)
+                .clipShape(Circle())
+            
             VStack(
                 alignment: .leading,
                 spacing: 3
@@ -206,18 +206,18 @@ private struct FeedHeader: View {
                 HStack(spacing: 4) {
                     BNText(userName)
                         .style(style: .b6m, color: ColorPalette.gray800)
-
+                    
                     BNImage(.right)
                         .resizable()
                         .frame(width: 10, height: 10)
                         .foregroundStyle(ColorPalette.gray600)
-
+                    
                     BNText(category)
                         .style(style: .b6m, color: ColorPalette.gray800)
-
+                    
                     Spacer()
                 }
-
+                
                 BNText(timeAgo)
                     .style(style: .b7m, color: ColorPalette.gray600)
             }
@@ -248,21 +248,21 @@ private struct FeedContent: View {
     let isVotingLocked: Bool
     let selectedVoteId: Int?
     let onVote: (Int) -> Void
-
+    
     private let horizontalPadding: CGFloat = 14
-
+    
     var body: some View {
         VStack {
             VStack(spacing: 12) {
                 BNText(content)
                     .style(style: .p4m, color: ColorPalette.gray950)
                     .frame(maxWidth: .infinity, alignment: .leading)
-
+                
                 ProductImageCard(
                     imageURL: productImageURL,
                     price: price
                 )
-
+                
                 VoteGroup(
                     options: voteOptions,
                     isPeriodDone: isPeriodDone,
@@ -284,45 +284,41 @@ private struct FeedContent: View {
 private struct ProductImageCard: View {
     let imageURL: String
     let price: String
-
+    
     var body: some View {
         GeometryReader { geometry in
             let size = geometry.size.width
-
+            
             ZStack(alignment: .bottomLeading) {
-                AsyncImage(url: URL(string: imageURL)) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                        /// TODO: 이미지 비율에 따라서 다르게 보이는 로직 추가 예정
-                    case .failure:
-                        Image(systemName: "photo")
-                            .foregroundColor(.gray)
-                    default:
+                KFImage.url(URL(string: imageURL))
+                    .placeholder {
                         ProgressView()
                     }
-                }
-                .overlay(
-                    LinearGradient(
-                        stops: [
-                            Gradient.Stop(color: ColorPalette.black.opacity(0), location: 0.00),
-                            Gradient.Stop(color: Color(red: 0.1, green: 0.1, blue: 0.1), location: 1.00),
-                        ],
-                        startPoint: UnitPoint(x: 0.5, y: 0.61),
-                        endPoint: UnitPoint(x: 0.5, y: 1.12)
+                    .onFailureView {
+                        Image(systemName: "photo")
+                            .foregroundColor(.gray)
+                    }
+                    .resizable()
+                    .scaledToFill()
+                    .overlay(
+                        LinearGradient(
+                            stops: [
+                                Gradient.Stop(color: ColorPalette.black.opacity(0), location: 0.00),
+                                Gradient.Stop(color: Color(red: 0.1, green: 0.1, blue: 0.1), location: 1.00),
+                            ],
+                            startPoint: UnitPoint(x: 0.5, y: 0.61),
+                            endPoint: UnitPoint(x: 0.5, y: 1.12)
+                        )
+                        .opacity(0.36)
                     )
-                    .opacity(0.36)
-                )
-                .frame(width: size, height: size)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-
+                    .frame(width: size, height: size)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                
                 BNText(price)
                     .style(style: .t1b, color: ColorPalette.gray0)
                     .padding(.leading, 14)
                     .padding(.bottom, 16)
-
+                
                 VStack {
                     HStack {
                         Spacer()
@@ -352,7 +348,7 @@ private struct ProductImageCard: View {
 // MARK: - Preview
 #Preview {
     let _ = BNFont.loadFonts()
-
+    
     let sampleData = VoteFeedData(
         id: "1",
         userName: "userName",
@@ -367,7 +363,7 @@ private struct ProductImageCard: View {
             .init(id: 1, text: "애매하긴 해..", voteCount: 90, imageURL: "")
         ]
     )
-
+    
     NavigationStack {
         VoteFeed(
             data: sampleData,

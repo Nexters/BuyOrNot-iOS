@@ -14,6 +14,7 @@ let project = Module.Feature.vote.project(
         Module.domain.toDependency,
         Module.designSystem.toDependency,
         Module.Feature.auth.toDependency,
+        .external(name: "Kingfisher"),
     ],
     infoPlist: .extendingDefault(
         with: [

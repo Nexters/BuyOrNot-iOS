@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DesignSystem
+import Kingfisher
 
 public struct VoteButton: View {
 
@@ -110,17 +111,16 @@ public struct VoteButton: View {
     }
 
     private func userProfileImage(url: URL) -> some View {
-        AsyncImage(url: url) { phase in
-            switch phase {
-            case .success(let image):
-                image.resizable().scaledToFill()
-            case .failure:
-                Image(systemName: "person.fill")
-                    .foregroundColor(.gray)
-            default:
+        KFImage.url(url)
+            .placeholder {
                 Circle().fill(Color.gray.opacity(0.3))
             }
-        }
+            .onFailureView {
+                Image(systemName: "person.fill")
+                    .foregroundColor(.gray)
+            }
+            .resizable()
+            .scaledToFill()
         .frame(width: Layout.iconSize, height: Layout.iconSize)
         .clipShape(Circle())
     }

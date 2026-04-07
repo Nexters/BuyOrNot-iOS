@@ -8,6 +8,7 @@
 import UIKit
 import SwiftUI
 import DesignSystem
+import Kingfisher
 
 public struct NotificationView: View {
     @Environment(\.dismiss) private var dismiss
@@ -174,13 +175,12 @@ private struct NotificationCell: View {
         } label: {
             VStack {
                 HStack(alignment: .center, spacing: 14) {
-                    AsyncImage(url: URL(string: item.imageURL)) { image in
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    } placeholder: {
-                        ColorPalette.gray200
-                    }
+                    KFImage.url(URL(string: item.imageURL))
+                        .placeholder {
+                            ColorPalette.gray200
+                        }
+                        .resizable()
+                        .scaledToFill()
                     .frame(width: 48, height: 48)
                     .cornerRadius(10)
 
