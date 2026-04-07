@@ -34,6 +34,8 @@ public enum BNImageAsset: String {
     case won = "won"
     case check = "check"
     case camera = "camera"
+    case clock = "clock"
     case extend = "extend"
     case combined_shape = "combined_shape"
+    case link = "link"
 }
