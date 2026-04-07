@@ -8,6 +8,7 @@
 import SwiftUI
 import UIKit
 import DesignSystem
+import Kingfisher
 
 public struct FullScreenImageView: View {
     let imageURL: String
@@ -26,53 +27,50 @@ public struct FullScreenImageView: View {
             Color.black
                 .ignoresSafeArea()
 
-            AsyncImage(url: URL(string: imageURL)) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .scaleEffect(scale)
-                        .offset(offset)
-                        .gesture(
-                            MagnificationGesture()
-                                .onChanged { value in
-                                    scale = lastScale * value
-                                }
-                                .onEnded { _ in
-                                    lastScale = scale
-                                    if scale < 1.0 {
-                                        withAnimation {
-                                            scale = 1.0
-                                            lastScale = 1.0
-                                            offset = .zero
-                                            lastOffset = .zero
-                                        }
-                                    }
-                                }
-                        )
-                        .simultaneousGesture(
-                            DragGesture()
-                                .onChanged { value in
-                                    if scale > 1.0 {
-                                        offset = CGSize(
-                                            width: lastOffset.width + value.translation.width,
-                                            height: lastOffset.height + value.translation.height
-                                        )
-                                    }
-                                }
-                                .onEnded { _ in
-                                    lastOffset = offset
-                                }
-                        )
-                case .failure:
-                    Image(systemName: "photo")
-                        .foregroundColor(.gray)
-                default:
+            KFImage.url(URL(string: imageURL))
+                .placeholder {
                     ProgressView()
                         .tint(.white)
                 }
-            }
+                .onFailureView {
+                    Image(systemName: "photo")
+                        .foregroundColor(.gray)
+                }
+                .resizable()
+                .scaledToFit()
+                .scaleEffect(scale)
+                .offset(offset)
+                .gesture(
+                    MagnificationGesture()
+                        .onChanged { value in
+                            scale = lastScale * value
+                        }
+                        .onEnded { _ in
+                            lastScale = scale
+                            if scale < 1.0 {
+                                withAnimation {
+                                    scale = 1.0
+                                    lastScale = 1.0
+                                    offset = .zero
+                                    lastOffset = .zero
+                                }
+                            }
+                        }
+                )
+                .simultaneousGesture(
+                    DragGesture()
+                        .onChanged { value in
+                            if scale > 1.0 {
+                                offset = CGSize(
+                                    width: lastOffset.width + value.translation.width,
+                                    height: lastOffset.height + value.translation.height
+                                )
+                            }
+                        }
+                        .onEnded { _ in
+                            lastOffset = offset
+                        }
+                )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             Button {
