@@ -59,7 +59,7 @@ public struct VoteButton: View {
                 let targetWidth = geometry.size.width * CGFloat(percent) / 100
 
                 ZStack(alignment: .leading) {
-                    buttonContent(textColor: VoteButtonStyle.plain.textColor)
+                    buttonContent(textColor: showPercent && style == .gray ? style.textColor : VoteButtonStyle.plain.textColor)
                             .background(VoteButtonStyle.plain.backgroundColor)
 
                     if showPercent {
