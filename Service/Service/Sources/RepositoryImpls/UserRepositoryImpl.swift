@@ -33,9 +33,6 @@ public class UserRepositoryImpl: UserRepository {
     }
 
     public func getMe() async throws -> User {
-        if let user = userStore.getUser() {
-            return user
-        }
         let response: BaseResponse<UserResponse> = try await request(.getMe)
         let data = response.data.toDomain()
         userStore.saveUser(data)

@@ -316,6 +316,7 @@ private struct ProductImageCard: View {
                 
                 BNText(price)
                     .style(style: .t1b, color: ColorPalette.gray0)
+                    .shadow(color: Color.black.opacity(0.3), radius: 4, x: 0, y: 4)
                     .padding(.leading, 14)
                     .padding(.bottom, 16)
                 
