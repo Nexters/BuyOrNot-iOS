@@ -86,8 +86,21 @@ public struct MyPageView: View {
                 )
                 .frame(width: 42, height: 42)
         } else {
-            KFImage.url(URL(string: viewModel.profileImageURL))
-                .placeholder {
+            AsyncImage(url: URL(string: viewModel.profileImageURL)) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFill()
+                case .empty:
+                    Circle()
+                        .fill(ColorPalette.gray100)
+                        .overlay(
+                            Circle()
+                                .stroke(ColorPalette.gray300, lineWidth: 1.3)
+                        )
+                        .overlay(ProgressView())
+                default:
                     Circle()
                         .fill(ColorPalette.gray100)
                         .overlay(
@@ -95,8 +108,7 @@ public struct MyPageView: View {
                                 .stroke(ColorPalette.gray300, lineWidth: 1.3)
                         )
                 }
-                .resizable()
-                .scaledToFill()
+            }
             .frame(width: 42, height: 42)
             .clipShape(Circle())
         }
