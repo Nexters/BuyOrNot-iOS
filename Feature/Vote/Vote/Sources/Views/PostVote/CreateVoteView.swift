@@ -32,6 +32,8 @@ public struct CreateVoteView: View {
                 category(viewModel.category)
                     .padding(.vertical, 18)
                 BNDivider(size: .s)
+                link
+                BNDivider(size: .s)
                 price
                 BNDivider(size: .s)
                 contents
@@ -187,12 +189,42 @@ public struct CreateVoteView: View {
     }
     
     @ViewBuilder
+    private var link: some View {
+        HStack(spacing: 6) {
+            BNImage(.won)
+                .style(color: ColorPalette.gray600, size: 18)
+            TextField(text: $viewModel.price) {
+                HStack(spacing: 2) {
+                    BNText("상품 링크")
+                        .style(style: .s3sb, color: ColorPalette.gray600)
+                    BNText("(선택)")
+                        .style(style: .s5sb, color: ColorPalette.gray600)
+                }
+            }
+            .focused($focusState, equals: .price)
+            .keyboardType(.numberPad)
+            .font(.s3sb)
+            .foregroundStyle(ColorPalette.gray800)
+            .tint(ColorPalette.gray950)
+            .onChange(of: viewModel.price) { oldValue, newValue in
+                viewModel.didChangePrice(previous: oldValue, text: newValue)
+            }
+            Spacer()
+        }
+        .frame(height: 18)
+        .padding(.vertical, 18)
+        .onTapGesture {
+            focusState = .price
+        }
+    }
+    
+    @ViewBuilder
     private var price: some View {
         HStack(spacing: 6) {
             BNImage(.won)
                 .style(color: ColorPalette.gray600, size: 18)
             TextField(text: $viewModel.price) {
-                BNText("상품 가격을 입력해주세요.")
+                BNText("상품 가격")
                     .style(style: .s3sb, color: ColorPalette.gray600)
             }
             .focused($focusState, equals: .price)
@@ -312,48 +344,8 @@ public struct CreateVoteView: View {
     }
 }
 
-private struct VotePostTooltip: View {
-    var body: some View {
-        HStack(spacing: 0) {
-            HStack(spacing: 4) {
-                BNImage(.clock)
-                    .style(color: ColorPalette.gray700, size: 16)
-                
-                BNText("투표는 48시간동안 진행돼요.")
-                    .style(style: .p4m, color: ColorPalette.gray700)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(ColorPalette.gray0)
-            )
-            
-            VotePostTooltipTrail()
-                .fill(ColorPalette.gray0)
-                .frame(width: 5, height: 10)
-        }
-        .shadow(
-            color: ColorPalette
-                .fromHex("#3670DB")
-                .opacity(0.2),
-            radius: 25,
-            x: 40,
-            y: 4
-        )
-    }
-}
 
-private struct VotePostTooltipTrail: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: 0, y: 0))
-        path.addLine(to: CGPoint(x: 0, y: rect.height))
-        path.addLine(to: CGPoint(x: rect.width, y: rect.midY))
-        path.closeSubpath()
-        return path
-    }
-}
+// MARK: - Preview
 
 private struct MockUploadsRepository: UploadsRepository {
     func postUploadImage(data: Data, fileName: String, contentType: String) async throws -> ImageInfo {
