@@ -38,6 +38,7 @@ public struct CreateVoteView: View {
                         BNDivider(size: .s)
                         price
                         BNDivider(size: .s)
+                        title
                         contents
                         addPhoto
                         Spacer()
@@ -268,6 +269,26 @@ public struct CreateVoteView: View {
     }
     
     @ViewBuilder
+    private var title: some View {
+        TextField(text: $viewModel.title) {
+            BNText("제목")
+                .style(style: .t2b, color: ColorPalette.gray600)
+        }
+        .focused($focusState, equals: .title)
+        .lineLimit(1)
+        .font(.t2b)
+        .foregroundStyle(ColorPalette.gray950)
+        .tint(ColorPalette.gray950)
+        .padding(.top, 20)
+        .onChange(of: viewModel.title) { _, newValue in
+            viewModel.didChangeTitle(text: newValue)
+        }
+        .onTapGesture {
+            focusState = .title
+        }
+    }
+    
+    @ViewBuilder
     private var contents: some View {
         VStack(spacing: 0) {
             TextField(
@@ -305,7 +326,7 @@ public struct CreateVoteView: View {
             }
             .padding(.vertical, 10)
         }
-        .padding(.top, 20)
+        .padding(.top, 12)
         .background(.white)
         .onTapGesture {
             focusState = .contents

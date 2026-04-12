@@ -19,6 +19,7 @@ final class PendingVoteCreateInfoStore: EntityStore {
         let entity = PendingVoteCreateInfoEntity(
             category: info.category?.rawValue,
             linkURL: info.linkURL,
+            title: info.title,
             price: info.price,
             content: info.content
         )
