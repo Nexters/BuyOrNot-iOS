@@ -197,11 +197,7 @@ public final class CreateVoteViewModel: ObservableObject {
 
     @MainActor
     func validateLinkURLBeforePost() -> Bool {
-        let trimmedLinkURL = linkURL.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmedLinkURL.isEmpty == false else {
-            return true
-        }
-        guard isValidLinkURL(trimmedLinkURL) else {
+        guard LinkValidator.isValid(linkURL) else {
             snackBar.addItem(
                 BNSnackBarItem(
                     text: "링크 주소를 다시 확인해 주세요."
@@ -209,9 +205,6 @@ public final class CreateVoteViewModel: ObservableObject {
             )
             createButtonState = .disabled
             return false
-        }
-        if linkURL != trimmedLinkURL {
-            linkURL = trimmedLinkURL
         }
         validatePost()
         return true
@@ -250,11 +243,6 @@ public final class CreateVoteViewModel: ObservableObject {
             .store(in: &anyCancellable)
     }
 
-    private func isValidLinkURL(_ linkURL: String) -> Bool {
-        let pattern = #"^(https?:\/\/)(?=.{1,2048}$)(?!.*\s)(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}(?::\d{1,5})?(?:\/[A-Za-z0-9\-._~%!$&'()*+,;=:@/]*)?(?:\?[A-Za-z0-9\-._~%!$&'()*+,;=:@/?]*)?(?:#[A-Za-z0-9\-._~%!$&'()*+,;=:@/?]*)?$"#
-        return linkURL.range(of: pattern, options: .regularExpression) != nil
-    }
-    
     @MainActor
     func postVote() async -> Bool {
         guard
