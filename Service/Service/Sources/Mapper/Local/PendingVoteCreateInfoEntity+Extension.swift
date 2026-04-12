@@ -12,6 +12,7 @@ extension PendingVoteCreateInfoEntity {
         PendingVoteCreateInfo(
             category: category.flatMap(FeedCategory.init(rawValue:)),
             linkURL: linkURL ?? "",
+            title: title ?? "",
             price: price,
             content: content
         )

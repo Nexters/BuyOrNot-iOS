@@ -8,17 +8,20 @@
 public struct PendingVoteCreateInfo: Equatable {
     public let category: FeedCategory?
     public let linkURL: String
+    public let title: String
     public let price: String
     public let content: String
 
     public init(
         category: FeedCategory?,
         linkURL: String = "",
+        title: String = "",
         price: String,
         content: String
     ) {
         self.category = category
         self.linkURL = linkURL
+        self.title = title
         self.price = price
         self.content = content
     }

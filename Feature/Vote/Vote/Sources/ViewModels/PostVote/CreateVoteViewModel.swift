@@ -16,6 +16,7 @@ import Core
 import Domain
 
 public final class CreateVoteViewModel: ObservableObject {
+    @Published var title: String = ""
     @Published var contents: String = ""
     @Published var linkURL: String = ""
     @Published var price: String = ""
@@ -44,10 +45,11 @@ public final class CreateVoteViewModel: ObservableObject {
     }
 
     var isWritingInProgress: Bool {
-        category != nil || linkURL.isEmpty == false || price.isEmpty == false || contents.isEmpty == false
+        category != nil || linkURL.isEmpty == false || price.isEmpty == false || title.isEmpty == false || contents.isEmpty == false
     }
     
     private let _accessLevel: PHAccessLevel = .readWrite
+    private let _titleLimitCount = 40
     private let _contentsLimitCount = 100
     private let _maxPrice = 100_000_000
 
@@ -91,6 +93,15 @@ public final class CreateVoteViewModel: ObservableObject {
     func didChangeContents(text: String) {
         if text.count > _contentsLimitCount {
             self.contents = String(text.prefix(_contentsLimitCount))
+        }
+    }
+
+    func didChangeTitle(text: String) {
+        defer {
+            validatePost()
+        }
+        if text.count > _titleLimitCount {
+            self.title = String(text.prefix(_titleLimitCount))
         }
     }
 
@@ -157,7 +168,7 @@ public final class CreateVoteViewModel: ObservableObject {
         guard let info = pendingVoteCreateInfoRepository.getPendingVoteCreateInfo() else {
             return false
         }
-        guard info.category != nil || info.linkURL.isEmpty == false || info.price.isEmpty == false || info.content.isEmpty == false else {
+        guard info.category != nil || info.linkURL.isEmpty == false || info.price.isEmpty == false || info.title.isEmpty == false || info.content.isEmpty == false else {
             return false
         }
         pendingVoteCreateInfoToRestore = info
@@ -172,6 +183,7 @@ public final class CreateVoteViewModel: ObservableObject {
         category = info.category
         linkURL = info.linkURL
         price = info.price
+        title = info.title
         contents = info.content
         validatePost()
         showRestorePendingAlert = false
@@ -209,21 +221,27 @@ public final class CreateVoteViewModel: ObservableObject {
         let isValidPrice = price.isEmpty == false
         let isValidCategory = category != nil
         let isValidImage = selectedImageData != nil && selectedImage != nil
-        let isValid = isValidImage && isValidCategory && isValidPrice
+        let isValidTitle = title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
+        let isValid = isValidImage && isValidCategory && isValidPrice && isValidTitle
         createButtonState = isValid ? .enabled : .disabled
     }
 
     private func bindPendingVoteCreateInfoAutoSave() {
-        Publishers.CombineLatest4($category, $linkURL, $price, $contents)
+        Publishers.CombineLatest(
+            Publishers.CombineLatest4($category, $linkURL, $price, $title),
+            $contents
+        )
             .dropFirst()
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
-            .sink { [weak self] category, linkURL, price, contents in
+            .sink { [weak self] values, contents in
                 guard let self, self.isPendingAutoSaveEnabled else {
                     return
                 }
+                let (category, linkURL, price, title) = values
                 let info = PendingVoteCreateInfo(
                     category: category,
                     linkURL: linkURL,
+                    title: title,
                     price: price,
                     content: contents
                 )
