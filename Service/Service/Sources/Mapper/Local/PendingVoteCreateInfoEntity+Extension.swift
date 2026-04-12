@@ -11,6 +11,7 @@ extension PendingVoteCreateInfoEntity {
     func toDomain() -> PendingVoteCreateInfo {
         PendingVoteCreateInfo(
             category: category.flatMap(FeedCategory.init(rawValue:)),
+            linkURL: linkURL ?? "",
             price: price,
             content: content
         )
