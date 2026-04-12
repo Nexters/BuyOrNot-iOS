@@ -17,6 +17,7 @@ import Domain
 
 public final class CreateVoteViewModel: ObservableObject {
     @Published var contents: String = ""
+    @Published var linkURL: String = ""
     @Published var price: String = ""
     @Published var category: FeedCategory? = nil
     @Published var categories: [FeedCategory] = FeedCategory.allCases
@@ -29,6 +30,7 @@ public final class CreateVoteViewModel: ObservableObject {
     @Published var showCategoryBottomSheet = false
     @Published var showCancelAlert = false
     @Published var showRestorePendingAlert = false
+    @Published var snackBar = BNSnackBarManager()
     
     private let uploadsRepository: UploadsRepository
     private let feedRepository: FeedRepository
@@ -42,7 +44,7 @@ public final class CreateVoteViewModel: ObservableObject {
     }
 
     var isWritingInProgress: Bool {
-        category != nil || price.isEmpty == false || contents.isEmpty == false
+        category != nil || linkURL.isEmpty == false || price.isEmpty == false || contents.isEmpty == false
     }
     
     private let _accessLevel: PHAccessLevel = .readWrite
@@ -91,7 +93,11 @@ public final class CreateVoteViewModel: ObservableObject {
             self.contents = String(text.prefix(_contentsLimitCount))
         }
     }
-    
+
+    func didChangeLinkURL() {
+        validatePost()
+    }
+
     @MainActor
     func checkPhotoPermission() async {
         let status = PHPhotoLibrary.authorizationStatus(for: _accessLevel)
@@ -151,7 +157,7 @@ public final class CreateVoteViewModel: ObservableObject {
         guard let info = pendingVoteCreateInfoRepository.getPendingVoteCreateInfo() else {
             return false
         }
-        guard info.category != nil || info.price.isEmpty == false || info.content.isEmpty == false else {
+        guard info.category != nil || info.linkURL.isEmpty == false || info.price.isEmpty == false || info.content.isEmpty == false else {
             return false
         }
         pendingVoteCreateInfoToRestore = info
@@ -164,6 +170,7 @@ public final class CreateVoteViewModel: ObservableObject {
             return
         }
         category = info.category
+        linkURL = info.linkURL
         price = info.price
         contents = info.content
         validatePost()
@@ -175,6 +182,28 @@ public final class CreateVoteViewModel: ObservableObject {
         anyCancellable.removeAll()
         pendingVoteCreateInfoRepository.removePendingVoteCreateInfo()
     }
+
+    @MainActor
+    func validateLinkURLBeforePost() -> Bool {
+        let trimmedLinkURL = linkURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmedLinkURL.isEmpty == false else {
+            return true
+        }
+        guard isValidLinkURL(trimmedLinkURL) else {
+            snackBar.addItem(
+                BNSnackBarItem(
+                    text: "링크 주소를 다시 확인해 주세요."
+                )
+            )
+            createButtonState = .disabled
+            return false
+        }
+        if linkURL != trimmedLinkURL {
+            linkURL = trimmedLinkURL
+        }
+        validatePost()
+        return true
+    }
     
     private func validatePost() {
         let isValidPrice = price.isEmpty == false
@@ -185,21 +214,27 @@ public final class CreateVoteViewModel: ObservableObject {
     }
 
     private func bindPendingVoteCreateInfoAutoSave() {
-        Publishers.CombineLatest3($category, $price, $contents)
+        Publishers.CombineLatest4($category, $linkURL, $price, $contents)
             .dropFirst()
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
-            .sink { [weak self] category, price, contents in
+            .sink { [weak self] category, linkURL, price, contents in
                 guard let self, self.isPendingAutoSaveEnabled else {
                     return
                 }
                 let info = PendingVoteCreateInfo(
                     category: category,
+                    linkURL: linkURL,
                     price: price,
                     content: contents
                 )
                 self.pendingVoteCreateInfoRepository.savePendingVoteCreateInfo(info)
             }
             .store(in: &anyCancellable)
+    }
+
+    private func isValidLinkURL(_ linkURL: String) -> Bool {
+        let pattern = #"^(https?:\/\/)(?=.{1,2048}$)(?!.*\s)(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}(?::\d{1,5})?(?:\/[A-Za-z0-9\-._~%!$&'()*+,;=:@/]*)?(?:\?[A-Za-z0-9\-._~%!$&'()*+,;=:@/?]*)?(?:#[A-Za-z0-9\-._~%!$&'()*+,;=:@/?]*)?$"#
+        return linkURL.range(of: pattern, options: .regularExpression) != nil
     }
     
     @MainActor

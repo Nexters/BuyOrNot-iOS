@@ -28,38 +28,55 @@ public struct CreateVoteView: View {
             }
             .padding(.horizontal, 20)
             BNDivider(size: .s)
-            VStack(spacing: 0) {
-                category(viewModel.category)
-                    .padding(.vertical, 18)
-                BNDivider(size: .s)
-                link
-                BNDivider(size: .s)
-                price
-                BNDivider(size: .s)
-                contents
-                addPhoto
-                Spacer()
-                HStack(spacing: 6) {
-                    Spacer()
-                    if viewModel.createButtonState == .enabled {
-                        VotePostTooltip()
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 0) {
+                        category(viewModel.category)
+                            .padding(.vertical, 18)
+                        BNDivider(size: .s)
+                        link
+                        BNDivider(size: .s)
+                        price
+                        BNDivider(size: .s)
+                        contents
+                        addPhoto
+                        Spacer()
                     }
-                    BNButton(
-                        text: "투표 게시!",
-                        type: .capsule,
-                        state: viewModel.createButtonState,
-                        width: 80
-                    ) {
-                        Task {
-                            let result = await viewModel.postVote()
-                            if result {
-                                dismiss()
+                    .padding(.horizontal, 20)
+                }
+                VStack(spacing: 10) {
+                    Spacer()
+                    if viewModel.snackBar.barState == .active {
+                        BNSnackBar(
+                            item: viewModel.snackBar.currentItem,
+                            state: $viewModel.snackBar.barState
+                        )
+                    }
+                    HStack(spacing: 6) {
+                        Spacer()
+                        if viewModel.createButtonState == .enabled {
+                            VotePostTooltip()
+                        }
+                        BNButton(
+                            text: "투표 게시!",
+                            type: .capsule,
+                            state: viewModel.createButtonState,
+                            width: 80
+                        ) {
+                            Task {
+                                guard viewModel.validateLinkURLBeforePost() else {
+                                    return
+                                }
+                                let result = await viewModel.postVote()
+                                if result {
+                                    dismiss()
+                                }
                             }
                         }
                     }
+                    .padding(.horizontal, 20)
                 }
             }
-            .padding(.horizontal, 20)
         }
         .onAppear {
             let shouldShowRestoreAlert = viewModel.checkPendingVoteCreateInfoOnAppear()
@@ -191,30 +208,36 @@ public struct CreateVoteView: View {
     @ViewBuilder
     private var link: some View {
         HStack(spacing: 6) {
-            BNImage(.won)
+            BNImage(.link)
                 .style(color: ColorPalette.gray600, size: 18)
-            TextField(text: $viewModel.price) {
-                HStack(spacing: 2) {
-                    BNText("상품 링크")
-                        .style(style: .s3sb, color: ColorPalette.gray600)
-                    BNText("(선택)")
-                        .style(style: .s5sb, color: ColorPalette.gray600)
+            ZStack(alignment: .leading) {
+                if viewModel.linkURL.isEmpty {
+                    HStack(spacing: 2) {
+                        BNText("상품 링크")
+                            .style(style: .s3sb, color: ColorPalette.gray600)
+                        BNText("(선택)")
+                            .style(style: .s5sb, color: ColorPalette.gray600)
+                    }
+                    .allowsHitTesting(false)
                 }
-            }
-            .focused($focusState, equals: .price)
-            .keyboardType(.numberPad)
-            .font(.s3sb)
-            .foregroundStyle(ColorPalette.gray800)
-            .tint(ColorPalette.gray950)
-            .onChange(of: viewModel.price) { oldValue, newValue in
-                viewModel.didChangePrice(previous: oldValue, text: newValue)
+                TextField("", text: $viewModel.linkURL)
+                    .focused($focusState, equals: .link)
+                    .keyboardType(.URL)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
+                    .font(.s3sb)
+                    .foregroundStyle(ColorPalette.gray800)
+                    .tint(ColorPalette.gray950)
+                    .onChange(of: viewModel.linkURL) { _, _ in
+                        viewModel.didChangeLinkURL()
+                    }
             }
             Spacer()
         }
         .frame(height: 18)
         .padding(.vertical, 18)
         .onTapGesture {
-            focusState = .price
+            focusState = .link
         }
     }
     
@@ -246,8 +269,6 @@ public struct CreateVoteView: View {
     
     @ViewBuilder
     private var contents: some View {
-        let placeHolder: String = "고민 이유를 자세히 적을수록 더 정확한 투표 결과를 얻을 수 있어요!"
-        
         VStack(spacing: 0) {
             TextField(
                 "",
@@ -268,7 +289,7 @@ public struct CreateVoteView: View {
                 if viewModel.contents.isEmpty {
                     VStack {
                         HStack {
-                            BNText(placeHolder)
+                            BNText("고민 이유를 자세히 적을수록 더 정확한 투표 결과를 얻을 수 있어요!")
                                 .style(style: .p2m, color: ColorPalette.gray600)
                             Spacer()
                         }
