@@ -15,6 +15,8 @@ public struct HomeView: View {
     @State private var selectedTab: FeedTab = .voteFeed
     @State private var showBanner = true
     @State private var showNavigationBar: Bool = true
+    @State private var selectedCategory: FeedCategoryFilter = .all
+    @State private var showFilterSheet = false
 
     public init(viewModel: HomeViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -46,11 +48,15 @@ public struct HomeView: View {
                     tabs: viewModel.isAuthenticated ? FeedTab.allCases : [.voteFeed]
                 )
 
+                if !shouldHideFilter {
+                    FeedCategoryFilterBar(
+                        selectedCategory: $selectedCategory,
+                        showFilterSheet: $showFilterSheet
+                    )
+                }
+
                 ScrollView {
                     VStack(spacing: 0) {
-                        if !shouldHideFilter {
-                            FeedFilterBar(selectedFilter: $viewModel.selectedFilter)
-                        }
                         switch selectedTab {
                         case .voteFeed:
                             voteFeedContent
@@ -74,6 +80,15 @@ public struct HomeView: View {
                 state: .close,
                 onVoteCreate: { viewModel.didTapCreateVote() }
             )
+
+            if showFilterSheet {
+                FeedFilterSheet(
+                    selectedFilter: $viewModel.selectedFilter,
+                    isPresented: $showFilterSheet
+                )
+                .transition(.opacity)
+                .zIndex(10)
+            }
 
             VStack {
                 Spacer()
@@ -213,6 +228,22 @@ enum FeedFilter: String, CaseIterable {
     case closed = "마감된 투표"
 }
 
+enum FeedCategoryFilter: Equatable {
+    case all
+    case category(FeedCategory)
+
+    static var allCases: [FeedCategoryFilter] {
+        [.all] + FeedCategory.allCases.map { .category($0) }
+    }
+
+    var displayName: String {
+        switch self {
+        case .all:             return "전체"
+        case .category(let c): return c.displayName
+        }
+    }
+}
+
 
 struct FeedSegmentedControl: View {
     @Binding var selectedTab: FeedTab
@@ -277,22 +308,151 @@ private struct TabItem: View {
     }
 }
 
-struct FeedFilterBar: View {
-    @Binding var selectedFilter: FeedFilter
+struct FeedCategoryFilterBar: View {
+    @Binding var selectedCategory: FeedCategoryFilter
+    @Binding var showFilterSheet: Bool
 
     var body: some View {
-        HStack(spacing: 8) {
-            ForEach(FeedFilter.allCases, id: \.self) { filter in
-                BNChip(
-                    title: filter.rawValue,
-                    state: selectedFilter == filter ? .selected : .unselected,
-                    onTap: { selectedFilter = filter }
-                )
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                FeedFilterIconChip(onTap: { showFilterSheet = true })
+                ForEach(FeedCategoryFilter.allCases, id: \.displayName) { category in
+                    FeedFilterChip(
+                        title: category.displayName,
+                        isSelected: selectedCategory == category,
+                        onTap: { selectedCategory = category }
+                    )
+                }
             }
-            Spacer()
+            .padding(.horizontal, 20)
+            .padding(.vertical, 1)
         }
-        .padding(.horizontal, 20)
+        .frame(height: 38)
         .padding(.top, 16)
+    }
+}
+
+private struct FeedFilterSheet: View {
+    @Binding var selectedFilter: FeedFilter
+    @Binding var isPresented: Bool
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    withAnimation(.easeInOut(duration: 0.2)) { isPresented = false }
+                }
+
+            VStack(spacing: 0) {
+                ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(ColorPalette.gray400)
+                        .frame(width: 40, height: 4)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 10)
+
+                    BNText("피드 정렬")
+                        .style(style: .s1sb, color: ColorPalette.gray950)
+                        .padding(.leading, 24)
+                        .padding(.top, 30)
+                }
+                .frame(height: 62)
+
+                VStack(spacing: 18) {
+                    ForEach(FeedFilter.allCases, id: \.self) { filter in
+                        FilterOptionRow(
+                            title: filter.rawValue,
+                            isSelected: selectedFilter == filter,
+                            onTap: {
+                                selectedFilter = filter
+                                withAnimation(.easeInOut(duration: 0.2)) { isPresented = false }
+                            }
+                        )
+                    }
+                    Color.clear.frame(height: 30)
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 10)
+            }
+            .frame(maxWidth: .infinity)
+            .background(ColorPalette.gray0)
+            .clipShape(RoundedRectangle(cornerRadius: 26))
+            .padding(.horizontal, 14)
+            .padding(.bottom, 50)
+        }
+        .ignoresSafeArea()
+    }
+}
+
+private struct FilterOptionRow: View {
+    let title: String
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button {
+            onTap()
+        } label: {
+            HStack {
+                BNText(title)
+                    .style(
+                        style: isSelected ? .s3sb : .b3m,
+                        color: isSelected ? ColorPalette.gray950 : ColorPalette.gray700
+                    )
+                Spacer()
+                if isSelected {
+                    BNImage(.check)
+                        .style(color: ColorPalette.gray950, size: 20)
+                }
+            }
+            .frame(height: 30)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct FeedFilterIconChip: View {
+    let onTap: () -> Void
+
+    var body: some View {
+        Button { onTap() } label: {
+            BNImage(.list)
+                .style(color: ColorPalette.gray800, size: 20)
+                .frame(width: 44, height: 36)
+                .background(ColorPalette.gray0)
+                .clipShape(Capsule())
+                .overlay {
+                    Capsule()
+                        .stroke(ColorPalette.gray300, lineWidth: 1)
+                }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct FeedFilterChip: View {
+    let title: String
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button {
+            onTap()
+        } label: {
+            BNText(title)
+                .style(style: .b5m, color: ColorPalette.gray950)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .frame(height: 36)
+                .background(isSelected ? ColorPalette.gray200 : ColorPalette.gray0)
+                .clipShape(Capsule())
+                .overlay {
+                    Capsule()
+                        .stroke(ColorPalette.gray300, lineWidth: 1)
+                }
+        }
+        .buttonStyle(.plain)
     }
 }
 

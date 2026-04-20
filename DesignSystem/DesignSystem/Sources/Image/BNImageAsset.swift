@@ -38,4 +38,5 @@ public enum BNImageAsset: String {
     case extend = "extend"
     case combined_shape = "combined_shape"
     case link = "link"
+    case list = "list"
 }
