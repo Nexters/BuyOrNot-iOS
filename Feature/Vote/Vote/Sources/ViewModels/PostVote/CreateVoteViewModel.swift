@@ -36,6 +36,7 @@ public final class CreateVoteViewModel: ObservableObject {
     @Published var showCancelAlert = false
     @Published var showRestorePendingAlert = false
     @Published var snackBar = BNSnackBarManager()
+    @Published var isKeyboardVisible = false
     
     private let uploadsRepository: UploadsRepository
     private let feedRepository: FeedRepository
@@ -189,6 +190,14 @@ public final class CreateVoteViewModel: ObservableObject {
         if isWritingInProgress {
             showCancelAlert = true
         }
+    }
+
+    func keyboardWillShow() {
+        isKeyboardVisible = true
+    }
+
+    func keyboardWillHide() {
+        isKeyboardVisible = false
     }
 
     @discardableResult

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 import Core
 import DesignSystem
 import Domain
@@ -54,8 +55,11 @@ public struct CreateVoteView: View {
                         )
                     }
                     HStack(spacing: 6) {
+                        if viewModel.isKeyboardVisible {
+                            subAddPhoto
+                        }
                         Spacer()
-                        if viewModel.createButtonState == .enabled {
+                        if viewModel.createButtonState == .enabled && !viewModel.isKeyboardVisible {
                             VotePostTooltip()
                         }
                         BNButton(
@@ -87,6 +91,12 @@ public struct CreateVoteView: View {
             if isPresented {
                 focusState = nil
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            viewModel.keyboardWillShow()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            viewModel.keyboardWillHide()
         }
         .interactiveDismissDisabled(true)
         .padding(.top, 20)
@@ -385,6 +395,22 @@ public struct CreateVoteView: View {
                     }
             }
             Spacer()
+        }
+    }
+    
+    @ViewBuilder
+    private var subAddPhoto: some View {
+        Button {
+            Task {
+                await viewModel.checkPhotoPermission()
+            }
+        } label: {
+            HStack(spacing: 4) {
+                BNImage(.camera)
+                    .style(color: ColorPalette.gray950, size: 20)
+                BNText("\(viewModel.selectedPhotoCount)/3")
+                    .style(style: .s5sb, color: ColorPalette.gray800)
+            }
         }
     }
 }
