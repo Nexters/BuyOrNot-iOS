@@ -11,7 +11,7 @@ public struct BNSnackBar: View {
     private let item: BNSnackBarItem
     private let iconSize: CGFloat = 16
     private var backgroundColor: Color {
-        ColorPalette.gray950
+        ColorPalette.gray900
     }
     
     @Binding var state: BNSnackBarState

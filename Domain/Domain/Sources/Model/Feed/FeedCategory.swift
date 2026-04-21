@@ -19,11 +19,11 @@ public enum FeedCategory: String, CaseIterable {
     public var displayName: String {
         switch self {
         case .luxury:
-            return "명품∙프리미엄"
+            return "명품 ∙ 프리미엄"
         case .fashion:
             return "패션 ∙ 잡화"
         case .beauty:
-            return "화장품∙뷰티"
+            return "화장품 ∙ 뷰티"
         case .food:
             return "음식"
         case .electronics:
@@ -31,7 +31,7 @@ public enum FeedCategory: String, CaseIterable {
         case .travel:
             return "여행 쇼핑템"
         case .health:
-            return "헬스∙운동용품"
+            return "헬스 ∙ 운동용품"
         case .book:
             return "도서"
         case .etc:
