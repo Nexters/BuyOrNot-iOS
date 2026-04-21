@@ -74,6 +74,7 @@ public struct CreateVoteView: View {
                                 }
                                 let result = await viewModel.postVote()
                                 if result {
+                                    viewModel.removePendingVoteCreateInfo()
                                     dismiss()
                                 }
                             }
@@ -188,6 +189,7 @@ public struct CreateVoteView: View {
             if viewModel.isWritingInProgress {
                 viewModel.didTapCancel()
             } else {
+                viewModel.removePendingVoteCreateInfo()
                 dismiss()
             }
         } label: {
