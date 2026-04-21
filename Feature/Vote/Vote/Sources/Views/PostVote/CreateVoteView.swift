@@ -92,8 +92,10 @@ public struct CreateVoteView: View {
         .padding(.top, 20)
         .padding(.bottom, 10)
         .sheet(isPresented: $viewModel.showPhotoPicker) {
-            SinglePhotoPicker { image, data in
-                viewModel.didSelectedImage(image, data)
+            SinglePhotoPicker(
+                selectionLimit: max(1, viewModel.remainingSelectablePhotoCount)
+            ) { photos in
+                viewModel.didSelectPhotos(photos)
             }
             .presentationDetents([.large])
             .presentationCornerRadius(18)
@@ -344,18 +346,19 @@ public struct CreateVoteView: View {
                 VStack(spacing: 2) {
                     BNImage(.camera)
                         .style(color: ColorPalette.gray600, size: 20)
-                    BNText("\(viewModel.selectedImage == nil ? 0 : 1)/1")
+                    BNText("\(viewModel.selectedPhotoCount)/3")
                         .style(style: .s5sb, color: ColorPalette.gray600)
                 }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 15)
+                .frame(width: 68, height: 68)
                 .background {
                     RoundedRectangle(cornerRadius: 12)
                         .fill(ColorPalette.gray100)
                 }
             }
-            if let image = viewModel.selectedImage {
-                image
+            .disabled(viewModel.isPhotoPickerEnabled == false)
+
+            ForEach(Array(viewModel.selectedPhotos.enumerated()), id: \.offset) { index, photo in
+                photo.image
                     .resizable()
                     .scaledToFill()
                     .frame(width: 68, height: 68)
@@ -365,7 +368,7 @@ public struct CreateVoteView: View {
                             Spacer()
                             VStack {
                                 Button {
-                                    viewModel.didTapDeleteImage()
+                                    viewModel.didTapDeleteImage(at: index)
                                 } label: {
                                     Circle()
                                         .fill(ColorPalette.black.opacity(0.4))
