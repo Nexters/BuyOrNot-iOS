@@ -51,11 +51,13 @@ public enum DesignSystemAsset: Sendable {
   public enum Icon {
   public static let camera = DesignSystemImages(name: "camera")
     public static let check = DesignSystemImages(name: "check")
+    public static let clock = DesignSystemImages(name: "clock")
     public static let close = DesignSystemImages(name: "close")
     public static let combinedShape = DesignSystemImages(name: "combined_shape")
     public static let completed = DesignSystemImages(name: "completed")
     public static let extend = DesignSystemImages(name: "extend")
     public static let `left` = DesignSystemImages(name: "left")
+    public static let link = DesignSystemImages(name: "link")
     public static let my = DesignSystemImages(name: "my")
     public static let notification = DesignSystemImages(name: "notification")
     public static let notificationFill = DesignSystemImages(name: "notification_fill")

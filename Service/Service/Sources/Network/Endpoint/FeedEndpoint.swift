@@ -83,4 +83,13 @@ enum FeedEndpoint: Endpoint {
             nil
         }
     }
+
+    var version: APIVersion {
+        switch self {
+        case .postFeeds:
+            return .v2
+        default:
+            return .v1
+        }
+    }
 }

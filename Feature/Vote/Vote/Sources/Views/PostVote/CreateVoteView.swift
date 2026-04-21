@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 import Core
 import DesignSystem
 import Domain
@@ -28,36 +29,60 @@ public struct CreateVoteView: View {
             }
             .padding(.horizontal, 20)
             BNDivider(size: .s)
-            VStack(spacing: 0) {
-                category(viewModel.category)
-                    .padding(.vertical, 18)
-                BNDivider(size: .s)
-                price
-                BNDivider(size: .s)
-                contents
-                addPhoto
-                Spacer()
-                HStack(spacing: 6) {
-                    Spacer()
-                    if viewModel.createButtonState == .enabled {
-                        VotePostTooltip()
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 0) {
+                        category(viewModel.category)
+                            .padding(.vertical, 18)
+                        BNDivider(size: .s)
+                        link
+                        BNDivider(size: .s)
+                        price
+                        BNDivider(size: .s)
+                        title
+                        contents
+                        addPhoto
+                        Spacer()
                     }
-                    BNButton(
-                        text: "투표 게시!",
-                        type: .capsule,
-                        state: viewModel.createButtonState,
-                        width: 80
-                    ) {
-                        Task {
-                            let result = await viewModel.postVote()
-                            if result {
-                                dismiss()
+                    .padding(.horizontal, 20)
+                }
+                VStack(spacing: 10) {
+                    Spacer()
+                    if viewModel.snackBar.barState == .active {
+                        BNSnackBar(
+                            item: viewModel.snackBar.currentItem,
+                            state: $viewModel.snackBar.barState
+                        )
+                    }
+                    HStack(spacing: 6) {
+                        if viewModel.isKeyboardVisible {
+                            subAddPhoto
+                        }
+                        Spacer()
+                        if viewModel.createButtonState == .enabled && !viewModel.isKeyboardVisible {
+                            VotePostTooltip()
+                        }
+                        BNButton(
+                            text: "투표 게시!",
+                            type: .capsule,
+                            state: viewModel.createButtonState,
+                            width: 80
+                        ) {
+                            Task {
+                                guard viewModel.validateLinkURLBeforePost() else {
+                                    return
+                                }
+                                let result = await viewModel.postVote()
+                                if result {
+                                    viewModel.removePendingVoteCreateInfo()
+                                    dismiss()
+                                }
                             }
                         }
                     }
+                    .padding(.horizontal, 20)
                 }
             }
-            .padding(.horizontal, 20)
         }
         .onAppear {
             let shouldShowRestoreAlert = viewModel.checkPendingVoteCreateInfoOnAppear()
@@ -68,12 +93,20 @@ public struct CreateVoteView: View {
                 focusState = nil
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            viewModel.keyboardWillShow()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            viewModel.keyboardWillHide()
+        }
         .interactiveDismissDisabled(true)
         .padding(.top, 20)
         .padding(.bottom, 10)
         .sheet(isPresented: $viewModel.showPhotoPicker) {
-            SinglePhotoPicker { image, data in
-                viewModel.didSelectedImage(image, data)
+            SinglePhotoPicker(
+                selectionLimit: max(1, viewModel.remainingSelectablePhotoCount)
+            ) { photos in
+                viewModel.didSelectPhotos(photos)
             }
             .presentationDetents([.large])
             .presentationCornerRadius(18)
@@ -156,6 +189,7 @@ public struct CreateVoteView: View {
             if viewModel.isWritingInProgress {
                 viewModel.didTapCancel()
             } else {
+                viewModel.removePendingVoteCreateInfo()
                 dismiss()
             }
         } label: {
@@ -187,12 +221,48 @@ public struct CreateVoteView: View {
     }
     
     @ViewBuilder
+    private var link: some View {
+        HStack(spacing: 6) {
+            BNImage(.link)
+                .style(color: ColorPalette.gray600, size: 18)
+            ZStack(alignment: .leading) {
+                if viewModel.linkURL.isEmpty {
+                    HStack(spacing: 2) {
+                        BNText("상품 링크")
+                            .style(style: .s3sb, color: ColorPalette.gray600)
+                        BNText("(선택)")
+                            .style(style: .s5sb, color: ColorPalette.gray600)
+                    }
+                    .allowsHitTesting(false)
+                }
+                TextField("", text: $viewModel.linkURL)
+                    .focused($focusState, equals: .link)
+                    .keyboardType(.URL)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
+                    .font(.s3sb)
+                    .foregroundStyle(ColorPalette.gray800)
+                    .tint(ColorPalette.gray950)
+                    .onChange(of: viewModel.linkURL) { _, _ in
+                        viewModel.didChangeLinkURL()
+                    }
+            }
+            Spacer()
+        }
+        .frame(height: 18)
+        .padding(.vertical, 18)
+        .onTapGesture {
+            focusState = .link
+        }
+    }
+    
+    @ViewBuilder
     private var price: some View {
         HStack(spacing: 6) {
             BNImage(.won)
                 .style(color: ColorPalette.gray600, size: 18)
             TextField(text: $viewModel.price) {
-                BNText("상품 가격을 입력해주세요.")
+                BNText("상품 가격")
                     .style(style: .s3sb, color: ColorPalette.gray600)
             }
             .focused($focusState, equals: .price)
@@ -213,9 +283,27 @@ public struct CreateVoteView: View {
     }
     
     @ViewBuilder
+    private var title: some View {
+        TextField(text: $viewModel.title) {
+            BNText("제목")
+                .style(style: .t2b, color: ColorPalette.gray600)
+        }
+        .focused($focusState, equals: .title)
+        .lineLimit(1)
+        .font(.t2b)
+        .foregroundStyle(ColorPalette.gray950)
+        .tint(ColorPalette.gray950)
+        .padding(.top, 20)
+        .onChange(of: viewModel.title) { _, newValue in
+            viewModel.didChangeTitle(text: newValue)
+        }
+        .onTapGesture {
+            focusState = .title
+        }
+    }
+    
+    @ViewBuilder
     private var contents: some View {
-        let placeHolder: String = "고민 이유를 자세히 적을수록 더 정확한 투표 결과를 얻을 수 있어요!"
-        
         VStack(spacing: 0) {
             TextField(
                 "",
@@ -236,7 +324,7 @@ public struct CreateVoteView: View {
                 if viewModel.contents.isEmpty {
                     VStack {
                         HStack {
-                            BNText(placeHolder)
+                            BNText("고민 이유를 자세히 적을수록 더 정확한 투표 결과를 얻을 수 있어요!")
                                 .style(style: .p2m, color: ColorPalette.gray600)
                             Spacer()
                         }
@@ -252,7 +340,7 @@ public struct CreateVoteView: View {
             }
             .padding(.vertical, 10)
         }
-        .padding(.top, 20)
+        .padding(.top, 12)
         .background(.white)
         .onTapGesture {
             focusState = .contents
@@ -270,18 +358,19 @@ public struct CreateVoteView: View {
                 VStack(spacing: 2) {
                     BNImage(.camera)
                         .style(color: ColorPalette.gray600, size: 20)
-                    BNText("\(viewModel.selectedImage == nil ? 0 : 1)/1")
+                    BNText("\(viewModel.selectedPhotoCount)/3")
                         .style(style: .s5sb, color: ColorPalette.gray600)
                 }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 15)
+                .frame(width: 68, height: 68)
                 .background {
                     RoundedRectangle(cornerRadius: 12)
                         .fill(ColorPalette.gray100)
                 }
             }
-            if let image = viewModel.selectedImage {
-                image
+            .disabled(viewModel.isPhotoPickerEnabled == false)
+
+            ForEach(Array(viewModel.selectedPhotos.enumerated()), id: \.offset) { index, photo in
+                photo.image
                     .resizable()
                     .scaledToFill()
                     .frame(width: 68, height: 68)
@@ -291,7 +380,7 @@ public struct CreateVoteView: View {
                             Spacer()
                             VStack {
                                 Button {
-                                    viewModel.didTapDeleteImage()
+                                    viewModel.didTapDeleteImage(at: index)
                                 } label: {
                                     Circle()
                                         .fill(ColorPalette.black.opacity(0.4))
@@ -310,50 +399,26 @@ public struct CreateVoteView: View {
             Spacer()
         }
     }
-}
-
-private struct VotePostTooltip: View {
-    var body: some View {
-        HStack(spacing: 0) {
-            HStack(spacing: 4) {
-                BNImage(.clock)
-                    .style(color: ColorPalette.gray700, size: 16)
-                
-                BNText("투표는 48시간동안 진행돼요.")
-                    .style(style: .p4m, color: ColorPalette.gray700)
+    
+    @ViewBuilder
+    private var subAddPhoto: some View {
+        Button {
+            Task {
+                await viewModel.checkPhotoPermission()
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(ColorPalette.gray0)
-            )
-            
-            VotePostTooltipTrail()
-                .fill(ColorPalette.gray0)
-                .frame(width: 5, height: 10)
+        } label: {
+            HStack(spacing: 4) {
+                BNImage(.camera)
+                    .style(color: ColorPalette.gray950, size: 20)
+                BNText("\(viewModel.selectedPhotoCount)/3")
+                    .style(style: .s5sb, color: ColorPalette.gray800)
+            }
         }
-        .shadow(
-            color: ColorPalette
-                .fromHex("#3670DB")
-                .opacity(0.2),
-            radius: 25,
-            x: 40,
-            y: 4
-        )
     }
 }
 
-private struct VotePostTooltipTrail: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: 0, y: 0))
-        path.addLine(to: CGPoint(x: 0, y: rect.height))
-        path.addLine(to: CGPoint(x: rect.width, y: rect.midY))
-        path.closeSubpath()
-        return path
-    }
-}
+
+// MARK: - Preview
 
 private struct MockUploadsRepository: UploadsRepository {
     func postUploadImage(data: Data, fileName: String, contentType: String) async throws -> ImageInfo {
