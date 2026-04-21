@@ -16,6 +16,11 @@ import Core
 import Domain
 
 public final class CreateVoteViewModel: ObservableObject {
+    struct SelectedPhoto {
+        let image: Image
+        let data: Data
+    }
+
     @Published var title: String = ""
     @Published var contents: String = ""
     @Published var linkURL: String = ""
@@ -24,8 +29,7 @@ public final class CreateVoteViewModel: ObservableObject {
     @Published var categories: [FeedCategory] = FeedCategory.allCases
     
     @Published var createButtonState: BNButtonState = .disabled
-    @Published var selectedImageData: Data?
-    @Published var selectedImage: Image?
+    @Published var selectedPhotos: [SelectedPhoto] = []
     @Published var showPhotoPicker = false
     @Published var showCustomAlert = false
     @Published var showCategoryBottomSheet = false
@@ -44,11 +48,24 @@ public final class CreateVoteViewModel: ObservableObject {
         _contentsLimitCount
     }
 
+    var selectedPhotoCount: Int {
+        selectedPhotos.count
+    }
+
+    var remainingSelectablePhotoCount: Int {
+        max(0, _maxPhotoCount - selectedPhotos.count)
+    }
+
+    var isPhotoPickerEnabled: Bool {
+        selectedPhotos.count < _maxPhotoCount
+    }
+
     var isWritingInProgress: Bool {
         category != nil || linkURL.isEmpty == false || price.isEmpty == false || title.isEmpty == false || contents.isEmpty == false
     }
     
     private let _accessLevel: PHAccessLevel = .readWrite
+    private let _maxPhotoCount = 3
     private let _titleLimitCount = 40
     private let _contentsLimitCount = 100
     private let _maxPrice = 100_000_000
@@ -111,6 +128,9 @@ public final class CreateVoteViewModel: ObservableObject {
 
     @MainActor
     func checkPhotoPermission() async {
+        guard isPhotoPickerEnabled else {
+            return
+        }
         let status = PHPhotoLibrary.authorizationStatus(for: _accessLevel)
         switch status {
         case .authorized, .limited:
@@ -138,20 +158,31 @@ public final class CreateVoteViewModel: ObservableObject {
         UIApplication.shared.open(url)
     }
     
-    func didSelectedImage(_ image: Image, _ data: Data) {
+    func didSelectPhotos(_ photos: [SinglePhotoPicker.PickedPhoto]) {
         defer {
             validatePost()
         }
-        selectedImageData = data
-        selectedImage = image
+        guard photos.isEmpty == false else {
+            return
+        }
+        let remaining = remainingSelectablePhotoCount
+        guard remaining > 0 else {
+            return
+        }
+        let newPhotos = photos
+            .prefix(remaining)
+            .map { SelectedPhoto(image: $0.image, data: $0.data) }
+        selectedPhotos.append(contentsOf: newPhotos)
     }
     
-    func didTapDeleteImage() {
+    func didTapDeleteImage(at index: Int) {
         defer {
             validatePost()
         }
-        selectedImageData = nil
-        selectedImage = nil
+        guard selectedPhotos.indices.contains(index) else {
+            return
+        }
+        selectedPhotos.remove(at: index)
     }
 
     func didTapCancel() {
@@ -213,7 +244,7 @@ public final class CreateVoteViewModel: ObservableObject {
     private func validatePost() {
         let isValidPrice = price.isEmpty == false
         let isValidCategory = category != nil
-        let isValidImage = selectedImageData != nil && selectedImage != nil
+        let isValidImage = selectedPhotos.isEmpty == false
         let isValidTitle = title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
         let isValid = isValidImage && isValidCategory && isValidPrice && isValidTitle
         createButtonState = isValid ? .enabled : .disabled
@@ -246,7 +277,7 @@ public final class CreateVoteViewModel: ObservableObject {
     @MainActor
     func postVote() async -> Bool {
         guard
-            let data = selectedImageData,
+            let data = selectedPhotos.first?.data,
             let selectedCategory = category,
             let priceValue = price.toInt
         else {
