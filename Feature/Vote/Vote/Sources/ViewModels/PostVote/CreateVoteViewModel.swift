@@ -16,6 +16,13 @@ import Core
 import Domain
 
 public final class CreateVoteViewModel: ObservableObject {
+    private struct UploadedImage {
+        let index: Int
+        let imageInfo: ImageInfo
+        let imageWidth: Int
+        let imageHeight: Int
+    }
+
     struct SelectedPhoto {
         let image: Image
         let data: Data
@@ -286,32 +293,58 @@ public final class CreateVoteViewModel: ObservableObject {
     @MainActor
     func postVote() async -> Bool {
         guard
-            let data = selectedPhotos.first?.data,
+            selectedPhotos.isEmpty == false,
             let selectedCategory = category,
             let priceValue = price.toInt
         else {
             return false
         }
 
-        let contentType = detectContentType(data) ?? "image/jpeg"
-        let fileExtension = contentType == "image/png" ? "png" : "jpg"
-        let fileName = "feed_\(UUID().uuidString).\(fileExtension)"
-        let imageSize = extractImageSize(data)
-
         do {
-            let imageInfo = try await uploadsRepository.postUploadImage(
-                data: data,
-                fileName: fileName,
-                contentType: contentType
-            )
+            let photoDatas = selectedPhotos.map(\.data)
+            let imageUploads = try await withThrowingTaskGroup(
+                of: UploadedImage.self
+            ) { group in
+                for (index, data) in photoDatas.enumerated() {
+                    group.addTask { [uploadsRepository] in
+                        let contentType = Self.detectContentType(data) ?? "image/jpeg"
+                        let fileExtension = contentType == "image/png" ? "png" : "jpg"
+                        let fileName = "feed_\(UUID().uuidString).\(fileExtension)"
+                        let imageSize = Self.extractImageSize(data)
+                        let imageInfo = try await uploadsRepository.postUploadImage(
+                            data: data,
+                            fileName: fileName,
+                            contentType: contentType
+                        )
+                        return UploadedImage(
+                            index: index,
+                            imageInfo: imageInfo,
+                            imageWidth: imageSize.width,
+                            imageHeight: imageSize.height
+                        )
+                    }
+                }
+
+                var uploads: [UploadedImage] = []
+                for try await value in group {
+                    uploads.append(value)
+                }
+                return uploads.sorted { $0.index < $1.index }
+            }
 
             let info = VoteCreateInfo(
                 category: selectedCategory,
                 price: priceValue,
+                link: linkURL,
+                title: title,
                 content: contents,
-                s3ObjectKey: imageInfo.s3ObjectKey,
-                imageWidth: imageSize.width,
-                imageHeight: imageSize.height
+                images: imageUploads.map { upload in
+                    VoteCreateInfo.Image(
+                        s3ObjectKey: upload.imageInfo.s3ObjectKey,
+                        imageWidth: upload.imageWidth,
+                        imageHeight: upload.imageHeight
+                    )
+                }
             )
             _ = try await feedRepository.postVoteFeed(info: info)
             NotificationCenter.default.post(name: .voteFeedDidCreate, object: nil)
@@ -322,7 +355,7 @@ public final class CreateVoteViewModel: ObservableObject {
         }
     }
 
-    private func detectContentType(_ data: Data) -> String? {
+    private static func detectContentType(_ data: Data) -> String? {
         let bytes = [UInt8](data.prefix(4))
         if bytes.count >= 2, bytes[0] == 0xFF, bytes[1] == 0xD8 {
             return "image/jpeg"
@@ -333,7 +366,7 @@ public final class CreateVoteViewModel: ObservableObject {
         return nil
     }
 
-    private func extractImageSize(_ data: Data) -> (width: Int, height: Int) {
+    private static func extractImageSize(_ data: Data) -> (width: Int, height: Int) {
         guard let image = UIImage(data: data) else {
             return (0, 0)
         }
