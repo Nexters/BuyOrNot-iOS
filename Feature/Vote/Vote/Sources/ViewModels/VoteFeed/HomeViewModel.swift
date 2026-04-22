@@ -20,6 +20,7 @@ public final class HomeViewModel: ObservableObject {
     @Published var voteFeedState: VoteFeedState = .loading
     @Published var feeds: [VoteFeedData] = []
     @Published var selectedFilter: FeedFilter = .all
+    @Published var selectedCategories: Set<FeedCategory> = []
     @Published var isLoadingMore: Bool = false
 
     @Published var myVoteState: MyVoteState = .loading
@@ -79,7 +80,8 @@ public final class HomeViewModel: ObservableObject {
             let page = try await feedRepository.getVoteFeeds(
                 cursor: nil,
                 size: pageSize,
-                feedStatus: feedStatusParam(for: selectedFilter)
+                feedStatus: feedStatusParam(for: selectedFilter),
+                category: categoryParam()
             )
             feeds = page.votes
                 .filter { removedFeedIds.contains(String($0.feedId)) == false }
@@ -105,7 +107,8 @@ public final class HomeViewModel: ObservableObject {
             let page = try await feedRepository.getVoteFeeds(
                 cursor: cursor,
                 size: pageSize,
-                feedStatus: feedStatusParam(for: selectedFilter)
+                feedStatus: feedStatusParam(for: selectedFilter),
+                category: categoryParam()
             )
             appendUniqueFeeds(
                 page.votes
@@ -198,7 +201,8 @@ public final class HomeViewModel: ObservableObject {
             let page = try await feedRepository.getMyVoteFeeds(
                 cursor: nil,
                 size: pageSize,
-                feedStatus: feedStatusParam(for: selectedFilter)
+                feedStatus: feedStatusParam(for: selectedFilter),
+                category: categoryParam()
             )
             let filteredVotes = page.votes.filter {
                 removedFeedIds.contains(String($0.feedId)) == false
@@ -229,7 +233,8 @@ public final class HomeViewModel: ObservableObject {
                 let page = try await feedRepository.getVoteFeeds(
                     cursor: cursor,
                     size: pageSize,
-                    feedStatus: feedStatusParam(for: selectedFilter)
+                    feedStatus: feedStatusParam(for: selectedFilter),
+                    category: categoryParam()
                 )
                 cursor = page.nextCursor
                 hasMorePages = page.hasNext
@@ -273,6 +278,10 @@ public final class HomeViewModel: ObservableObject {
         }
     }
 
+    private func categoryParam() -> String? {
+        selectedCategories.isEmpty ? nil : selectedCategories.map(\.rawValue).joined(separator: ",")
+    }
+
     private func voteChoice(for optionId: Int) -> VoteChoice? {
         switch optionId {
         case 0: return .yes
@@ -306,9 +315,11 @@ public final class HomeViewModel: ObservableObject {
                 userProfileImageURL: item.userProfileImageURL,
                 category: item.category,
                 timeAgo: item.timeAgo,
+                title: item.title,
                 content: item.content,
-                productImageURL: item.productImageURL,
+                productImageURLs: item.productImageURLs,
                 price: item.price,
+                link: item.link,
                 voteOptions: updatedOptions,
                 selectedVoteId: selectedOptionId,
                 isPeriodDone: item.isPeriodDone,
@@ -343,9 +354,11 @@ public final class HomeViewModel: ObservableObject {
             userProfileImageURL: vote.author.profileImage,
             category: categoryDisplayName(vote.category),
             timeAgo: timeAgoText(from: vote.createdAt),
+            title: vote.title,
             content: vote.content,
-            productImageURL: vote.viewUrl,
+            productImageURLs: vote.images.map(\.imageUrl),
             price: formatPrice(vote.price),
+            link: vote.link,
             voteOptions: voteOptions(
                 yesCount: vote.yesCount,
                 noCount: vote.noCount,

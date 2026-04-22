@@ -15,7 +15,7 @@ public struct HomeView: View {
     @State private var selectedTab: FeedTab = .voteFeed
     @State private var showBanner = true
     @State private var showNavigationBar: Bool = true
-    @State private var selectedCategory: FeedCategoryFilter = .all
+    @State private var showCategoryFilter: Bool = true
     @State private var showFilterSheet = false
 
     public init(viewModel: HomeViewModel) {
@@ -48,11 +48,12 @@ public struct HomeView: View {
                     tabs: viewModel.isAuthenticated ? FeedTab.allCases : [.voteFeed]
                 )
 
-                if !shouldHideFilter {
+                if !shouldHideFilter && showCategoryFilter {
                     FeedCategoryFilterBar(
-                        selectedCategory: $selectedCategory,
+                        selectedCategories: $viewModel.selectedCategories,
                         showFilterSheet: $showFilterSheet
                     )
+                    .transition(.move(edge: .top).combined(with: .opacity))
                 }
 
                 ScrollView {
@@ -71,6 +72,7 @@ public struct HomeView: View {
                             let isScrollingDown = value.translation.height < 0
                             withAnimation(.easeInOut(duration: 0.25)) {
                                 showNavigationBar = !isScrollingDown
+                                showCategoryFilter = !isScrollingDown
                             }
                         }
                 )
@@ -118,6 +120,22 @@ public struct HomeView: View {
                 Task { await viewModel.fetchMyFeeds() }
             }
         }
+        .onChange(of: viewModel.selectedCategories) { _, _ in
+            switch selectedTab {
+            case .voteFeed:
+                Task { await viewModel.fetchFeeds() }
+            case .myVotes:
+                Task { await viewModel.fetchMyFeeds() }
+            }
+        }
+    }
+
+    private var voteFeedTooltipId: String? {
+        viewModel.feeds.first(where: { $0.link != nil })?.id
+    }
+
+    private var myFeedTooltipId: String? {
+        viewModel.myFeeds.first(where: { $0.link != nil })?.id
     }
 
     @ViewBuilder
@@ -153,6 +171,7 @@ public struct HomeView: View {
                     ForEach(viewModel.feeds, id: \.id) { feed in
                         VoteFeed(
                             data: feed,
+                            showLinkTooltip: feed.id == voteFeedTooltipId,
                             onDelete: { Task { await viewModel.deleteFeed(feedId: feed.id) } },
                             onReport: { Task { await viewModel.reportFeed(feedId: feed.id) } },
                             onBlock: { Task { await viewModel.blockUser(userId: feed.userId, userName: feed.userName) } },
@@ -160,7 +179,6 @@ public struct HomeView: View {
                                 Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
                             }
                         )
-                        .padding(.horizontal, 20)
                         .onAppear {
                             Task { await viewModel.fetchMoreIfNeeded(currentFeedId: feed.id) }
                         }
@@ -193,6 +211,7 @@ public struct HomeView: View {
                 ForEach(viewModel.myFeeds, id: \.id) { feed in
                     VoteFeed(
                         data: feed,
+                        showLinkTooltip: feed.id == myFeedTooltipId,
                         onDelete: { Task { await viewModel.deleteFeed(feedId: feed.id) } },
                         onReport: { Task { await viewModel.reportFeed(feedId: feed.id) } },
                         onBlock: { Task { await viewModel.blockUser(userId: feed.userId, userName: feed.userName) } },
@@ -200,7 +219,6 @@ public struct HomeView: View {
                             Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
                         }
                     )
-                    .padding(.horizontal, 20)
                 }
             }
 
@@ -228,21 +246,6 @@ enum FeedFilter: String, CaseIterable {
     case closed = "마감된 투표"
 }
 
-enum FeedCategoryFilter: Equatable {
-    case all
-    case category(FeedCategory)
-
-    static var allCases: [FeedCategoryFilter] {
-        [.all] + FeedCategory.allCases.map { .category($0) }
-    }
-
-    var displayName: String {
-        switch self {
-        case .all:             return "전체"
-        case .category(let c): return c.displayName
-        }
-    }
-}
 
 
 struct FeedSegmentedControl: View {
@@ -309,18 +312,29 @@ private struct TabItem: View {
 }
 
 struct FeedCategoryFilterBar: View {
-    @Binding var selectedCategory: FeedCategoryFilter
+    @Binding var selectedCategories: Set<FeedCategory>
     @Binding var showFilterSheet: Bool
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
                 FeedFilterIconChip(onTap: { showFilterSheet = true })
-                ForEach(FeedCategoryFilter.allCases, id: \.displayName) { category in
+                FeedFilterChip(
+                    title: "전체",
+                    isSelected: selectedCategories.isEmpty,
+                    onTap: { selectedCategories = [] }
+                )
+                ForEach(FeedCategory.allCases, id: \.rawValue) { category in
                     FeedFilterChip(
                         title: category.displayName,
-                        isSelected: selectedCategory == category,
-                        onTap: { selectedCategory = category }
+                        isSelected: selectedCategories.contains(category),
+                        onTap: {
+                            if selectedCategories.contains(category) {
+                                selectedCategories.remove(category)
+                            } else {
+                                selectedCategories.insert(category)
+                            }
+                        }
                     )
                 }
             }
@@ -328,7 +342,8 @@ struct FeedCategoryFilterBar: View {
             .padding(.vertical, 1)
         }
         .frame(height: 38)
-        .padding(.top, 16)
+        .padding(.top, 10)
+        .padding(.bottom, 10)
     }
 }
 
@@ -457,10 +472,10 @@ private struct FeedFilterChip: View {
 }
 
 private struct PreviewFeedRepository: FeedRepository {
-    func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> Domain.VotePage {
+    func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?, category: String?) async throws -> Domain.VotePage {
         VotePage(votes: [], nextCursor: nil, hasNext: false)
     }
-    func getMyVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> Domain.VotePage {
+    func getMyVoteFeeds(cursor: Int?, size: Int, feedStatus: String?, category: String?) async throws -> Domain.VotePage {
         VotePage(votes: [], nextCursor: nil, hasNext: false)
     }
     func postVoteFeed(info: Domain.VoteCreateInfo) async throws -> Int { 0 }
@@ -478,14 +493,13 @@ private struct PreviewFeedRepository: FeedRepository {
             yesCount: 0,
             noCount: 0,
             voteStatus: .open,
-            s3ObjectKey: "",
-            viewUrl: "",
-            imageWidth: 0,
-            imageHeight: 0,
+            images: [],
             author: FeedAuthor(id: 0, nickname: "", profileImage: ""),
             createdAt: DateComponents(),
             hasVoted: false,
-            myVoteChoice: nil
+            myVoteChoice: nil,
+            link: nil,
+            title: nil
         )
     }
 }
