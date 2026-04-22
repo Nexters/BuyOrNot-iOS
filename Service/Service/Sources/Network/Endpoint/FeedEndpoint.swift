@@ -42,7 +42,7 @@ enum FeedEndpoint: Endpoint {
 
     var version: APIVersion {
         switch self {
-        case .getFeeds, .getMyFeeds:
+        case .getFeeds, .getMyFeeds, .getFeed:
             return .v2
         default:
             return .v1
@@ -72,7 +72,9 @@ enum FeedEndpoint: Endpoint {
             if let cursor { params["cursor"] = cursor }
             if let size { params["size"] = size }
             if let feedStatus { params["feedStatus"] = feedStatus }
-            if let category { params["category"] = category }
+            if let category {
+                params["category"] = category.components(separatedBy: ",")
+            }
             return params.isEmpty ? nil : params
         default:
             return nil
