@@ -13,6 +13,13 @@ struct FeedPageResponse: Decodable {
     let hasNext: Bool
 }
 
+struct FeedImageResponse: Decodable {
+    let s3ObjectKey: String
+    let imageUrl: String
+    let imageWidth: Int
+    let imageHeight: Int
+}
+
 struct FeedsResponse: Decodable {
     public let feedId: Int
     public let content: String
@@ -22,12 +29,11 @@ struct FeedsResponse: Decodable {
     public let noCount: Int
     public let totalCount: Int
     public let feedStatus: String
-    public let s3ObjectKey: String?
-    public let viewUrl: String?
-    public let imageWidth: Int
-    public let imageHeight: Int
+    public let images: [FeedImageResponse]
     public let author: UserResponse
     public let createdAt: String
     public let hasVoted: Bool?
     public let myVoteChoice: String?
+    public let link: String?
+    public let title: String?
 }
