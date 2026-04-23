@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SafariServices
 import DesignSystem
 import Kingfisher
 
@@ -289,8 +290,6 @@ private struct ProductImageCarousel: View {
     let link: String?
     let showLinkTooltip: Bool
 
-    @Environment(\.openURL) private var openURL
-
     private let tooltipBg = Color(red: 0.23, green: 0.24, blue: 0.24).opacity(0.8)
 
     private var prefixedImages: [String] { Array(imageURLs.prefix(3)) }
@@ -298,6 +297,7 @@ private struct ProductImageCarousel: View {
 
     @State private var carouselHeight: CGFloat = UIScreen.main.bounds.width - 40
     @State private var visibleImageIndex: Int? = 0
+    @State private var safariURL: URL?
 
     private var shouldShowLinkPill: Bool {
         !hasMultipleImages || visibleImageIndex == 0 || visibleImageIndex == nil
@@ -349,6 +349,15 @@ private struct ProductImageCarousel: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: carouselHeight)
+        .sheet(isPresented: Binding(
+            get: { safariURL != nil },
+            set: { if !$0 { safariURL = nil } }
+        )) {
+            if let url = safariURL {
+                SafariView(url: url)
+                    .ignoresSafeArea()
+            }
+        }
     }
 
     @ViewBuilder
@@ -399,7 +408,7 @@ private struct ProductImageCarousel: View {
     private var indicatorPill: some View {
         if let urlStr = link {
             Button {
-                if let url = URL(string: urlStr) { openURL(url) }
+                if let url = URL(string: urlStr) { safariURL = url }
             } label: {
                 BNImage(.link)
                     .style(color: ColorPalette.gray0, size: 20)
@@ -432,6 +441,16 @@ private struct ProductImageCarousel: View {
                 }
         }
     }
+}
+
+private struct SafariView: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: Context) -> SFSafariViewController {
+        SFSafariViewController(url: url)
+    }
+
+    func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
 }
 
 private struct LinkTooltipArrow: Shape {
