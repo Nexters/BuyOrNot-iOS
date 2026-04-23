@@ -7,7 +7,8 @@
 
 enum APIVersion: String {
     case v1
-    
+    case v2
+
     var path: String {
         "/api/\(self.rawValue)"
     }

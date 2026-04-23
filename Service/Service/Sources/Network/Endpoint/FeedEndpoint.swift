@@ -6,8 +6,8 @@
 //
 
 enum FeedEndpoint: Endpoint {
-    case getFeeds(cursor: Int?, size: Int?, feedStatus: String?)
-    case getMyFeeds(cursor: Int?, size: Int?, feedStatus: String?)
+    case getFeeds(cursor: Int?, size: Int?, feedStatus: String?, category: String?)
+    case getMyFeeds(cursor: Int?, size: Int?, feedStatus: String?, category: String?)
     case postFeeds(PostFeedRequest)
     case postVote(feedId: Int, body: PostVoteRequest)
     case postFeedsReport(Int)
@@ -40,6 +40,15 @@ enum FeedEndpoint: Endpoint {
         }
     }
 
+    var version: APIVersion {
+        switch self {
+        case .getFeeds, .getMyFeeds, .getFeed:
+            return .v2
+        default:
+            return .v1
+        }
+    }
+
     var method: HTTPMethod {
         switch self {
         case .getFeeds, .getMyFeeds, .getFeed:
@@ -57,12 +66,15 @@ enum FeedEndpoint: Endpoint {
 
     var queryParameters: [String: Any]? {
         switch self {
-        case .getFeeds(let cursor, let size, let feedStatus),
-             .getMyFeeds(let cursor, let size, let feedStatus):
+        case .getFeeds(let cursor, let size, let feedStatus, let category),
+             .getMyFeeds(let cursor, let size, let feedStatus, let category):
             var params: [String: Any] = [:]
             if let cursor { params["cursor"] = cursor }
             if let size { params["size"] = size }
             if let feedStatus { params["feedStatus"] = feedStatus }
+            if let category {
+                params["category"] = category.components(separatedBy: ",")
+            }
             return params.isEmpty ? nil : params
         default:
             return nil

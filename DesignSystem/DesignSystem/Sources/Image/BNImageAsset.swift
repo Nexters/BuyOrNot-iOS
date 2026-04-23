@@ -10,6 +10,7 @@ public enum BNImageAsset: String {
     case login_background = "login_background"
     case feed_banner = "feed_banner"
     case empty_image = "empty_image"
+    case category_empty_image = "category_empty_image"
     case error_image = "error_image"
     case notification_empty_image = "notification_empty_image"
     case delete_account = "delete_account"
@@ -38,4 +39,5 @@ public enum BNImageAsset: String {
     case extend = "extend"
     case combined_shape = "combined_shape"
     case link = "link"
+    case list = "list"
 }

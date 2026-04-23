@@ -24,8 +24,10 @@ public class FeedRepositoryImpl: FeedRepository {
         try await apiClient.request(endpoint)
     }
     
-    public func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> VotePage {
-        let response: BaseResponse<FeedPageResponse> = try await request(.getFeeds(cursor: cursor, size: size, feedStatus: feedStatus))
+    public func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?, category: String?) async throws -> VotePage {
+        let response: BaseResponse<FeedPageResponse> = try await request(
+            .getFeeds(cursor: cursor, size: size, feedStatus: feedStatus, category: category)
+        )
         let page = response.data
         return VotePage(
             votes: page.content.map { $0.toDomain() },
@@ -33,10 +35,10 @@ public class FeedRepositoryImpl: FeedRepository {
             hasNext: page.hasNext
         )
     }
-    
-    public func getMyVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> VotePage {
+
+    public func getMyVoteFeeds(cursor: Int?, size: Int, feedStatus: String?, category: String?) async throws -> VotePage {
         let response: BaseResponse<FeedPageResponse> = try await request(
-            .getMyFeeds(cursor: cursor, size: size, feedStatus: feedStatus)
+            .getMyFeeds(cursor: cursor, size: size, feedStatus: feedStatus, category: category)
         )
         let page = response.data
         return VotePage(
