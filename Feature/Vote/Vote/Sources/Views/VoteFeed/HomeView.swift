@@ -146,8 +146,15 @@ public struct HomeView: View {
 
         case .success:
             if viewModel.feeds.isEmpty {
-                FeedEmptyView()
-                    .padding(.top, 140)
+                if viewModel.selectedCategories.isEmpty {
+                    FeedEmptyView()
+                        .padding(.top, 140)
+                } else {
+                    CategoryEmptyView {
+                        viewModel.didTapCreateVote()
+                    }
+                    .padding(.top, 60)
+                }
             } else {
                 if showBanner {
                     VStack {
@@ -223,8 +230,15 @@ public struct HomeView: View {
             }
 
         case .empty:
-            FeedEmptyView()
-                .padding(.top, 140)
+            if viewModel.selectedCategories.isEmpty {
+                FeedEmptyView()
+                    .padding(.top, 140)
+            } else {
+                CategoryEmptyView {
+                    viewModel.didTapCreateVote()
+                }
+                .padding(.top, 60)
+            }
 
         case .error:
             FeedErrorView {
