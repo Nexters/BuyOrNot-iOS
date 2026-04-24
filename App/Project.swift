@@ -8,7 +8,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let version = "0.0.5"
+let version = "0.0.6"
 let build = 0
 
 let project = Module.app.project(
@@ -23,6 +23,7 @@ let project = Module.app.project(
         .external(name: "FirebaseRemoteConfig"),
     ],
     infoPlist: .extendingDefault(
+        
         with: getAppInfoPlistValues()
     ),
     entitlements: "App/App.entitlements",

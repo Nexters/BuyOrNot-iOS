@@ -26,7 +26,7 @@ public struct SplashView: View {
                 .onAppear {
                     Task {
                         await viewModel.didSplashStarted()
-                        try await Task.sleep(for: .milliseconds(2300))
+                        try await Task.sleep(for: .milliseconds(1600))
                         await viewModel.didSplashEnded()
                     }
                 }

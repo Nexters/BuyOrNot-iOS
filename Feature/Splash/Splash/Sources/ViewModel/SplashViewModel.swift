@@ -40,7 +40,6 @@ public final class SplashViewModel: ObservableObject {
     private func routeAfterVersionCheck() async {
         let updateInfo = await appUpdateRepository.getAppUpdateInfo()
         let currentVersion = AppVersion(rawValue: Bundle.main.appVersionString)
-        print(updateInfo, currentVersion)
 
         if currentVersion < updateInfo.minimumVersion {
             alertConfig = forceUpdateAlertConfig()
