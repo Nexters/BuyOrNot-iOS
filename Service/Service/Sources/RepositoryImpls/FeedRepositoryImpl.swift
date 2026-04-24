@@ -52,10 +52,16 @@ public class FeedRepositoryImpl: FeedRepository {
         let body = PostFeedRequest(
             category: info.category.rawValue,
             price: info.price,
+            link: info.link,
+            title: info.title,
             content: info.content,
-            s3ObjectKey: info.s3ObjectKey,
-            imageWidth: info.imageWidth,
-            imageHeight: info.imageHeight
+            images: info.images.map {
+                PostFeedImageRequest(
+                    s3ObjectKey: $0.s3ObjectKey,
+                    imageWidth: $0.imageWidth,
+                    imageHeight: $0.imageHeight
+                )
+            }
         )
         let response: BaseResponse<PostFeedResponse> = try await request(.postFeeds(body))
         return response.data.feedId

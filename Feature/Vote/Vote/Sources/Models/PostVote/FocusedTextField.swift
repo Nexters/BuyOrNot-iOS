@@ -6,6 +6,8 @@
 //
 
 enum FocusedTextField: Hashable {
+    case link
     case price
+    case title
     case contents
 }
