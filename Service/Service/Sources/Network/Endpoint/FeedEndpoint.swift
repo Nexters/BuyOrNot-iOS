@@ -42,7 +42,7 @@ enum FeedEndpoint: Endpoint {
 
     var version: APIVersion {
         switch self {
-        case .getFeeds, .getMyFeeds, .getFeed:
+        case .getFeeds, .getMyFeeds, .getFeed, .postFeeds:
             return .v2
         default:
             return .v1

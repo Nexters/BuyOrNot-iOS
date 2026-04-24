@@ -18,6 +18,8 @@ final class PendingVoteCreateInfoStore: EntityStore {
     func savePendingVoteCreateInfo(_ info: PendingVoteCreateInfo) {
         let entity = PendingVoteCreateInfoEntity(
             category: info.category?.rawValue,
+            linkURL: info.linkURL,
+            title: info.title,
             price: info.price,
             content: info.content
         )
