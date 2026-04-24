@@ -427,10 +427,10 @@ private struct MockUploadsRepository: UploadsRepository {
 }
 
 private struct MockFeedRepository: FeedRepository {
-    func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> VotePage {
+    func getVoteFeeds(cursor: Int?, size: Int, feedStatus: String?, category: String?) async throws -> VotePage {
         VotePage(votes: [], nextCursor: nil, hasNext: false)
     }
-    func getMyVoteFeeds(cursor: Int?, size: Int, feedStatus: String?) async throws -> VotePage {
+    func getMyVoteFeeds(cursor: Int?, size: Int, feedStatus: String?, category: String?) async throws -> VotePage {
         VotePage(votes: [], nextCursor: nil, hasNext: false)
     }
     func postVoteFeed(info: VoteCreateInfo) async throws -> Int { 0 }
@@ -448,14 +448,13 @@ private struct MockFeedRepository: FeedRepository {
             yesCount: 0,
             noCount: 0,
             voteStatus: .open,
-            s3ObjectKey: "",
-            viewUrl: "",
-            imageWidth: 0,
-            imageHeight: 0,
+            images: [],
             author: FeedAuthor(id: 0, nickname: "", profileImage: ""),
             createdAt: DateComponents(),
             hasVoted: false,
-            myVoteChoice: nil
+            myVoteChoice: nil,
+            link: nil,
+            title: nil
         )
     }
 }

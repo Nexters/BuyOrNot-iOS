@@ -58,6 +58,7 @@ public enum DesignSystemAsset: Sendable {
     public static let extend = DesignSystemImages(name: "extend")
     public static let `left` = DesignSystemImages(name: "left")
     public static let link = DesignSystemImages(name: "link")
+    public static let list = DesignSystemImages(name: "list")
     public static let my = DesignSystemImages(name: "my")
     public static let notification = DesignSystemImages(name: "notification")
     public static let notificationFill = DesignSystemImages(name: "notification_fill")
@@ -70,6 +71,7 @@ public enum DesignSystemAsset: Sendable {
   }
   public enum Image {
   public static let appleLogo = DesignSystemImages(name: "apple_logo")
+    public static let categoryEmptyImage = DesignSystemImages(name: "category_empty_image")
     public static let deleteAccount = DesignSystemImages(name: "delete_account")
     public static let emptyImage = DesignSystemImages(name: "empty_image")
     public static let errorImage = DesignSystemImages(name: "error_image")

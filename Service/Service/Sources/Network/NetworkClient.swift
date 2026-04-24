@@ -168,9 +168,15 @@ final class NetworkClient: NetworkClientProtocol {
         }
 
         if let queryParameters = endpoint.queryParameters {
-            urlComponents.queryItems = queryParameters.map {
-                URLQueryItem(name: $0.key, value: "\($0.value)")
+            var queryItems: [URLQueryItem] = []
+            for (key, value) in queryParameters {
+                if let array = value as? [Any] {
+                    array.forEach { queryItems.append(URLQueryItem(name: key, value: "\($0)")) }
+                } else {
+                    queryItems.append(URLQueryItem(name: key, value: "\(value)"))
+                }
             }
+            urlComponents.queryItems = queryItems
         }
 
         guard let url = urlComponents.url else {
