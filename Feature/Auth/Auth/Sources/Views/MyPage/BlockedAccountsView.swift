@@ -44,7 +44,7 @@ public struct BlockedAccountsView: View {
                             }
                         }
                         .padding(.horizontal, 20)
-                        .padding(.top, 26)
+                        .padding(.top, 10)
                     }
                     .scrollBounceBehavior(
                         .basedOnSize,
