@@ -28,6 +28,8 @@ public struct AccountSettingView: View {
                 .basedOnSize,
                 axes: .vertical
             )
+            .padding(.top, 10)
+
         }
         .navigationBarHidden(true)
         .bnAlert(

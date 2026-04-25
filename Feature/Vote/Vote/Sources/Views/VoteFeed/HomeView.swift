@@ -131,11 +131,11 @@ public struct HomeView: View {
     }
 
     private var voteFeedTooltipId: String? {
-        viewModel.feeds.first(where: { $0.link != nil })?.id
+        viewModel.feeds.first(where: { $0.link != nil && !($0.link!.isEmpty) })?.id
     }
 
     private var myFeedTooltipId: String? {
-        viewModel.myFeeds.first(where: { $0.link != nil })?.id
+        viewModel.myFeeds.first(where: { $0.link != nil && !($0.link!.isEmpty) })?.id
     }
 
     @ViewBuilder
@@ -330,34 +330,59 @@ struct FeedCategoryFilterBar: View {
     @Binding var showFilterSheet: Bool
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 6) {
-                FeedFilterIconChip(onTap: { showFilterSheet = true })
-                FeedFilterChip(
-                    title: "전체",
-                    isSelected: selectedCategories.isEmpty,
-                    onTap: { selectedCategories = [] }
-                )
-                ForEach(FeedCategory.allCases, id: \.rawValue) { category in
+        ZStack(alignment: .leading) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    Color.clear.frame(width: 50)
                     FeedFilterChip(
-                        title: category.displayName,
-                        isSelected: selectedCategories.contains(category),
-                        onTap: {
-                            if selectedCategories.contains(category) {
-                                selectedCategories.remove(category)
-                            } else {
-                                selectedCategories.insert(category)
-                            }
-                        }
+                        title: "전체",
+                        isSelected: selectedCategories.isEmpty,
+                        onTap: { selectedCategories = [] }
                     )
+                    ForEach(FeedCategory.allCases, id: \.rawValue) { category in
+                        FeedFilterChip(
+                            title: category.displayName,
+                            isSelected: selectedCategories.contains(category),
+                            onTap: {
+                                if selectedCategories.contains(category) {
+                                    selectedCategories.remove(category)
+                                } else {
+                                    selectedCategories.insert(category)
+                                    if selectedCategories.count == FeedCategory.allCases.count {
+                                        selectedCategories = []
+                                    }
+                                }
+                            }
+                        )
+                    }
                 }
+                .padding(.vertical, 1)
             }
             .padding(.horizontal, 20)
-            .padding(.vertical, 1)
+            .frame(height: 38)
+
+            HStack(spacing: 0) {
+                Color.white
+                    .frame(width: 19, height: 50)
+                LinearGradient(
+                    stops: [
+                        .init(color: Color.white.opacity(0.0001), location: 0.1848),
+                        .init(color: Color.white.opacity(0.74), location: 0.346),
+                        .init(color: .white, location: 0.5),
+                        .init(color: .white, location: 1.0)
+                    ],
+                    startPoint: .trailing,
+                    endPoint: .leading
+                )
+                .frame(width: 36, height: 50)
+            }
+            .padding(.leading, 20)
+
+            FeedFilterIconChip(onTap: { showFilterSheet = true })
+                .padding(.leading, 20)
         }
-        .frame(height: 38)
-        .padding(.top, 10)
-        .padding(.bottom, 10)
+        .background(Color.white)
+        .padding([.top, .bottom], 10)
     }
 }
 
@@ -447,7 +472,7 @@ private struct FeedFilterIconChip: View {
     var body: some View {
         Button { onTap() } label: {
             BNImage(.list)
-                .style(color: ColorPalette.gray800, size: 20)
+                .style(color: ColorPalette.gray950, size: 20)
                 .frame(width: 44, height: 36)
                 .background(ColorPalette.gray0)
                 .clipShape(Capsule())
@@ -470,15 +495,15 @@ private struct FeedFilterChip: View {
             onTap()
         } label: {
             BNText(title)
-                .style(style: .b5m, color: ColorPalette.gray950)
+                .style(style: .b5m, color: isSelected ? ColorPalette.gray0 : ColorPalette.gray950)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
                 .frame(height: 36)
-                .background(isSelected ? ColorPalette.gray200 : ColorPalette.gray0)
+                .background(isSelected ? ColorPalette.gray950 : ColorPalette.gray0)
                 .clipShape(Capsule())
                 .overlay {
                     Capsule()
-                        .stroke(ColorPalette.gray300, lineWidth: 1)
+                        .stroke(isSelected ? ColorPalette.gray0 : ColorPalette.gray300 , lineWidth: 1)
                 }
         }
         .buttonStyle(.plain)
