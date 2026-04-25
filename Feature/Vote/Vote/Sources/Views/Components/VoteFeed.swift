@@ -130,7 +130,6 @@ public struct VoteFeed: View {
                         onVote(optionId)
                     }
                 )
-                .padding(.bottom, 20)
             }
             .overlay(alignment: .topTrailing) {
                 if showMenu {
@@ -158,6 +157,7 @@ public struct VoteFeed: View {
                 }
             }
             BNDivider(size: .s)
+                .padding(.horizontal, 20)
         }
         .bnAlert(
             isPresented: $showBlockAlert,
@@ -259,6 +259,7 @@ private struct FeedContent: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
+            .padding(.leading, 4)
 
             if !productImageURLs.isEmpty {
                 ProductImageCarousel(
@@ -279,7 +280,7 @@ private struct FeedContent: View {
             )
             .padding(.horizontal, 20)
             .padding(.top, 12)
-            .padding(.bottom, 16)
+            .padding(.bottom, 20)
         }
     }
 }
@@ -298,6 +299,7 @@ private struct ProductImageCarousel: View {
     @State private var carouselHeight: CGFloat = UIScreen.main.bounds.width - 40
     @State private var visibleImageIndex: Int? = 0
     @State private var safariURL: URL?
+    @State private var tooltipDismissed = false
 
     private var shouldShowLinkPill: Bool {
         !hasMultipleImages || visibleImageIndex == 0 || visibleImageIndex == nil
@@ -338,8 +340,9 @@ private struct ProductImageCarousel: View {
                         indicatorPill
                             .padding(.trailing, 10)
                     }
-                    if showLinkTooltip, link != nil, shouldShowLinkPill {
+                    if showLinkTooltip, link != nil, shouldShowLinkPill, !tooltipDismissed {
                         linkTooltipView
+                            .onTapGesture { tooltipDismissed = true }
                     }
                 }
                 .padding(.top, 16)
@@ -395,7 +398,7 @@ private struct ProductImageCarousel: View {
 
             if showPrice {
                 BNText(price)
-                    .style(style: .t1b, color: ColorPalette.gray0)
+                    .style(style: .h4b, color: ColorPalette.gray0)
                     .shadow(color: Color.black.opacity(0.3), radius: 4, x: 0, y: 4)
                     .padding(.leading, 16)
                     .padding(.bottom, 16)
@@ -406,7 +409,7 @@ private struct ProductImageCarousel: View {
 
     @ViewBuilder
     private var indicatorPill: some View {
-        if let urlStr = link {
+        if let urlStr = link, !urlStr.isEmpty {
             Button {
                 if let url = URL(string: urlStr) { safariURL = url }
             } label: {
@@ -415,7 +418,7 @@ private struct ProductImageCarousel: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(Color.black.opacity(0.3))
+            .background(Color.black.opacity(0.4))
             .clipShape(Capsule())
         }
     }
