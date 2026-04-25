@@ -447,7 +447,7 @@ private struct FeedFilterIconChip: View {
     var body: some View {
         Button { onTap() } label: {
             BNImage(.list)
-                .style(color: ColorPalette.gray800, size: 20)
+                .style(color: ColorPalette.gray950, size: 20)
                 .frame(width: 44, height: 36)
                 .background(ColorPalette.gray0)
                 .clipShape(Capsule())
@@ -470,15 +470,15 @@ private struct FeedFilterChip: View {
             onTap()
         } label: {
             BNText(title)
-                .style(style: .b5m, color: ColorPalette.gray950)
+                .style(style: .b5m, color: isSelected ? ColorPalette.gray0 : ColorPalette.gray950)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
                 .frame(height: 36)
-                .background(isSelected ? ColorPalette.gray200 : ColorPalette.gray0)
+                .background(isSelected ? ColorPalette.gray950 : ColorPalette.gray0)
                 .clipShape(Capsule())
                 .overlay {
                     Capsule()
-                        .stroke(ColorPalette.gray300, lineWidth: 1)
+                        .stroke(isSelected ? ColorPalette.gray0 : ColorPalette.gray300 , lineWidth: 1)
                 }
         }
         .buttonStyle(.plain)

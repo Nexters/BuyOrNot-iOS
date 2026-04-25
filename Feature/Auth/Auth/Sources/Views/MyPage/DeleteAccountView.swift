@@ -33,7 +33,7 @@ public struct DeleteAccountView: View {
                     Spacer()
                 }
             }
-            .padding(20)
+            .padding(10)
             BNImage(.delete_account)
                 .resizable()
                 .scaledToFit()

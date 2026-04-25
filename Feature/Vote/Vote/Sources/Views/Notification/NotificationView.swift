@@ -32,7 +32,7 @@ public struct NotificationView: View {
                             await viewModel.applyFilter(filter)
                         }
                     })
-                        .padding(.top, 20)
+                        .padding(.top, 10)
 
                     if !isNotificationAuthorized {
                         NotificationPermissionBanner(onTap: {
@@ -157,9 +157,9 @@ private struct NotificationListContent: View {
             }
 
             BNText("30일 전 알림까지 보여줘요")
-                .style(style: .b5m, color: ColorPalette.gray600)
+                .style(style: .b4m, color: ColorPalette.gray600)
                 .frame(maxWidth: .infinity)
-                .padding(.top, 20)
+                .padding(.top, 10)
         }
     }
 }
