@@ -46,6 +46,7 @@ public struct CreateVoteView: View {
                     }
                     .padding(.horizontal, 20)
                 }
+                .onTapGesture { focusState = nil }
                 VStack(spacing: 10) {
                     Spacer()
                     if viewModel.snackBar.barState == .active {
@@ -81,6 +82,8 @@ public struct CreateVoteView: View {
                         }
                     }
                     .padding(.horizontal, 20)
+                    .frame(height: 60)
+                    .background(Color.white)
                 }
             }
         }
@@ -375,6 +378,10 @@ public struct CreateVoteView: View {
                     .scaledToFill()
                     .frame(width: 68, height: 68)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(ColorPalette.gray300, lineWidth: 1)
+                    }
                     .overlay {
                         HStack {
                             Spacer()
