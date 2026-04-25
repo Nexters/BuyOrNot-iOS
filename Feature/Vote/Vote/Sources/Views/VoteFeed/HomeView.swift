@@ -131,11 +131,11 @@ public struct HomeView: View {
     }
 
     private var voteFeedTooltipId: String? {
-        viewModel.feeds.first(where: { $0.link != nil })?.id
+        viewModel.feeds.first(where: { $0.link != nil && !($0.link!.isEmpty) })?.id
     }
 
     private var myFeedTooltipId: String? {
-        viewModel.myFeeds.first(where: { $0.link != nil })?.id
+        viewModel.myFeeds.first(where: { $0.link != nil && !($0.link!.isEmpty) })?.id
     }
 
     @ViewBuilder

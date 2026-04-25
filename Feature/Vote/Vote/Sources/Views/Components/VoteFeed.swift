@@ -299,6 +299,7 @@ private struct ProductImageCarousel: View {
     @State private var carouselHeight: CGFloat = UIScreen.main.bounds.width - 40
     @State private var visibleImageIndex: Int? = 0
     @State private var safariURL: URL?
+    @State private var tooltipDismissed = false
 
     private var shouldShowLinkPill: Bool {
         !hasMultipleImages || visibleImageIndex == 0 || visibleImageIndex == nil
@@ -339,8 +340,9 @@ private struct ProductImageCarousel: View {
                         indicatorPill
                             .padding(.trailing, 10)
                     }
-                    if showLinkTooltip, link != nil, shouldShowLinkPill {
+                    if showLinkTooltip, link != nil, shouldShowLinkPill, !tooltipDismissed {
                         linkTooltipView
+                            .onTapGesture { tooltipDismissed = true }
                     }
                 }
                 .padding(.top, 16)
@@ -407,7 +409,7 @@ private struct ProductImageCarousel: View {
 
     @ViewBuilder
     private var indicatorPill: some View {
-        if let urlStr = link {
+        if let urlStr = link, !urlStr.isEmpty {
             Button {
                 if let url = URL(string: urlStr) { safariURL = url }
             } label: {
