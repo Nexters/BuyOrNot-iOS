@@ -21,33 +21,31 @@ struct PhotoSourceSheetView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            BNText("사진 등록")
-                .style(style: .s1sb, color: ColorPalette.gray950)
-                .padding(.bottom, 8)
-
+        VStack(alignment: .leading, spacing: 18) {
             Button {
                 didTapCamera()
             } label: {
-                HStack {
+                HStack(spacing: 10) {
+                    BNImage(.camera)
+                        .style(color: ColorPalette.gray900, size: 20)
                     BNText("카메라로 직접 찍기")
                         .style(style: .s3sb, color: ColorPalette.gray900)
                     Spacer()
                 }
-                .padding(.vertical, 16)
+                .padding(.vertical, 5)
             }
-
-            BNDivider(size: .s)
 
             Button {
                 didTapAlbum()
             } label: {
-                HStack {
+                HStack(spacing: 10) {
+                    BNImage(.photo_album)
+                        .style(color: ColorPalette.gray900, size: 20)
                     BNText("앨범에서 사진 선택")
                         .style(style: .s3sb, color: ColorPalette.gray900)
                     Spacer()
                 }
-                .padding(.vertical, 16)
+                .padding(.vertical, 5)
             }
         }
         .padding(.horizontal, 24)
