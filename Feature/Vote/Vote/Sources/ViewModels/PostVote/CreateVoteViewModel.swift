@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import SwiftUI
 import UIKit
+import AVFoundation
 import Photos
 import PhotosUI
 import DesignSystem
@@ -16,6 +17,11 @@ import Core
 import Domain
 
 public final class CreateVoteViewModel: ObservableObject {
+    private enum PhotoPermissionType {
+        case album
+        case camera
+    }
+
     private struct UploadedImage {
         let index: Int
         let imageInfo: ImageInfo
@@ -38,6 +44,8 @@ public final class CreateVoteViewModel: ObservableObject {
     @Published var createButtonState: BNButtonState = .disabled
     @Published var selectedPhotos: [SelectedPhoto] = []
     @Published var showPhotoPicker = false
+    @Published var showCameraPicker = false
+    @Published var showPhotoSourceBottomSheet = false
     @Published var showCustomAlert = false
     @Published var showCategoryBottomSheet = false
     @Published var showCancelAlert = false
@@ -51,6 +59,7 @@ public final class CreateVoteViewModel: ObservableObject {
     private var anyCancellable = Set<AnyCancellable>()
     private var isPendingAutoSaveEnabled = true
     private var pendingVoteCreateInfoToRestore: PendingVoteCreateInfo?
+    private var currentPhotoPermissionType: PhotoPermissionType = .album
     
     var contentsLimitCount: Int {
         _contentsLimitCount
@@ -134,8 +143,20 @@ public final class CreateVoteViewModel: ObservableObject {
         validatePost()
     }
 
+    func didTapAddPhotoButton() {
+        guard isPhotoPickerEnabled else {
+            return
+        }
+        showPhotoSourceBottomSheet = true
+    }
+
     @MainActor
     func checkPhotoPermission() async {
+        await checkAlbumPermission()
+    }
+
+    @MainActor
+    func checkAlbumPermission() async {
         guard isPhotoPickerEnabled else {
             return
         }
@@ -144,16 +165,48 @@ public final class CreateVoteViewModel: ObservableObject {
         case .authorized, .limited:
             showPhotoPicker = true
         case .denied, .restricted:
-            showCustomAlert = true
+            presentPhotoPermissionAlert(type: .album)
         case .notDetermined:
             let newStatus = await PHPhotoLibrary.requestAuthorization(for: _accessLevel)
             if newStatus == .authorized || newStatus == .limited {
                 showPhotoPicker = true
             } else {
-                showCustomAlert = true
+                presentPhotoPermissionAlert(type: .album)
             }
         @unknown default:
-            showCustomAlert = true
+            presentPhotoPermissionAlert(type: .album)
+        }
+    }
+
+    @MainActor
+    func checkCameraPermission() async {
+        guard isPhotoPickerEnabled else {
+            return
+        }
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            snackBar.addItem(
+                BNSnackBarItem(
+                    text: "이 기기에서는 카메라를 사용할 수 없어요."
+                )
+            )
+            return
+        }
+
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        switch status {
+        case .authorized:
+            showCameraPicker = true
+        case .denied, .restricted:
+            presentPhotoPermissionAlert(type: .camera)
+        case .notDetermined:
+            let isGranted = await AVCaptureDevice.requestAccess(for: .video)
+            if isGranted {
+                showCameraPicker = true
+            } else {
+                presentPhotoPermissionAlert(type: .camera)
+            }
+        @unknown default:
+            presentPhotoPermissionAlert(type: .camera)
         }
     }
     
@@ -164,6 +217,24 @@ public final class CreateVoteViewModel: ObservableObject {
             return
         }
         UIApplication.shared.open(url)
+    }
+
+    var photoPermissionAlertTitle: String {
+        switch currentPhotoPermissionType {
+        case .album:
+            return "사진 접근 권한을 허용해주세요"
+        case .camera:
+            return "카메라 접근 권한을 허용해주세요"
+        }
+    }
+
+    var photoPermissionAlertMessage: String {
+        switch currentPhotoPermissionType {
+        case .album:
+            return "더 쉽고 편하게 사진을 올릴 수 있어요."
+        case .camera:
+            return "사진 촬영을 위해 카메라 접근 권한이 필요해요."
+        }
     }
     
     func didSelectPhotos(_ photos: [SinglePhotoPicker.PickedPhoto]) {
@@ -178,9 +249,36 @@ public final class CreateVoteViewModel: ObservableObject {
             return
         }
         let newPhotos = photos
+            .filter { $0.data.isEmpty == false }
             .prefix(remaining)
             .map { SelectedPhoto(image: $0.image, data: $0.data) }
+        guard newPhotos.isEmpty == false else {
+            snackBar.addItem(
+                BNSnackBarItem(
+                    text: "사진 데이터를 불러오지 못했어요. 다시 시도해 주세요."
+                )
+            )
+            return
+        }
         selectedPhotos.append(contentsOf: newPhotos)
+    }
+
+    func didPickCameraPhoto(image: Image, data: Data) {
+        defer {
+            validatePost()
+        }
+        guard remainingSelectablePhotoCount > 0 else {
+            return
+        }
+        guard data.isEmpty == false else {
+            snackBar.addItem(
+                BNSnackBarItem(
+                    text: "사진 데이터를 불러오지 못했어요. 다시 시도해 주세요."
+                )
+            )
+            return
+        }
+        selectedPhotos.append(SelectedPhoto(image: image, data: data))
     }
     
     func didTapDeleteImage(at index: Int) {
@@ -266,6 +364,11 @@ public final class CreateVoteViewModel: ObservableObject {
         createButtonState = isValid ? .enabled : .disabled
     }
 
+    private func presentPhotoPermissionAlert(type: PhotoPermissionType) {
+        currentPhotoPermissionType = type
+        showCustomAlert = true
+    }
+
     private func bindPendingVoteCreateInfoAutoSave() {
         Publishers.CombineLatest(
             Publishers.CombineLatest4($category, $linkURL, $price, $title),
@@ -297,6 +400,14 @@ public final class CreateVoteViewModel: ObservableObject {
             let selectedCategory = category,
             let priceValue = price.toInt
         else {
+            return false
+        }
+        guard selectedPhotos.allSatisfy({ $0.data.isEmpty == false }) else {
+            snackBar.addItem(
+                BNSnackBarItem(
+                    text: "사진 데이터를 불러오지 못했어요. 다시 시도해 주세요."
+                )
+            )
             return false
         }
 
