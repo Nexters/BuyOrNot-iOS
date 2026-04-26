@@ -114,6 +114,18 @@ public struct CreateVoteView: View {
             .presentationDetents([.large])
             .presentationCornerRadius(18)
         }
+        .fullScreenCover(isPresented: $viewModel.showCameraPicker) {
+            CameraPhotoPicker(
+                onPicked: { image, data in
+                    viewModel.didPickCameraPhoto(image: image, data: data)
+                    viewModel.showCameraPicker = false
+                },
+                onCancel: {
+                    viewModel.showCameraPicker = false
+                }
+            )
+            .ignoresSafeArea()
+        }
         .bnBottomSheet(
             isPresented: $viewModel.showCategoryBottomSheet,
             isEnableDismiss: true,
@@ -126,12 +138,35 @@ public struct CreateVoteView: View {
                 viewModel.didChangeCategory(category)
             }
         }
+        .bnBottomSheet(
+            isPresented: $viewModel.showPhotoSourceBottomSheet,
+            isEnableDismiss: true
+        ) { dismiss in
+            PhotoSourceSheetView(
+                didTapCamera: {
+                    dismiss()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        Task {
+                            await viewModel.checkCameraPermission()
+                        }
+                    }
+                },
+                didTapAlbum: {
+                    dismiss()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        Task {
+                            await viewModel.checkAlbumPermission()
+                        }
+                    }
+                }
+            )
+        }
         .bnAlert(
             isPresented: $viewModel.showCustomAlert,
             isEnableDismiss: true,
             config: BNAlertConfig(
-                title: "사진 접근 권한을 허용해주세요",
-                message: "더 쉽고 편하게 사진을 올릴 수 있어요.",
+                title: viewModel.photoPermissionAlertTitle,
+                message: viewModel.photoPermissionAlertMessage,
                 buttons: [
                     .close,
                     BNAlertButtonConfig(
@@ -354,9 +389,8 @@ public struct CreateVoteView: View {
     private var addPhoto: some View {
         HStack(spacing: 8) {
             Button {
-                Task {
-                    await viewModel.checkPhotoPermission()
-                }
+                focusState = nil
+                viewModel.didTapAddPhotoButton()
             } label: {
                 VStack(spacing: 2) {
                     BNImage(.camera)
@@ -410,9 +444,8 @@ public struct CreateVoteView: View {
     @ViewBuilder
     private var subAddPhoto: some View {
         Button {
-            Task {
-                await viewModel.checkPhotoPermission()
-            }
+            focusState = nil
+            viewModel.didTapAddPhotoButton()
         } label: {
             HStack(spacing: 4) {
                 BNImage(.camera)
@@ -421,6 +454,7 @@ public struct CreateVoteView: View {
                     .style(style: .s5sb, color: ColorPalette.gray800)
             }
         }
+        .disabled(viewModel.isPhotoPickerEnabled == false)
     }
 }
 

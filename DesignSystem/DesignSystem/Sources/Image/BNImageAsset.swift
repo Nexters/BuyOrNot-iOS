@@ -29,6 +29,7 @@ public enum BNImageAsset: String {
     case notification = "notification"
     case plus = "plus"
     case product = "product"
+    case photo_album = "photo_album"
     case right = "right"
     case vote_check = "vote_check"
     case vote = "vote"
