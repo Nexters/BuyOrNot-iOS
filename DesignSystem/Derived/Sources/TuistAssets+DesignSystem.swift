@@ -62,6 +62,7 @@ public enum DesignSystemAsset: Sendable {
     public static let my = DesignSystemImages(name: "my")
     public static let notification = DesignSystemImages(name: "notification")
     public static let notificationFill = DesignSystemImages(name: "notification_fill")
+    public static let photoAlbum = DesignSystemImages(name: "photo_album")
     public static let plus = DesignSystemImages(name: "plus")
     public static let product = DesignSystemImages(name: "product")
     public static let `right` = DesignSystemImages(name: "right")
