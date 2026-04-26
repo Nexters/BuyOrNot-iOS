@@ -249,8 +249,17 @@ public final class CreateVoteViewModel: ObservableObject {
             return
         }
         let newPhotos = photos
+            .filter { $0.data.isEmpty == false }
             .prefix(remaining)
             .map { SelectedPhoto(image: $0.image, data: $0.data) }
+        guard newPhotos.isEmpty == false else {
+            snackBar.addItem(
+                BNSnackBarItem(
+                    text: "사진 데이터를 불러오지 못했어요. 다시 시도해 주세요."
+                )
+            )
+            return
+        }
         selectedPhotos.append(contentsOf: newPhotos)
     }
 
@@ -259,6 +268,14 @@ public final class CreateVoteViewModel: ObservableObject {
             validatePost()
         }
         guard remainingSelectablePhotoCount > 0 else {
+            return
+        }
+        guard data.isEmpty == false else {
+            snackBar.addItem(
+                BNSnackBarItem(
+                    text: "사진 데이터를 불러오지 못했어요. 다시 시도해 주세요."
+                )
+            )
             return
         }
         selectedPhotos.append(SelectedPhoto(image: image, data: data))
@@ -383,6 +400,14 @@ public final class CreateVoteViewModel: ObservableObject {
             let selectedCategory = category,
             let priceValue = price.toInt
         else {
+            return false
+        }
+        guard selectedPhotos.allSatisfy({ $0.data.isEmpty == false }) else {
+            snackBar.addItem(
+                BNSnackBarItem(
+                    text: "사진 데이터를 불러오지 못했어요. 다시 시도해 주세요."
+                )
+            )
             return false
         }
 

@@ -141,7 +141,10 @@ public struct SinglePhotoPicker: UIViewControllerRepresentable {
                     completion(nil)
                     return
                 }
-                let data = uiImage.jpegData(compressionQuality: 0.9) ?? Data()
+                guard let data = uiImage.jpegData(compressionQuality: 0.9), data.isEmpty == false else {
+                    completion(nil)
+                    return
+                }
                 completion(PickedPhoto(image: Image(uiImage: uiImage), data: data))
             }
         }
