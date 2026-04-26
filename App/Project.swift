@@ -69,6 +69,8 @@ private func getAppInfoPlistValues() -> [String: Plist.Value] {
             "투표 등록 시 사진을 등록하기 위해서 앨범 접근 권한이 필요합니다.",
         "NSPhotoLibraryUsageDescription":
             "투표 등록 시 사진을 등록하기 위해서 앨범 접근 권한이 필요합니다.",
+        "NSCameraUsageDescription":
+            "투표 등록 시 사진을 촬영하기 위해서 카메라 접근 권한이 필요합니다.",
         "LSApplicationQueriesSchemes": .array([
             "kakaokompassauth",
             "kakaolink",

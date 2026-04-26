@@ -114,6 +114,18 @@ public struct CreateVoteView: View {
             .presentationDetents([.large])
             .presentationCornerRadius(18)
         }
+        .sheet(isPresented: $viewModel.showCameraPicker) {
+            CameraPhotoPicker(
+                onPicked: { image, data in
+                    viewModel.didPickCameraPhoto(image: image, data: data)
+                    viewModel.showCameraPicker = false
+                },
+                onCancel: {
+                    viewModel.showCameraPicker = false
+                }
+            )
+            .ignoresSafeArea()
+        }
         .bnBottomSheet(
             isPresented: $viewModel.showCategoryBottomSheet,
             isEnableDismiss: true,
@@ -133,12 +145,17 @@ public struct CreateVoteView: View {
             PhotoSourceSheetView(
                 didTapCamera: {
                     dismiss()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        Task {
+                            await viewModel.checkCameraPermission()
+                        }
+                    }
                 },
                 didTapAlbum: {
                     dismiss()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                         Task {
-                            await viewModel.checkPhotoPermission()
+                            await viewModel.checkAlbumPermission()
                         }
                     }
                 }
@@ -148,8 +165,8 @@ public struct CreateVoteView: View {
             isPresented: $viewModel.showCustomAlert,
             isEnableDismiss: true,
             config: BNAlertConfig(
-                title: "사진 접근 권한을 허용해주세요",
-                message: "더 쉽고 편하게 사진을 올릴 수 있어요.",
+                title: viewModel.photoPermissionAlertTitle,
+                message: viewModel.photoPermissionAlertMessage,
                 buttons: [
                     .close,
                     BNAlertButtonConfig(
