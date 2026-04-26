@@ -114,7 +114,7 @@ public struct CreateVoteView: View {
             .presentationDetents([.large])
             .presentationCornerRadius(18)
         }
-        .sheet(isPresented: $viewModel.showCameraPicker) {
+        .fullScreenCover(isPresented: $viewModel.showCameraPicker) {
             CameraPhotoPicker(
                 onPicked: { image, data in
                     viewModel.didPickCameraPhoto(image: image, data: data)
@@ -454,6 +454,7 @@ public struct CreateVoteView: View {
                     .style(style: .s5sb, color: ColorPalette.gray800)
             }
         }
+        .disabled(viewModel.isPhotoPickerEnabled == false)
     }
 }
 
