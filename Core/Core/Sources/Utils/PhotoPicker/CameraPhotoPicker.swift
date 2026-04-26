@@ -46,7 +46,6 @@ public struct CameraPhotoPicker: UIViewControllerRepresentable {
 
         public func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             parent.onCancel()
-            picker.dismiss(animated: true)
         }
 
         public func imagePickerController(
@@ -54,12 +53,11 @@ public struct CameraPhotoPicker: UIViewControllerRepresentable {
             didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
         ) {
             guard let image = info[.originalImage] as? UIImage else {
-                picker.dismiss(animated: true)
+                parent.onCancel()
                 return
             }
             let data = image.jpegData(compressionQuality: 0.9) ?? Data()
             parent.onPicked(Image(uiImage: image), data)
-            picker.dismiss(animated: true)
         }
     }
 }
