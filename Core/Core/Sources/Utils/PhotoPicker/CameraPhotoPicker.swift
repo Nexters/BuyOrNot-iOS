@@ -20,7 +20,14 @@ public struct CameraPhotoPicker: UIViewControllerRepresentable {
         self.onCancel = onCancel
     }
 
-    public func makeUIViewController(context: Context) -> UIImagePickerController {
+    public func makeUIViewController(context: Context) -> UIViewController {
+        guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
+            DispatchQueue.main.async {
+                onCancel()
+            }
+            return UIViewController()
+        }
+
         let picker = UIImagePickerController()
         picker.sourceType = .camera
         picker.cameraCaptureMode = .photo
@@ -29,7 +36,7 @@ public struct CameraPhotoPicker: UIViewControllerRepresentable {
     }
 
     public func updateUIViewController(
-        _ uiViewController: UIImagePickerController,
+        _ uiViewController: UIViewController,
         context: Context
     ) { }
 
@@ -56,7 +63,10 @@ public struct CameraPhotoPicker: UIViewControllerRepresentable {
                 parent.onCancel()
                 return
             }
-            let data = image.jpegData(compressionQuality: 0.9) ?? Data()
+            guard let data = image.jpegData(compressionQuality: 0.9), data.isEmpty == false else {
+                parent.onCancel()
+                return
+            }
             parent.onPicked(Image(uiImage: image), data)
         }
     }
