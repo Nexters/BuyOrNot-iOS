@@ -126,6 +126,24 @@ public struct CreateVoteView: View {
                 viewModel.didChangeCategory(category)
             }
         }
+        .bnBottomSheet(
+            isPresented: $viewModel.showPhotoSourceBottomSheet,
+            isEnableDismiss: true
+        ) { dismiss in
+            PhotoSourceSheetView(
+                didTapCamera: {
+                    dismiss()
+                },
+                didTapAlbum: {
+                    dismiss()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        Task {
+                            await viewModel.checkPhotoPermission()
+                        }
+                    }
+                }
+            )
+        }
         .bnAlert(
             isPresented: $viewModel.showCustomAlert,
             isEnableDismiss: true,
