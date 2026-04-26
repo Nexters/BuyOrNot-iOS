@@ -354,9 +354,8 @@ public struct CreateVoteView: View {
     private var addPhoto: some View {
         HStack(spacing: 8) {
             Button {
-                Task {
-                    await viewModel.checkPhotoPermission()
-                }
+                focusState = nil
+                viewModel.didTapAddPhotoButton()
             } label: {
                 VStack(spacing: 2) {
                     BNImage(.camera)
@@ -410,9 +409,8 @@ public struct CreateVoteView: View {
     @ViewBuilder
     private var subAddPhoto: some View {
         Button {
-            Task {
-                await viewModel.checkPhotoPermission()
-            }
+            focusState = nil
+            viewModel.didTapAddPhotoButton()
         } label: {
             HStack(spacing: 4) {
                 BNImage(.camera)

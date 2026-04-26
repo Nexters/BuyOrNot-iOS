@@ -38,6 +38,7 @@ public final class CreateVoteViewModel: ObservableObject {
     @Published var createButtonState: BNButtonState = .disabled
     @Published var selectedPhotos: [SelectedPhoto] = []
     @Published var showPhotoPicker = false
+    @Published var showPhotoSourceBottomSheet = false
     @Published var showCustomAlert = false
     @Published var showCategoryBottomSheet = false
     @Published var showCancelAlert = false
@@ -132,6 +133,13 @@ public final class CreateVoteViewModel: ObservableObject {
 
     func didChangeLinkURL() {
         validatePost()
+    }
+
+    func didTapAddPhotoButton() {
+        guard isPhotoPickerEnabled else {
+            return
+        }
+        showPhotoSourceBottomSheet = true
     }
 
     @MainActor
