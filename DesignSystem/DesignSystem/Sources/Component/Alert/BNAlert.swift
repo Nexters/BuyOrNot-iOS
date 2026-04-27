@@ -82,6 +82,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
                             )
                         Spacer()
                     }
+                    .padding(.horizontal, 6)
                 }
                 if let message = config.message {
                     HStack {
@@ -92,6 +93,7 @@ public struct BNAlertModifier<AlertContent: View>: ViewModifier {
                             )
                         Spacer()
                     }
+                    .padding(.horizontal, 6)
                 }
             }
             alertContent()
