@@ -20,7 +20,9 @@ private enum OptionPreviewItem: String, CaseIterable, OptionBottomSheetDisplayab
 
 private struct BottomSheetPreviewContainer: View {
     @State private var showBasic = false
-    @State private var showContent = false
+    @State private var showContentImageOnly = false
+    @State private var showContentTextOnly = false
+    @State private var showContentNone = false
     @State private var showOption = false
     @State private var showAction = false
     @State private var selectedOptionItem: OptionPreviewItem? = .travel
@@ -34,24 +36,62 @@ private struct BottomSheetPreviewContainer: View {
     var body: some View {
         VStack(spacing: 12) {
             Button("Show Basic BottomSheet") { showBasic = true }
-            Button("Show ContentBottomSheet") { showContent = true }
+            Button("Show ContentBottomSheet (Image)") { showContentImageOnly = true }
+            Button("Show ContentBottomSheet (Text)") { showContentTextOnly = true }
+            Button("Show ContentBottomSheet (None)") { showContentNone = true }
             Button("Show OptionBottomSheet") { showOption = true }
             Button("Show ActionBottomSheet") { showAction = true }
         }
         .bnBottomSheet(isPresented: $showBasic) { dismiss in
             previewChild(title: "Basic BottomSheet", dismiss: dismiss)
         }
-        .contentBottomSheet(isPresented: $showContent) { dismiss in
-            previewChild(title: "ContentBottomSheet", dismiss: dismiss)
-        }
+        .contentBottomSheet(
+            isPresented: $showContentImageOnly,
+            icon: .notification,
+            title: "알림 설정이 꺼져 있어요",
+            subTitle: "푸시 알림을 켜면 투표 결과를 놓치지 않아요.",
+            primaryButtonText: "설정 열기",
+            secondaryButtonText: "닫기",
+            didTapPrimaryButton: {},
+            didTapSecondaryButton: {},
+            customContent: {
+                BNImage(.notification_fill)
+                    .style(color: ColorPalette.gray950, size: 40)
+            }
+        )
+        .contentBottomSheet(
+            isPresented: $showContentTextOnly,
+            icon: .notification,
+            title: "알림 설정이 꺼져 있어요",
+            subTitle: "푸시 알림을 켜면 투표 결과를 놓치지 않아요.",
+            primaryButtonText: "설정 열기",
+            secondaryButtonText: "닫기",
+            didTapPrimaryButton: {},
+            didTapSecondaryButton: {},
+            customContent: {
+                BNText("아무 텍스트")
+                    .style(style: .b4m, color: ColorPalette.gray700)
+            }
+        )
+        .contentBottomSheet(
+            isPresented: $showContentNone,
+            icon: .notification,
+            title: "알림 설정이 꺼져 있어요",
+            subTitle: "푸시 알림을 켜면 투표 결과를 놓치지 않아요.",
+            primaryButtonText: "설정 열기",
+            secondaryButtonText: "닫기",
+            didTapPrimaryButton: {},
+            didTapSecondaryButton: {}
+        )
         .optionBottomSheet(
             isPresented: $showOption,
             title: "카테고리",
             selectedItem: selectedOptionItem,
-            items: optionItems
-        ) { item in
-            selectedOptionItem = item
-        }
+            items: optionItems,
+            didSelectItem: { item in
+                selectedOptionItem = item
+            }
+        )
         .actionBottomSheet(isPresented: $showAction, items: actionItems)
         .padding()
     }
