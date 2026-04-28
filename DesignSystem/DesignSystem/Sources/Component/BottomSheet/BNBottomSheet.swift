@@ -32,6 +32,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
         response: 0.3,
         dampingFraction: 1
     )
+    private let transitionDuration: TimeInterval = 0.3
     
     public func body(content: Content) -> some View {
         content
@@ -129,7 +130,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     private func dismiss() {
         withAnimation(animation) {
             isFullScreenViewVisible = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration) {
                 isPresented = false
             }
         }
