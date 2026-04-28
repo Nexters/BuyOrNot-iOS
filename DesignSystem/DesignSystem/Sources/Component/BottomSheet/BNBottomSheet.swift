@@ -12,16 +12,16 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     @State private var dragOffset: CGFloat = 0
     @State private var isFullScreenViewVisible = false
     private let isEnableDismiss: Bool
-    private let sheetContent: (@escaping VoidCallBack) -> SheetView
+    private let sheetChild: (@escaping VoidCallBack) -> SheetView
     
     public init(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool,
-        @ViewBuilder content: @escaping (@escaping VoidCallBack) -> SheetView
+        @ViewBuilder child: @escaping (@escaping VoidCallBack) -> SheetView
     ) {
         self._isPresented = isPresented
         self.isEnableDismiss = isEnableDismiss
-        self.sheetContent = content
+        self.sheetChild = child
     }
     
     private let hiddenOffset: CGFloat = UIScreen.main.bounds.height
@@ -81,7 +81,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
             handleView
                 .padding(.top, 10)
                 .padding(.bottom, 16)
-            sheetContent(dismiss)
+            sheetChild(dismiss)
         }
         .frame(maxWidth: .infinity)
         .background(ColorPalette.gray0)
@@ -137,13 +137,13 @@ public extension View {
     func bnBottomSheet<SheetContent: View>(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool = true,
-        @ViewBuilder content: @escaping (@escaping VoidCallBack) -> SheetContent
+        @ViewBuilder child: @escaping (@escaping VoidCallBack) -> SheetContent
     ) -> some View {
         modifier(
             BNBottomSheetModifier(
                 isPresented: isPresented,
                 isEnableDismiss: isEnableDismiss,
-                content: content
+                child: child
             )
         )
     }
