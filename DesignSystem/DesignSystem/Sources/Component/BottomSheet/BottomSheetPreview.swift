@@ -7,16 +7,29 @@
 
 import SwiftUI
 
+private enum OptionPreviewItem: String, CaseIterable, OptionBottomSheetDisplayable {
+    case fashion = "패션"
+    case digital = "디지털"
+    case travel = "여행"
+    case food = "식품"
+    case hobby = "취미"
+    case sports = "스포츠"
+
+    var title: String { rawValue }
+}
+
 private struct BottomSheetPreviewContainer: View {
     @State private var showBasic = false
     @State private var showContent = false
     @State private var showOption = false
     @State private var showAction = false
+    @State private var selectedOptionItem: OptionPreviewItem? = .travel
     private let actionItems: [ActionBottomSheetItem<String>] = [
         .init(item: "camera", icon: .camera, text: "카메라로 직접 찍기") { _ in },
         .init(item: "album", icon: .photo_album, text: "앨범에서 사진 선택") { _ in },
         .init(item: "emtpy", text: "아이콘 없는 메뉴") { _ in }
     ]
+    private let optionItems: [OptionPreviewItem] = OptionPreviewItem.allCases
     
     var body: some View {
         VStack(spacing: 12) {
@@ -31,8 +44,13 @@ private struct BottomSheetPreviewContainer: View {
         .contentBottomSheet(isPresented: $showContent) { dismiss in
             previewChild(title: "ContentBottomSheet", dismiss: dismiss)
         }
-        .optionBottomSheet(isPresented: $showOption) { dismiss in
-            previewChild(title: "OptionBottomSheet", dismiss: dismiss)
+        .optionBottomSheet(
+            isPresented: $showOption,
+            title: "카테고리",
+            selectedItem: selectedOptionItem,
+            items: optionItems
+        ) { item in
+            selectedOptionItem = item
         }
         .actionBottomSheet(isPresented: $showAction, items: actionItems)
         .padding()

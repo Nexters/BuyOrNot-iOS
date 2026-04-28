@@ -29,18 +29,15 @@ public struct ActionBottomSheetItem<T> {
 public struct ActionBottomSheetModifier<ActionType>: ViewModifier {
     @Binding private var isPresented: Bool
     private let isEnableDismiss: Bool
-    private let handleBottomSpacing: CGFloat
     private let items: [ActionBottomSheetItem<ActionType>]
 
     public init(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool = true,
-        handleBottomSpacing: CGFloat = 26,
         items: [ActionBottomSheetItem<ActionType>]
     ) {
         self._isPresented = isPresented
         self.isEnableDismiss = isEnableDismiss
-        self.handleBottomSpacing = handleBottomSpacing
         self.items = items
     }
 
@@ -49,7 +46,6 @@ public struct ActionBottomSheetModifier<ActionType>: ViewModifier {
             .bnBottomSheet(
                 isPresented: $isPresented,
                 isEnableDismiss: isEnableDismiss,
-                handleBottomSpacing: handleBottomSpacing,
                 child: { dismiss in
                     actionBottomSheetContent(dismiss: dismiss)
                 }
@@ -87,14 +83,12 @@ public extension View {
     func actionBottomSheet<ActionType>(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool = true,
-        handleBottomSpacing: CGFloat = 26,
         items: [ActionBottomSheetItem<ActionType>]
     ) -> some View {
         modifier(
             ActionBottomSheetModifier(
                 isPresented: isPresented,
                 isEnableDismiss: isEnableDismiss,
-                handleBottomSpacing: handleBottomSpacing,
                 items: items
             )
         )
