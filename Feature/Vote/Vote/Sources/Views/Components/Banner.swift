@@ -81,7 +81,7 @@ public struct Banner: View {
         .padding(.bottom, 16)
         .background(ColorPalette.gray0)
         .clipShape(RoundedRectangle(cornerRadius: 20))
-        .shadow(color: Color.black.opacity(0.1), radius: 20, x: 0, y: 4)
+        .shadow(color: Color(red: 0.88, green: 0.89, blue: 0.9).opacity(0.6), radius: 20, x: 0, y: 4)
         .overlay(
             RoundedRectangle(cornerRadius: 20)
                 .inset(by: 0.5)

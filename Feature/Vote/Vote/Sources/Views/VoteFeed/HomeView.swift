@@ -334,15 +334,15 @@ struct FeedCategoryFilterBar: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
                     Color.clear.frame(width: 50)
-                    FeedFilterChip(
+                    BNChip(
                         title: "전체",
-                        isSelected: selectedCategories.isEmpty,
+                        state: selectedCategories.isEmpty ? .selected : .unselected,
                         onTap: { selectedCategories = [] }
                     )
                     ForEach(FeedCategory.allCases, id: \.rawValue) { category in
-                        FeedFilterChip(
+                        BNChip(
                             title: category.displayName,
-                            isSelected: selectedCategories.contains(category),
+                            state: selectedCategories.contains(category) ? .selected : .unselected,
                             onTap: {
                                 if selectedCategories.contains(category) {
                                     selectedCategories.remove(category)
@@ -479,31 +479,6 @@ private struct FeedFilterIconChip: View {
                 .overlay {
                     Capsule()
                         .stroke(ColorPalette.gray300, lineWidth: 1)
-                }
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-private struct FeedFilterChip: View {
-    let title: String
-    let isSelected: Bool
-    let onTap: () -> Void
-
-    var body: some View {
-        Button {
-            onTap()
-        } label: {
-            BNText(title)
-                .style(style: .b5m, color: isSelected ? ColorPalette.gray0 : ColorPalette.gray950)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
-                .frame(height: 36)
-                .background(isSelected ? ColorPalette.gray950 : ColorPalette.gray0)
-                .clipShape(Capsule())
-                .overlay {
-                    Capsule()
-                        .stroke(isSelected ? ColorPalette.gray0 : ColorPalette.gray300 , lineWidth: 1)
                 }
         }
         .buttonStyle(.plain)
