@@ -85,7 +85,7 @@ public struct ContentBottomSheetModifier: ViewModifier {
                 HStack(spacing: 10) {
                     BNButton(
                         text: primaryButtonText,
-                        type: .primary,
+                        type: .secondaryLarge,
                         state: .enabled
                     ) {
                         dismiss()
@@ -93,7 +93,7 @@ public struct ContentBottomSheetModifier: ViewModifier {
                     }
                     BNButton(
                         text: secondaryButtonText,
-                        type: .secondaryLarge,
+                        type: .primary,
                         state: .enabled
                     ) {
                         dismiss()
