@@ -12,15 +12,18 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     @State private var dragOffset: CGFloat = 0
     @State private var isFullScreenViewVisible = false
     private let isEnableDismiss: Bool
+    private let handleBottomSpacing: CGFloat
     private let sheetChild: (@escaping VoidCallBack) -> SheetView
     
     public init(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool,
+        handleBottomSpacing: CGFloat = 26,
         @ViewBuilder child: @escaping (@escaping VoidCallBack) -> SheetView
     ) {
         self._isPresented = isPresented
         self.isEnableDismiss = isEnableDismiss
+        self.handleBottomSpacing = handleBottomSpacing
         self.sheetChild = child
     }
     
@@ -80,7 +83,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
         VStack(spacing: 0) {
             handleView
                 .padding(.top, 10)
-                .padding(.bottom, 16)
+                .padding(.bottom, handleBottomSpacing)
             sheetChild(dismiss)
         }
         .frame(maxWidth: .infinity)
@@ -92,14 +95,14 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
             )
         )
         .padding(.horizontal, 14)
-        .padding(.bottom, 10)
+        .padding(.bottom, 20)
         .animation(.linear(duration: 0.2), value: dragOffset)
     }
     
     @ViewBuilder
     private var handleView: some View {
         Capsule()
-            .fill(isEnableDismiss ? ColorPalette.fromHex("#D9D9D9"): ColorPalette.gray0)
+            .fill(isEnableDismiss ? ColorPalette.gray400: ColorPalette.gray0)
             .frame(width: 40, height: 4)
     }
     
@@ -137,12 +140,14 @@ public extension View {
     func bnBottomSheet<SheetContent: View>(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool = true,
+        handleBottomSpacing: CGFloat = 26,
         @ViewBuilder child: @escaping (@escaping VoidCallBack) -> SheetContent
     ) -> some View {
         modifier(
             BNBottomSheetModifier(
                 isPresented: isPresented,
                 isEnableDismiss: isEnableDismiss,
+                handleBottomSpacing: handleBottomSpacing,
                 child: child
             )
         )

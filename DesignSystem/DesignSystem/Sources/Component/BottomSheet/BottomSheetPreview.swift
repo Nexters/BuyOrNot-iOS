@@ -2,7 +2,7 @@
 //  BottomSheetPreview.swift
 //  DesignSystem
 //
-//  Created by Codex on 4/28/26.
+//  Created by 문종식 on 4/28/26.
 //
 
 import SwiftUI
@@ -12,7 +12,12 @@ private struct BottomSheetPreviewContainer: View {
     @State private var showContent = false
     @State private var showOption = false
     @State private var showAction = false
-
+    private let actionItems: [ActionBottomSheetItem<String>] = [
+        .init(item: "camera", icon: .camera, text: "카메라로 직접 찍기") { _ in },
+        .init(item: "album", icon: .photo_album, text: "앨범에서 사진 선택") { _ in },
+        .init(item: "emtpy", text: "아이콘 없는 메뉴") { _ in }
+    ]
+    
     var body: some View {
         VStack(spacing: 12) {
             Button("Show Basic BottomSheet") { showBasic = true }
@@ -29,12 +34,10 @@ private struct BottomSheetPreviewContainer: View {
         .optionBottomSheet(isPresented: $showOption) { dismiss in
             previewChild(title: "OptionBottomSheet", dismiss: dismiss)
         }
-        .actionBottomSheet(isPresented: $showAction) { dismiss in
-            previewChild(title: "ActionBottomSheet", dismiss: dismiss)
-        }
+        .actionBottomSheet(isPresented: $showAction, items: actionItems)
         .padding()
     }
-
+    
     @ViewBuilder
     private func previewChild(title: String, dismiss: @escaping VoidCallBack) -> some View {
         VStack(spacing: 12) {
