@@ -54,6 +54,7 @@ public struct HomeView: View {
                         showFilterSheet: $showFilterSheet
                     )
                     .transition(.move(edge: .top).combined(with: .opacity))
+                    .padding(.vertical, 10)
                 }
 
                 ScrollView {
@@ -66,6 +67,7 @@ public struct HomeView: View {
                         }
                     }
                 }
+                .scrollClipDisabled()
                 .simultaneousGesture(
                     DragGesture()
                         .onChanged { value in
@@ -168,7 +170,8 @@ public struct HomeView: View {
                                 viewModel.didTapCreateVote()
                             }
                         )
-                        .padding(.vertical, 12)
+                        .padding(.top, 4)
+                        .padding(.bottom, 12)
                         BNDivider(size: .s)
                     }
                     .padding(.horizontal, 20)
@@ -329,41 +332,52 @@ struct FeedCategoryFilterBar: View {
     @Binding var selectedCategories: Set<FeedCategory>
     @Binding var showFilterSheet: Bool
 
+    private let allChipId = "전체"
+
     var body: some View {
         ZStack(alignment: .leading) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    Color.clear.frame(width: 50)
-                    BNChip(
-                        title: "전체",
-                        state: selectedCategories.isEmpty ? .selected : .unselected,
-                        onTap: { selectedCategories = [] }
-                    )
-                    ForEach(FeedCategory.allCases, id: \.rawValue) { category in
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        Color.clear.frame(width: 50)
                         BNChip(
-                            title: category.displayName,
-                            state: selectedCategories.contains(category) ? .selected : .unselected,
+                            title: "전체",
+                            state: selectedCategories.isEmpty ? .selected : .unselected,
                             onTap: {
-                                if selectedCategories.contains(category) {
-                                    selectedCategories.remove(category)
-                                } else {
-                                    selectedCategories.insert(category)
-                                    if selectedCategories.count == FeedCategory.allCases.count {
-                                        selectedCategories = []
-                                    }
-                                }
+                                selectedCategories = []
+                                withAnimation { proxy.scrollTo(allChipId, anchor: .center) }
                             }
                         )
+                        .id(allChipId)
+                        ForEach(FeedCategory.allCases, id: \.rawValue) { category in
+                            BNChip(
+                                title: category.displayName,
+                                state: selectedCategories.contains(category) ? .selected : .unselected,
+                                onTap: {
+                                    if selectedCategories.contains(category) {
+                                        selectedCategories.remove(category)
+                                    } else {
+                                        selectedCategories.insert(category)
+                                        if selectedCategories.count == FeedCategory.allCases.count {
+                                            selectedCategories = []
+                                            withAnimation { proxy.scrollTo(allChipId, anchor: .center) }
+                                        } else {
+                                            withAnimation { proxy.scrollTo(category.rawValue, anchor: .center) }
+                                        }
+                                    }
+                                }
+                            )
+                            .id(category.rawValue)
+                        }
                     }
                 }
-                .padding(.vertical, 1)
+                .padding(.horizontal, 20)
+                .frame(height: 36)
             }
-            .padding(.horizontal, 20)
-            .frame(height: 38)
 
             HStack(spacing: 0) {
                 Color.white
-                    .frame(width: 19, height: 50)
+                    .frame(width: 19, height: 36)
                 LinearGradient(
                     stops: [
                         .init(color: Color.white.opacity(0.0001), location: 0.1848),
@@ -374,15 +388,13 @@ struct FeedCategoryFilterBar: View {
                     startPoint: .trailing,
                     endPoint: .leading
                 )
-                .frame(width: 36, height: 50)
+                .frame(width: 36, height: 36)
             }
             .padding(.leading, 20)
 
             FeedFilterIconChip(onTap: { showFilterSheet = true })
                 .padding(.leading, 20)
         }
-        .background(Color.white)
-        .padding([.top, .bottom], 10)
     }
 }
 
