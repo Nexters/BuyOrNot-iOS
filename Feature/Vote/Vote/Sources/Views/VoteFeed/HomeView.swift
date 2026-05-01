@@ -31,6 +31,15 @@ public struct HomeView: View {
         }
     }
 
+    private var isShowingCategoryEmpty: Bool {
+        switch selectedTab {
+        case .voteFeed:
+            return viewModel.voteFeedState == .success && viewModel.feeds.isEmpty
+        case .myVotes:
+            return viewModel.myVoteState == .empty
+        }
+    }
+
     public var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -80,10 +89,12 @@ public struct HomeView: View {
                 )
             }
 
-            FloatingButton(
-                state: .close,
-                onVoteCreate: { viewModel.didTapCreateVote() }
-            )
+            if !isShowingCategoryEmpty {
+                FloatingButton(
+                    state: .close,
+                    onVoteCreate: { viewModel.didTapCreateVote() }
+                )
+            }
 
             if showFilterSheet {
                 FeedFilterSheet(
@@ -148,15 +159,10 @@ public struct HomeView: View {
 
         case .success:
             if viewModel.feeds.isEmpty {
-                if viewModel.selectedCategories.isEmpty {
-                    FeedEmptyView()
-                        .padding(.top, 140)
-                } else {
-                    CategoryEmptyView {
-                        viewModel.didTapCreateVote()
-                    }
-                    .padding(.top, 60)
+                CategoryEmptyView {
+                    viewModel.didTapCreateVote()
                 }
+                .padding(.top, 60)
             } else {
                 if showBanner {
                     VStack {
@@ -233,15 +239,10 @@ public struct HomeView: View {
             }
 
         case .empty:
-            if viewModel.selectedCategories.isEmpty {
-                FeedEmptyView()
-                    .padding(.top, 140)
-            } else {
-                CategoryEmptyView {
-                    viewModel.didTapCreateVote()
-                }
-                .padding(.top, 60)
+            CategoryEmptyView {
+                viewModel.didTapCreateVote()
             }
+            .padding(.top, 60)
 
         case .error:
             FeedErrorView {
