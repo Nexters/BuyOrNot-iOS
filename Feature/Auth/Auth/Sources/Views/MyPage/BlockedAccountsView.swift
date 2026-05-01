@@ -21,16 +21,15 @@ public struct BlockedAccountsView: View {
     public var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                BNNavigationBar(title: "차단된 계정", onLeadingTap: { dismiss() })
+                BNNavigationBar(title: "차단된 사용자", onLeadingTap: { dismiss() })
 
                 if viewModel.isLoading {
                     Spacer()
                     ProgressView()
                     Spacer()
                 } else if viewModel.blockedUsers.isEmpty {
-                    Spacer()
-                    BNText("차단된 계정이 없어요.")
-                        .style(style: .b3m, color: ColorPalette.gray600)
+                    BlockedAccountsEmptyView()
+                        .padding(.top, 160)
                     Spacer()
                 } else {
                     ScrollView {
@@ -65,6 +64,29 @@ public struct BlockedAccountsView: View {
         .navigationBarHidden(true)
         .task {
             await viewModel.fetchBlockedUsers()
+        }
+    }
+}
+
+// MARK: - BlockedAccountsEmptyView
+
+private struct BlockedAccountsEmptyView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            BNImage(.blocked_empty_image)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 140, height: 140)
+
+            VStack(spacing: 6) {
+                BNText("차단된 사용자가 없어요")
+                    .style(style: .t1b, color: ColorPalette.gray800)
+                    .multilineTextAlignment(.center)
+
+                BNText("사용자를 차단하면 투표를 볼 수 없어요.")
+                    .style(style: .b5m, color: ColorPalette.gray600)
+                    .multilineTextAlignment(.center)
+            }
         }
     }
 }

@@ -75,7 +75,9 @@ public final class HomeViewModel: ObservableObject {
     func fetchFeeds() async {
         cursor = nil
         hasMorePages = true
-        voteFeedState = .loading
+        if voteFeedState != .success {
+            voteFeedState = .loading
+        }
         do {
             let page = try await feedRepository.getVoteFeeds(
                 cursor: nil,
@@ -196,7 +198,9 @@ public final class HomeViewModel: ObservableObject {
 
     @MainActor
     func fetchMyFeeds() async {
-        myVoteState = .loading
+        if myVoteState != .success {
+            myVoteState = .loading
+        }
         do {
             let page = try await feedRepository.getMyVoteFeeds(
                 cursor: nil,
