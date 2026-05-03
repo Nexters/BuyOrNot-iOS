@@ -82,6 +82,8 @@ public struct VoteFeed: View {
     @State private var selectedVoteId: Int?
     @State private var showMenu: Bool = false
     @State private var showBlockAlert: Bool = false
+    @State private var showImageDetail: Bool = false
+    @State private var detailStartIndex: Int = 0
 
     public init(
         data: VoteFeedData,
@@ -128,6 +130,10 @@ public struct VoteFeed: View {
                     onVote: { optionId in
                         withAnimation { selectedVoteId = optionId }
                         onVote(optionId)
+                    },
+                    onImageTap: { index in
+                        detailStartIndex = index
+                        showImageDetail = true
                     }
                 )
             }
@@ -173,6 +179,12 @@ public struct VoteFeed: View {
                 ]
             )
         )
+        .navigationDestination(isPresented: $showImageDetail) {
+            FullScreenImageView(
+                imageURLs: Array(data.productImageURLs.prefix(3)),
+                initialIndex: detailStartIndex
+            )
+        }
     }
 }
 
@@ -244,6 +256,7 @@ private struct FeedContent: View {
     let isVotingLocked: Bool
     let selectedVoteId: Int?
     let onVote: (Int) -> Void
+    let onImageTap: (Int) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -266,7 +279,8 @@ private struct FeedContent: View {
                     imageURLs: productImageURLs,
                     price: price,
                     link: link,
-                    showLinkTooltip: showLinkTooltip
+                    showLinkTooltip: showLinkTooltip,
+                    onImageTap: onImageTap
                 )
                 .padding(.top, 12)
             }
@@ -290,6 +304,7 @@ private struct ProductImageCarousel: View {
     let price: String
     let link: String?
     let showLinkTooltip: Bool
+    let onImageTap: (Int) -> Void
 
     private let tooltipBg = Color(red: 0.23, green: 0.24, blue: 0.24).opacity(0.8)
 
@@ -299,8 +314,6 @@ private struct ProductImageCarousel: View {
     @State private var carouselHeight: CGFloat = UIScreen.main.bounds.width - 40
     @State private var safariURL: URL?
     @State private var tooltipDismissed = false
-    @State private var showImageDetail = false
-    @State private var detailStartIndex = 0
 
     var body: some View {
         GeometryReader { geometry in
@@ -342,9 +355,6 @@ private struct ProductImageCarousel: View {
                 SafariView(url: url)
                     .ignoresSafeArea()
             }
-        }
-        .fullScreenCover(isPresented: $showImageDetail) {
-            FullScreenImageView(imageURLs: prefixedImages, initialIndex: detailStartIndex)
         }
     }
 
@@ -404,8 +414,7 @@ private struct ProductImageCarousel: View {
             }
         }
         .onTapGesture {
-            detailStartIndex = index
-            showImageDetail = true
+            onImageTap(index)
         }
     }
 

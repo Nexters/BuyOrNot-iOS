@@ -10,71 +10,36 @@ import UIKit
 import DesignSystem
 import Kingfisher
 
+// MARK: - FullScreenImageView
+
 public struct FullScreenImageView: View {
-    let imageURL: String
+    let imageURLs: [String]
+    let initialIndex: Int
 
-    @State private var scale: CGFloat = 1.0
-    @State private var lastScale: CGFloat = 1.0
-    @State private var offset: CGSize = .zero
-    @State private var lastOffset: CGSize = .zero
+    @Environment(\.dismiss) private var dismiss
+    @State private var currentIndex: Int
 
-    public init(imageURL: String) {
-        self.imageURL = imageURL
+    public init(imageURLs: [String], initialIndex: Int = 0) {
+        self.imageURLs = imageURLs
+        self.initialIndex = initialIndex
+        _currentIndex = State(initialValue: initialIndex)
     }
 
     public var body: some View {
         ZStack(alignment: .topLeading) {
-            Color.black
-                .ignoresSafeArea()
+            Color.black.ignoresSafeArea()
 
-            KFImage.url(URL(string: imageURL))
-                .placeholder {
-                    ProgressView()
-                        .tint(.white)
+            TabView(selection: $currentIndex) {
+                ForEach(Array(imageURLs.enumerated()), id: \.offset) { index, url in
+                    ZoomableImageCell(imageURL: url)
+                        .tag(index)
                 }
-                .onFailureView {
-                    Image(systemName: "photo")
-                        .foregroundColor(.gray)
-                }
-                .resizable()
-                .scaledToFit()
-                .scaleEffect(scale)
-                .offset(offset)
-                .gesture(
-                    MagnificationGesture()
-                        .onChanged { value in
-                            scale = lastScale * value
-                        }
-                        .onEnded { _ in
-                            lastScale = scale
-                            if scale < 1.0 {
-                                withAnimation {
-                                    scale = 1.0
-                                    lastScale = 1.0
-                                    offset = .zero
-                                    lastOffset = .zero
-                                }
-                            }
-                        }
-                )
-                .simultaneousGesture(
-                    DragGesture()
-                        .onChanged { value in
-                            if scale > 1.0 {
-                                offset = CGSize(
-                                    width: lastOffset.width + value.translation.width,
-                                    height: lastOffset.height + value.translation.height
-                                )
-                            }
-                        }
-                        .onEnded { _ in
-                            lastOffset = offset
-                        }
-                )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .ignoresSafeArea()
 
             Button {
-                dismissFullScreen()
+                dismiss()
             } label: {
                 BNImage(.close)
                     .style(color: ColorPalette.gray0, size: 16)
@@ -82,54 +47,67 @@ public struct FullScreenImageView: View {
             .padding(.leading, 20)
             .padding(.top, 16)
         }
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 }
 
-// MARK: - UIKit Presentation
+// MARK: - ZoomableImageCell
 
-func presentFullScreenImage(imageURL: String) {
-    let hostingController = UIHostingController(
-        rootView: FullScreenImageView(imageURL: imageURL)
-    )
-    hostingController.modalPresentationStyle = .overFullScreen
+private struct ZoomableImageCell: View {
+    let imageURL: String
 
-    guard let window = keyWindow,
-          let topVC = topViewController else { return }
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
 
-    let transition = CATransition()
-    transition.duration = 0.3
-    transition.type = .push
-    transition.subtype = .fromRight
-    transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-    window.layer.add(transition, forKey: kCATransition)
-
-    topVC.present(hostingController, animated: false)
-}
-
-private func dismissFullScreen() {
-    guard let window = keyWindow,
-          let topVC = topViewController else { return }
-
-    let transition = CATransition()
-    transition.duration = 0.3
-    transition.type = .push
-    transition.subtype = .fromLeft
-    transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-    window.layer.add(transition, forKey: kCATransition)
-
-    topVC.dismiss(animated: false)
-}
-
-private var keyWindow: UIWindow? {
-    UIApplication.shared.connectedScenes
-        .compactMap { $0 as? UIWindowScene }
-        .first?.windows.first
-}
-
-private var topViewController: UIViewController? {
-    guard var topVC = keyWindow?.rootViewController else { return nil }
-    while let presented = topVC.presentedViewController {
-        topVC = presented
+    var body: some View {
+        KFImage.url(URL(string: imageURL))
+            .placeholder {
+                ProgressView()
+                    .tint(.white)
+            }
+            .onFailureView {
+                Image(systemName: "photo")
+                    .foregroundColor(.gray)
+            }
+            .resizable()
+            .scaledToFit()
+            .scaleEffect(scale)
+            .offset(offset)
+            .gesture(
+                MagnificationGesture()
+                    .onChanged { value in
+                        scale = max(1.0, lastScale * value)
+                    }
+                    .onEnded { _ in
+                        lastScale = scale
+                        if scale < 1.0 {
+                            withAnimation {
+                                scale = 1.0
+                                lastScale = 1.0
+                                offset = .zero
+                                lastOffset = .zero
+                            }
+                        }
+                    }
+            )
+            .simultaneousGesture(
+                DragGesture()
+                    .onChanged { value in
+                        guard scale > 1.0 else { return }
+                        offset = CGSize(
+                            width: lastOffset.width + value.translation.width,
+                            height: lastOffset.height + value.translation.height
+                        )
+                    }
+                    .onEnded { _ in
+                        guard scale > 1.0 else { return }
+                        lastOffset = offset
+                    }
+            )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black)
     }
-    return topVC
 }
