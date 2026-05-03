@@ -50,20 +50,26 @@ public struct HomeView: View {
                         onProfileTap: { viewModel.didTapProfile() },
                         onLoginTap: { viewModel.didTapLogin() }
                     )
+                    .background(Color.white)
+                    .zIndex(2)
                 }
 
                 FeedSegmentedControl(
                     selectedTab: $selectedTab,
                     tabs: viewModel.isAuthenticated ? FeedTab.allCases : [.voteFeed]
                 )
+                .background(Color.white)
+                .zIndex(2)
 
                 if !shouldHideFilter && showCategoryFilter {
                     FeedCategoryFilterBar(
                         selectedCategories: $viewModel.selectedCategories,
                         showFilterSheet: $showFilterSheet
                     )
-                    .transition(.move(edge: .top).combined(with: .opacity))
                     .padding(.vertical, 10)
+                    .background(Color.white)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .zIndex(2)
                 }
 
                 ScrollView {
@@ -76,7 +82,6 @@ public struct HomeView: View {
                         }
                     }
                 }
-                .scrollClipDisabled()
                 .simultaneousGesture(
                     DragGesture()
                         .onChanged { value in
@@ -176,7 +181,7 @@ public struct HomeView: View {
                                 viewModel.didTapCreateVote()
                             }
                         )
-                        .padding(.top, 4)
+                        .padding(.top, 6)
                         .padding(.bottom, 12)
                         BNDivider(size: .s)
                     }
@@ -372,7 +377,7 @@ struct FeedCategoryFilterBar: View {
                         }
                     }
                 }
-                .padding(.horizontal, 20)
+                .padding(.leading, 20)
                 .frame(height: 36)
             }
 
