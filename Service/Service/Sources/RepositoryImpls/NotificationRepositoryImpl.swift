@@ -25,4 +25,17 @@ public class NotificationRepositoryImpl: NotificationRepository {
         )
         return response.data.map { $0.toDomain() }
     }
+
+    public func patchNotificationRead(id: String) async throws {
+        let _: BaseResponse<EmptyResponse> = try await request(
+            .patchNotificationRead(id: id)
+        )
+    }
+
+    public func getNotificationUnreadCount() async throws -> Int {
+        let response: BaseResponse<NotificationUnreadCountResponse> = try await request(
+            .getNotificationUnreadCount
+        )
+        return response.data.unreadCount
+    }
 }
