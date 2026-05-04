@@ -10,6 +10,7 @@ import Foundation
 struct NotificationResponse: Decodable {
     let notificationId: Int
     let feedId: Int
+    let feedTitle: String
     let type: String
     let title: String
     let body: String
