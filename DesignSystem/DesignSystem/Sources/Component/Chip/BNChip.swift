@@ -33,12 +33,18 @@ public struct BNChip: View {
             onTap()
         } label: {
             BNText(title)
-                .style(style: fontStyle, color: foregroundColorType)
+                .style(style: fontStyle, color: foregroundColor)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
                 .frame(height: 36)
                 .background(backgroundColor)
-                .cornerRadius(12)
+                .clipShape(Capsule())
+                .overlay {
+                    if state == .unselected {
+                        Capsule()
+                            .stroke(ColorPalette.gray300, lineWidth: 1)
+                    }
+                }
         }
         .buttonStyle(.plain)
     }
@@ -53,12 +59,12 @@ public struct BNChip: View {
         }
     }
 
-    private var foregroundColorType: Color {
+    private var foregroundColor: Color {
         switch state {
         case .selected:
             return ColorPalette.gray0
         case .unselected, .hover:
-            return ColorPalette.gray700
+            return ColorPalette.gray950
         }
     }
 
@@ -67,9 +73,9 @@ public struct BNChip: View {
         case .selected:
             return ColorPalette.gray950
         case .unselected:
-            return ColorPalette.gray200
+            return ColorPalette.gray0
         case .hover:
-            return ColorPalette.gray300
+            return ColorPalette.gray200
         }
     }
 }
