@@ -51,6 +51,9 @@ public struct FeedDetailView: View {
                                     dismiss()
                                 }
                             },
+                            onReport: {
+                                Task { await viewModel.reportFeed(feedId: feed.id) }
+                            },
                             onBlock: {
                                 Task {
                                     await viewModel.blockUser(userId: feed.userId, userName: feed.userName)
