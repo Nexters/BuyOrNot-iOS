@@ -13,6 +13,7 @@ extension NotificationResponse {
         AppNotification(
             notificationId: self.notificationId,
             feedId: self.feedId,
+            feedTitle: self.feedTitle,
             type: AppNotificationType(rawValue: self.type) ?? .myFeedClosed,
             title: self.title,
             body: self.body,

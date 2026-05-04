@@ -10,6 +10,7 @@ import Foundation
 public struct AppNotification {
     public let notificationId: Int
     public let feedId: Int
+    public let feedTitle: String
     public let type: AppNotificationType
     public let title: String
     public let body: String
@@ -19,9 +20,10 @@ public struct AppNotification {
     public let resultLabel: ResultLabel
     public let viewUrl: String?
 
-    public init(notificationId: Int, feedId: Int, type: AppNotificationType, title: String, body: String, isRead: Bool, voteClosedAt: DateComponents, resultPercent: Int, resultLabel: ResultLabel, viewUrl: String?) {
+    public init(notificationId: Int, feedId: Int, feedTitle: String, type: AppNotificationType, title: String, body: String, isRead: Bool, voteClosedAt: DateComponents, resultPercent: Int, resultLabel: ResultLabel, viewUrl: String?) {
         self.notificationId = notificationId
         self.feedId = feedId
+        self.feedTitle = feedTitle
         self.type = type
         self.title = title
         self.body = body
