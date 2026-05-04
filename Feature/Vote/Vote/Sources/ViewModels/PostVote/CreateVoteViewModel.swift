@@ -150,6 +150,21 @@ public final class CreateVoteViewModel: ObservableObject {
         showPhotoSourceBottomSheet = true
     }
 
+    var photoSourceActionItems: [ActionBottomSheetItem<PhotoSourceAction>] {
+        [
+            .init(item: .camera, icon: .camera, text: "카메라로 직접 찍기") { [weak self] _ in
+                Task {
+                    await self?.checkCameraPermission()
+                }
+            },
+            .init(item: .album, icon: .photo_album, text: "앨범에서 사진 선택") { [weak self] _ in
+                Task {
+                    await self?.checkAlbumPermission()
+                }
+            }
+        ]
+    }
+
     @MainActor
     func checkPhotoPermission() async {
         await checkAlbumPermission()

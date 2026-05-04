@@ -126,44 +126,20 @@ public struct CreateVoteView: View {
             )
             .ignoresSafeArea()
         }
-        .bnBottomSheet(
+        .optionBottomSheet(
             isPresented: $viewModel.showCategoryBottomSheet,
-            isEnableDismiss: true,
-        ) { dismiss in
-            CategorySheetView(
-                viewModel.categories,
-                viewModel.category
-            ) { category in
-                dismiss()
-                viewModel.didChangeCategory(category)
-            }
+            title: "카테고리",
+            selectedItem: viewModel.category,
+            items: viewModel.categories
+        ) { category in
+            viewModel.didChangeCategory(category)
         }
-        .bnBottomSheet(
+        .actionBottomSheet(
             isPresented: $viewModel.showPhotoSourceBottomSheet,
-            isEnableDismiss: true
-        ) { dismiss in
-            PhotoSourceSheetView(
-                didTapCamera: {
-                    dismiss()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                        Task {
-                            await viewModel.checkCameraPermission()
-                        }
-                    }
-                },
-                didTapAlbum: {
-                    dismiss()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                        Task {
-                            await viewModel.checkAlbumPermission()
-                        }
-                    }
-                }
-            )
-        }
+            items: viewModel.photoSourceActionItems
+        )
         .bnAlert(
             isPresented: $viewModel.showCustomAlert,
-            isEnableDismiss: true,
             config: BNAlertConfig(
                 title: viewModel.photoPermissionAlertTitle,
                 message: viewModel.photoPermissionAlertMessage,
@@ -180,7 +156,6 @@ public struct CreateVoteView: View {
         )
         .bnAlert(
             isPresented: $viewModel.showCancelAlert,
-            isEnableDismiss: true,
             config: BNAlertConfig(
                 title: "다음에 등록할까요?",
                 message: "지금까지 쓴 내용은 저장되지 않아요.",
@@ -201,7 +176,6 @@ public struct CreateVoteView: View {
         )
         .bnAlert(
             isPresented: $viewModel.showRestorePendingAlert,
-            isEnableDismiss: true,
             config: BNAlertConfig(
                 title: "이전에 작성하던 글이 있어요!",
                 message: "[닫기] 선택 시 해당 내용은 복구할 수 없어요.",
@@ -405,7 +379,7 @@ public struct CreateVoteView: View {
                 }
             }
             .disabled(viewModel.isPhotoPickerEnabled == false)
-
+            
             ForEach(Array(viewModel.selectedPhotos.enumerated()), id: \.offset) { index, photo in
                 photo.image
                     .resizable()

@@ -12,16 +12,19 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     @State private var dragOffset: CGFloat = 0
     @State private var isFullScreenViewVisible = false
     private let isEnableDismiss: Bool
-    private let sheetContent: (@escaping VoidCallBack) -> SheetView
+    private let handleBottomSpacing: CGFloat
+    private let sheetChild: (@escaping VoidCallBack) -> SheetView
     
     public init(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool,
-        @ViewBuilder content: @escaping (@escaping VoidCallBack) -> SheetView
+        handleBottomSpacing: CGFloat = 26,
+        @ViewBuilder child: @escaping (@escaping VoidCallBack) -> SheetView
     ) {
         self._isPresented = isPresented
         self.isEnableDismiss = isEnableDismiss
-        self.sheetContent = content
+        self.handleBottomSpacing = handleBottomSpacing
+        self.sheetChild = child
     }
     
     private let hiddenOffset: CGFloat = UIScreen.main.bounds.height
@@ -29,6 +32,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
         response: 0.3,
         dampingFraction: 1
     )
+    private let transitionDuration: TimeInterval = 0.3
     
     public func body(content: Content) -> some View {
         content
@@ -80,8 +84,8 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
         VStack(spacing: 0) {
             handleView
                 .padding(.top, 10)
-                .padding(.bottom, 16)
-            sheetContent(dismiss)
+                .padding(.bottom, handleBottomSpacing)
+            sheetChild(dismiss)
         }
         .frame(maxWidth: .infinity)
         .background(ColorPalette.gray0)
@@ -92,14 +96,14 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
             )
         )
         .padding(.horizontal, 14)
-        .padding(.bottom, 10)
+        .padding(.bottom, 20)
         .animation(.linear(duration: 0.2), value: dragOffset)
     }
     
     @ViewBuilder
     private var handleView: some View {
         Capsule()
-            .fill(isEnableDismiss ? ColorPalette.fromHex("#D9D9D9"): ColorPalette.gray0)
+            .fill(isEnableDismiss ? ColorPalette.gray400: ColorPalette.gray0)
             .frame(width: 40, height: 4)
     }
     
@@ -126,7 +130,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     private func dismiss() {
         withAnimation(animation) {
             isFullScreenViewVisible = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + transitionDuration) {
                 isPresented = false
             }
         }
@@ -137,13 +141,15 @@ public extension View {
     func bnBottomSheet<SheetContent: View>(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool = true,
-        @ViewBuilder content: @escaping (@escaping VoidCallBack) -> SheetContent
+        handleBottomSpacing: CGFloat = 26,
+        @ViewBuilder child: @escaping (@escaping VoidCallBack) -> SheetContent
     ) -> some View {
         modifier(
             BNBottomSheetModifier(
                 isPresented: isPresented,
                 isEnableDismiss: isEnableDismiss,
-                content: content
+                handleBottomSpacing: handleBottomSpacing,
+                child: child
             )
         )
     }
