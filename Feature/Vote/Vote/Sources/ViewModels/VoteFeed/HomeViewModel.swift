@@ -153,6 +153,12 @@ public final class HomeViewModel: ObservableObject {
         guard let id = Int(feedId) else { return }
         do {
             try await feedRepository.reportVoteFeed(feedId: id)
+            let item = BNSnackBarItem(
+                text: "신고가 완료되었습니다.",
+                icon: .completed,
+                color: ColorPalette.red100
+            )
+            snackBar.addItem(item)
             removedFeedIds.insert(feedId)
             reportedFeedIds.insert(feedId)
             reportFeedRepository.saveReportFeed(

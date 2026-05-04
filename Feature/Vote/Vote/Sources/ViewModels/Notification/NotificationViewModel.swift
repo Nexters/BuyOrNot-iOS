@@ -98,24 +98,11 @@ public final class NotificationViewModel: ObservableObject {
             id: String(notification.notificationId),
             imageURL: notification.viewUrl ?? "",
             status: "투표 종료",
-            message: buildMessage(resultLabel: notification.resultLabel, resultPercent: notification.resultPercent),
+            message: notification.feedTitle,
             timeAgo: timeAgoText(from: notification.voteClosedAt),
             isRead: notification.isRead,
             feedId: notification.feedId
         )
-    }
-
-    private func buildMessage(resultLabel: ResultLabel, resultPercent: Int) -> String {
-        switch resultLabel {
-        case .yes:
-            return "\(resultPercent)% '사! 가즈아!'"
-        case .no:
-            return "\(resultPercent)% '애매하긴 해!'"
-        case .tie:
-            return "무승부! 2차전 가보자고!"
-        case .zero:
-            return "아직 투표 결과가 없어요"
-        }
     }
 
     private func timeAgoText(from components: DateComponents) -> String {

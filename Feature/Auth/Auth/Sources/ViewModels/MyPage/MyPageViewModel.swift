@@ -15,7 +15,7 @@ public final class MyPageViewModel: ObservableObject {
     
     @Published var name: String = "이름입니다최대열자임"
     @Published var profileImageURL: String = ""
-    @Published var appVersion: String = "0.0.1"
+    @Published var appVersion: String = Bundle.main.appVersionString
     @Published var url: URL?
     
     public init(

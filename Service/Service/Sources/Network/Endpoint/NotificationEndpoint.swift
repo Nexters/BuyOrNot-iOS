@@ -7,18 +7,29 @@
 
 enum NotificationEndpoint: Endpoint {
     case getNotifications(type: String?)
+    case patchNotificationRead(id: String)
+    case getNotificationUnreadCount
 
     var path: String {
-        switch self {
+        let prefix = "/notifications"
+        let path = switch self {
         case .getNotifications:
-            return version.path + "/notifications"
+            ""
+        case .patchNotificationRead(let id):
+            "/\(id)/read"
+        case .getNotificationUnreadCount:
+            "/unread-count"
         }
+        
+        return version.path + prefix + path
     }
 
     var method: HTTPMethod {
         switch self {
-        case .getNotifications:
+        case .getNotifications, .getNotificationUnreadCount:
             .get
+        case .patchNotificationRead:
+            .patch
         }
     }
 
@@ -28,6 +39,8 @@ enum NotificationEndpoint: Endpoint {
             var params: [String: Any] = [:]
             if let type { params["type"] = type }
             return params.isEmpty ? nil : params
+        case .patchNotificationRead, .getNotificationUnreadCount:
+            return nil
         }
     }
 }
