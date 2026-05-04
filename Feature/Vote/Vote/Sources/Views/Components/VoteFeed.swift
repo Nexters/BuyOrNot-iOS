@@ -82,6 +82,8 @@ public struct VoteFeed: View {
     @State private var selectedVoteId: Int?
     @State private var showMenu: Bool = false
     @State private var showBlockAlert: Bool = false
+    @State private var showImageDetail: Bool = false
+    @State private var detailStartIndex: Int = 0
 
     public init(
         data: VoteFeedData,
@@ -128,6 +130,10 @@ public struct VoteFeed: View {
                     onVote: { optionId in
                         withAnimation { selectedVoteId = optionId }
                         onVote(optionId)
+                    },
+                    onImageTap: { index in
+                        detailStartIndex = index
+                        showImageDetail = true
                     }
                 )
             }
@@ -173,6 +179,12 @@ public struct VoteFeed: View {
                 ]
             )
         )
+        .navigationDestination(isPresented: $showImageDetail) {
+            FullScreenImageView(
+                imageURLs: Array(data.productImageURLs.prefix(3)),
+                initialIndex: detailStartIndex
+            )
+        }
     }
 }
 
@@ -244,6 +256,7 @@ private struct FeedContent: View {
     let isVotingLocked: Bool
     let selectedVoteId: Int?
     let onVote: (Int) -> Void
+    let onImageTap: (Int) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -266,7 +279,8 @@ private struct FeedContent: View {
                     imageURLs: productImageURLs,
                     price: price,
                     link: link,
-                    showLinkTooltip: showLinkTooltip
+                    showLinkTooltip: showLinkTooltip,
+                    onImageTap: onImageTap
                 )
                 .padding(.top, 12)
             }
@@ -290,6 +304,7 @@ private struct ProductImageCarousel: View {
     let price: String
     let link: String?
     let showLinkTooltip: Bool
+    let onImageTap: (Int) -> Void
 
     private let tooltipBg = Color(red: 0.23, green: 0.24, blue: 0.24).opacity(0.8)
 
@@ -297,13 +312,8 @@ private struct ProductImageCarousel: View {
     private var hasMultipleImages: Bool { prefixedImages.count > 1 }
 
     @State private var carouselHeight: CGFloat = UIScreen.main.bounds.width - 40
-    @State private var visibleImageIndex: Int? = 0
     @State private var safariURL: URL?
     @State private var tooltipDismissed = false
-
-    private var shouldShowLinkPill: Bool {
-        !hasMultipleImages || visibleImageIndex == 0 || visibleImageIndex == nil
-    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -315,18 +325,17 @@ private struct ProductImageCarousel: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 10) {
                             ForEach(Array(prefixedImages.enumerated()), id: \.offset) { index, url in
-                                imageCell(url: url, size: imageWidth, showPrice: index == 0)
+                                imageCell(url: url, index: index, size: imageWidth)
                             }
                         }
                         .scrollTargetLayout()
                     }
-                    .scrollPosition(id: $visibleImageIndex)
                     .contentMargins(.horizontal, 20, for: .scrollContent)
                     .scrollTargetBehavior(.viewAligned)
                     .frame(width: fullWidth, height: imageWidth)
                 } else if let url = prefixedImages.first {
                     ScrollView(.horizontal, showsIndicators: false) {
-                        imageCell(url: url, size: imageWidth, showPrice: true)
+                        imageCell(url: url, index: 0, size: imageWidth)
                     }
                     .contentMargins(.horizontal, 20, for: .scrollContent)
                     .scrollDisabled(true)
@@ -334,20 +343,6 @@ private struct ProductImageCarousel: View {
                 }
             }
             .frame(width: fullWidth, height: imageWidth)
-            .overlay(alignment: .topTrailing) {
-                VStack(alignment: .trailing, spacing: 4) {
-                    if shouldShowLinkPill {
-                        indicatorPill
-                            .padding(.trailing, 10)
-                    }
-                    if showLinkTooltip, link != nil, shouldShowLinkPill, !tooltipDismissed {
-                        linkTooltipView
-                            .onTapGesture { tooltipDismissed = true }
-                    }
-                }
-                .padding(.top, 16)
-                .padding(.trailing, 26)
-            }
             .onAppear { carouselHeight = imageWidth }
         }
         .frame(maxWidth: .infinity)
@@ -364,7 +359,7 @@ private struct ProductImageCarousel: View {
     }
 
     @ViewBuilder
-    private func imageCell(url: String, size: CGFloat, showPrice: Bool) -> some View {
+    private func imageCell(url: String, index: Int, size: CGFloat) -> some View {
         ZStack(alignment: .bottomLeading) {
             KFImage.url(URL(string: url))
                 .placeholder { Color(ColorPalette.gray200) }
@@ -396,7 +391,7 @@ private struct ProductImageCarousel: View {
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .allowsHitTesting(false)
 
-            if showPrice {
+            if index == 0 {
                 BNText(price)
                     .style(style: .h4b, color: ColorPalette.gray0)
                     .shadow(color: Color.black.opacity(0.3), radius: 4, x: 0, y: 4)
@@ -405,6 +400,22 @@ private struct ProductImageCarousel: View {
             }
         }
         .frame(width: size, height: size)
+        .overlay(alignment: .topTrailing) {
+            if index == 0 {
+                VStack(alignment: .trailing, spacing: 4) {
+                    indicatorPill
+                    if showLinkTooltip, link != nil, !tooltipDismissed {
+                        linkTooltipView
+                            .onTapGesture { tooltipDismissed = true }
+                    }
+                }
+                .padding(.top, 10)
+                .padding(.trailing, 10)
+            }
+        }
+        .onTapGesture {
+            onImageTap(index)
+        }
     }
 
     @ViewBuilder

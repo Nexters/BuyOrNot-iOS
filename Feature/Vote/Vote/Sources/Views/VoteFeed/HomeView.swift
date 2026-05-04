@@ -31,6 +31,15 @@ public struct HomeView: View {
         }
     }
 
+    private var isShowingCategoryEmpty: Bool {
+        switch selectedTab {
+        case .voteFeed:
+            return viewModel.voteFeedState == .success && viewModel.feeds.isEmpty
+        case .myVotes:
+            return viewModel.myVoteState == .empty
+        }
+    }
+
     public var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -41,19 +50,26 @@ public struct HomeView: View {
                         onProfileTap: { viewModel.didTapProfile() },
                         onLoginTap: { viewModel.didTapLogin() }
                     )
+                    .background(Color.white)
+                    .zIndex(2)
                 }
 
                 FeedSegmentedControl(
                     selectedTab: $selectedTab,
                     tabs: viewModel.isAuthenticated ? FeedTab.allCases : [.voteFeed]
                 )
+                .background(Color.white)
+                .zIndex(2)
 
                 if !shouldHideFilter && showCategoryFilter {
                     FeedCategoryFilterBar(
                         selectedCategories: $viewModel.selectedCategories,
                         showFilterSheet: $showFilterSheet
                     )
+                    .padding(.vertical, 10)
+                    .background(Color.white)
                     .transition(.move(edge: .top).combined(with: .opacity))
+                    .zIndex(2)
                 }
 
                 ScrollView {
@@ -78,10 +94,12 @@ public struct HomeView: View {
                 )
             }
 
-            FloatingButton(
-                state: .close,
-                onVoteCreate: { viewModel.didTapCreateVote() }
-            )
+            if !isShowingCategoryEmpty {
+                FloatingButton(
+                    state: .close,
+                    onVoteCreate: { viewModel.didTapCreateVote() }
+                )
+            }
 
             if showFilterSheet {
                 FeedFilterSheet(
@@ -146,15 +164,10 @@ public struct HomeView: View {
 
         case .success:
             if viewModel.feeds.isEmpty {
-                if viewModel.selectedCategories.isEmpty {
-                    FeedEmptyView()
-                        .padding(.top, 140)
-                } else {
-                    CategoryEmptyView {
-                        viewModel.didTapCreateVote()
-                    }
-                    .padding(.top, 60)
+                CategoryEmptyView {
+                    viewModel.didTapCreateVote()
                 }
+                .padding(.top, 60)
             } else {
                 if showBanner {
                     VStack {
@@ -168,7 +181,8 @@ public struct HomeView: View {
                                 viewModel.didTapCreateVote()
                             }
                         )
-                        .padding(.vertical, 12)
+                        .padding(.top, 6)
+                        .padding(.bottom, 12)
                         BNDivider(size: .s)
                     }
                     .padding(.horizontal, 20)
@@ -230,15 +244,10 @@ public struct HomeView: View {
             }
 
         case .empty:
-            if viewModel.selectedCategories.isEmpty {
-                FeedEmptyView()
-                    .padding(.top, 140)
-            } else {
-                CategoryEmptyView {
-                    viewModel.didTapCreateVote()
-                }
-                .padding(.top, 60)
+            CategoryEmptyView {
+                viewModel.didTapCreateVote()
             }
+            .padding(.top, 60)
 
         case .error:
             FeedErrorView {
@@ -329,41 +338,52 @@ struct FeedCategoryFilterBar: View {
     @Binding var selectedCategories: Set<FeedCategory>
     @Binding var showFilterSheet: Bool
 
+    private let allChipId = "전체"
+
     var body: some View {
         ZStack(alignment: .leading) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    Color.clear.frame(width: 50)
-                    FeedFilterChip(
-                        title: "전체",
-                        isSelected: selectedCategories.isEmpty,
-                        onTap: { selectedCategories = [] }
-                    )
-                    ForEach(FeedCategory.allCases, id: \.rawValue) { category in
-                        FeedFilterChip(
-                            title: category.displayName,
-                            isSelected: selectedCategories.contains(category),
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        Color.clear.frame(width: 50)
+                        BNChip(
+                            title: "전체",
+                            state: selectedCategories.isEmpty ? .selected : .unselected,
                             onTap: {
-                                if selectedCategories.contains(category) {
-                                    selectedCategories.remove(category)
-                                } else {
-                                    selectedCategories.insert(category)
-                                    if selectedCategories.count == FeedCategory.allCases.count {
-                                        selectedCategories = []
-                                    }
-                                }
+                                selectedCategories = []
+                                withAnimation { proxy.scrollTo(allChipId, anchor: .center) }
                             }
                         )
+                        .id(allChipId)
+                        ForEach(FeedCategory.allCases, id: \.rawValue) { category in
+                            BNChip(
+                                title: category.displayName,
+                                state: selectedCategories.contains(category) ? .selected : .unselected,
+                                onTap: {
+                                    if selectedCategories.contains(category) {
+                                        selectedCategories.remove(category)
+                                    } else {
+                                        selectedCategories.insert(category)
+                                        if selectedCategories.count == FeedCategory.allCases.count {
+                                            selectedCategories = []
+                                            withAnimation { proxy.scrollTo(allChipId, anchor: .center) }
+                                        } else {
+                                            withAnimation { proxy.scrollTo(category.rawValue, anchor: .center) }
+                                        }
+                                    }
+                                }
+                            )
+                            .id(category.rawValue)
+                        }
                     }
                 }
-                .padding(.vertical, 1)
+                .padding(.leading, 20)
+                .frame(height: 36)
             }
-            .padding(.horizontal, 20)
-            .frame(height: 38)
 
             HStack(spacing: 0) {
                 Color.white
-                    .frame(width: 19, height: 50)
+                    .frame(width: 19, height: 36)
                 LinearGradient(
                     stops: [
                         .init(color: Color.white.opacity(0.0001), location: 0.1848),
@@ -374,15 +394,13 @@ struct FeedCategoryFilterBar: View {
                     startPoint: .trailing,
                     endPoint: .leading
                 )
-                .frame(width: 36, height: 50)
+                .frame(width: 36, height: 36)
             }
             .padding(.leading, 20)
 
             FeedFilterIconChip(onTap: { showFilterSheet = true })
                 .padding(.leading, 20)
         }
-        .background(Color.white)
-        .padding([.top, .bottom], 10)
     }
 }
 
@@ -479,31 +497,6 @@ private struct FeedFilterIconChip: View {
                 .overlay {
                     Capsule()
                         .stroke(ColorPalette.gray300, lineWidth: 1)
-                }
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-private struct FeedFilterChip: View {
-    let title: String
-    let isSelected: Bool
-    let onTap: () -> Void
-
-    var body: some View {
-        Button {
-            onTap()
-        } label: {
-            BNText(title)
-                .style(style: .b5m, color: isSelected ? ColorPalette.gray0 : ColorPalette.gray950)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 10)
-                .frame(height: 36)
-                .background(isSelected ? ColorPalette.gray950 : ColorPalette.gray0)
-                .clipShape(Capsule())
-                .overlay {
-                    Capsule()
-                        .stroke(isSelected ? ColorPalette.gray0 : ColorPalette.gray300 , lineWidth: 1)
                 }
         }
         .buttonStyle(.plain)
