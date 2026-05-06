@@ -15,18 +15,18 @@ public struct FloatingContextMenu: View {
     private let menuButtons: [FloatingContextMenuButton]
     
     public var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 4) {
             ForEach(menuButtons.indices, id: \.self) { i in
                 menuButtons[i]
             }
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 14)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 10)
         .background {
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 12)
                 .fill(ColorPalette.gray0)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 14)
+                    RoundedRectangle(cornerRadius: 12)
                         .stroke(
                             ColorPalette.gray100,
                             lineWidth: 1
