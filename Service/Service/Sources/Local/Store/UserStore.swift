@@ -7,6 +7,7 @@
 
 import Domain
 import Core
+import Foundation
 
 final class UserStore: EntityStore {
     let client: UserDefaultsClientProtocol

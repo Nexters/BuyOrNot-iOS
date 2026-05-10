@@ -521,7 +521,7 @@ public final class CreateVoteViewModel: ObservableObject {
         let filledFields = analyticsFilledFields()
         guard filledFields.isEmpty == false else { return }
 
-        var properties: [String: Any] = [
+        var properties: AnalyticsProperties = [
             "filled_fields": filledFields,
         ]
         if let lastTouchedField {
