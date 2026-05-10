@@ -8,11 +8,12 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let version = "0.0.8"
+let version = "0.0.9"
 let build = 0
 
 let project = Module.app.project(
     dependencies: [
+        Module.core.toDependency,
         Module.Feature.splash.toDependency,
         Module.Feature.auth.toDependency,
         Module.Feature.vote.toDependency,
@@ -112,6 +113,8 @@ private func getAppInfoPlistValues() -> [String: Plist.Value] {
             "$(USER_FEEDBACK_URL)",
         "APP_STORE_URL":
             "$(APP_STORE_URL)",
+        "MIXPANEL_TOKEN":
+            "$(MIXPANEL_TOKEN)",
     ]
 
     for (key, value) in xcconfigInfo {
