@@ -91,6 +91,9 @@ public struct CreateVoteView: View {
             let shouldShowRestoreAlert = viewModel.checkPendingVoteCreateInfoOnAppear()
             self.focusState = shouldShowRestoreAlert ? nil : .price
         }
+        .onDisappear {
+            viewModel.onDisappear()
+        }
         .onChange(of: viewModel.showRestorePendingAlert) { _, isPresented in
             if isPresented {
                 focusState = nil
@@ -480,12 +483,26 @@ private struct MockPendingVoteCreateInfoRepository: PendingVoteCreateInfoReposit
     func removePendingVoteCreateInfo() {}
 }
 
+private struct MockUserRepository: UserRepository {
+    func cacheUser(_ user: User) {}
+    func clearCachedUser() {}
+    func getMe() async throws -> User { User(id: 0, nickname: "", profileImage: "", socialAccount: "", email: "") }
+    func getCachedUser() -> User? { nil }
+    func updateFCMToken(_ token: String) async throws {}
+    func deleteAccount() async throws {}
+    func blockUser(userId: Int) async throws {}
+    func getBlockedUsers() async throws -> [BlockedUser] { [] }
+    func unblockUser(userId: Int) async throws {}
+}
+
 #Preview {
     CreateVoteView(
         viewModel: CreateVoteViewModel(
             uploadsRepository: MockUploadsRepository(),
             feedRepository: MockFeedRepository(),
-            pendingVoteCreateInfoRepository: MockPendingVoteCreateInfoRepository()
+            pendingVoteCreateInfoRepository: MockPendingVoteCreateInfoRepository(),
+            userRepository: MockUserRepository(),
+            analytics: DebugAnalyticsTracker()
         )
     )
 }

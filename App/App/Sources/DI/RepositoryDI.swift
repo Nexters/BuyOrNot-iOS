@@ -8,6 +8,7 @@
 import Swinject
 import Domain
 import Service
+import Core
 
 extension DIContainer {
     func registerRepositories(_ container: Container) {
@@ -45,6 +46,10 @@ extension DIContainer {
 
         container.register(AppUpdateRepository.self) { _ in
             AppUpdateRepositoryImpl()
+        }
+
+        container.register(AnalyticsTracking.self) { _ in
+            AnalyticsCenter.tracker
         }
     }
 }
