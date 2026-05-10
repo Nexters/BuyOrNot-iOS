@@ -72,6 +72,7 @@ public enum DesignSystemAsset: Sendable {
   }
   public enum Image {
   public static let appleLogo = DesignSystemImages(name: "apple_logo")
+    public static let blockedEmptyImage = DesignSystemImages(name: "blocked_empty_image")
     public static let categoryEmptyImage = DesignSystemImages(name: "category_empty_image")
     public static let deleteAccount = DesignSystemImages(name: "delete_account")
     public static let emptyImage = DesignSystemImages(name: "empty_image")
