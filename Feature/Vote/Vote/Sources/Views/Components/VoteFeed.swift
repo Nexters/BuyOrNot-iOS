@@ -400,6 +400,10 @@ private struct ProductImageCarousel: View {
             }
         }
         .frame(width: size, height: size)
+        .overlay {
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(ColorPalette.gray300, lineWidth: 1)
+        }
         .overlay(alignment: .topTrailing) {
             if index == 0 {
                 VStack(alignment: .trailing, spacing: 4) {

@@ -24,7 +24,7 @@ public struct VoteButton: View {
     @State private var animatedWidth: CGFloat = 0
 
     private enum Layout {
-        static let height: CGFloat = 50
+        static let height: CGFloat = 46
         static let cornerRadius: CGFloat = 12
         static let horizontalPadding: CGFloat = 15
         static let verticalPadding: CGFloat = 14
