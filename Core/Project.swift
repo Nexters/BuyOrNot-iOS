@@ -14,6 +14,7 @@ let project = Project(
         Module.core.target(
             dependencies: [
                 .external(name: "Then"),
+                .external(name: "Mixpanel"),
             ],
             infoPlist: .default,
             entitlements: nil,
