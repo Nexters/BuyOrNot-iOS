@@ -14,7 +14,7 @@ public final class MixpanelAnalyticsTracker: AnalyticsTracking {
         observeUserIdChanges()
     }
 
-    public func track(name: String, properties: [String: Any]) {
+    public func track(name: String, properties: AnalyticsProperties) {
         instance.track(event: name, properties: properties)
     }
 
