@@ -13,17 +13,20 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
     @State private var isFullScreenViewVisible = false
     private let isEnableDismiss: Bool
     private let handleBottomSpacing: CGFloat
+    private let heightRatio: CGFloat?
     private let sheetChild: (@escaping VoidCallBack) -> SheetView
     
     public init(
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool,
         handleBottomSpacing: CGFloat = 26,
+        heightRatio: CGFloat? = nil,
         @ViewBuilder child: @escaping (@escaping VoidCallBack) -> SheetView
     ) {
         self._isPresented = isPresented
         self.isEnableDismiss = isEnableDismiss
         self.handleBottomSpacing = handleBottomSpacing
+        self.heightRatio = heightRatio
         self.sheetChild = child
     }
     
@@ -33,6 +36,10 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
         dampingFraction: 1
     )
     private let transitionDuration: TimeInterval = 0.3
+    private var resolvedSheetHeight: CGFloat? {
+        guard let heightRatio else { return nil }
+        return UIScreen.main.bounds.height * max(0, min(heightRatio, 1))
+    }
     
     public func body(content: Content) -> some View {
         content
@@ -97,6 +104,7 @@ public struct BNBottomSheetModifier<SheetView: View>: ViewModifier {
         )
         .padding(.horizontal, 14)
         .padding(.bottom, 20)
+        .frame(maxHeight: resolvedSheetHeight, alignment: .top)
         .animation(.linear(duration: 0.2), value: dragOffset)
     }
     
@@ -142,6 +150,7 @@ public extension View {
         isPresented: Binding<Bool>,
         isEnableDismiss: Bool = true,
         handleBottomSpacing: CGFloat = 26,
+        heightRatio: CGFloat? = nil,
         @ViewBuilder child: @escaping (@escaping VoidCallBack) -> SheetContent
     ) -> some View {
         modifier(
@@ -149,6 +158,7 @@ public extension View {
                 isPresented: isPresented,
                 isEnableDismiss: isEnableDismiss,
                 handleBottomSpacing: handleBottomSpacing,
+                heightRatio: heightRatio,
                 child: child
             )
         )

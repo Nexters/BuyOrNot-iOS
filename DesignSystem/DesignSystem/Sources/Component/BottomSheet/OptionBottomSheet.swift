@@ -41,6 +41,7 @@ public struct OptionBottomSheetModifier<Item: OptionBottomSheetDisplayable>: Vie
                 isPresented: $isPresented,
                 isEnableDismiss: isEnableDismiss,
                 handleBottomSpacing: 16,
+                heightRatio: 0.5,
                 child: { dismiss in
                     optionBottomSheetContent(dismiss: dismiss)
                 }
@@ -103,7 +104,6 @@ public struct OptionBottomSheetModifier<Item: OptionBottomSheetDisplayable>: Vie
                     .frame(height: 70)
                 }
             }
-            .frame(height: 238)
         }
         .padding(.horizontal, 24)
     }
