@@ -56,10 +56,14 @@ public final class CreateVoteViewModel: ObservableObject {
     private let uploadsRepository: UploadsRepository
     private let feedRepository: FeedRepository
     private let pendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository
+    private let userRepository: UserRepository
+    private let analytics: AnalyticsTracking
     private var anyCancellable = Set<AnyCancellable>()
     private var isPendingAutoSaveEnabled = true
     private var pendingVoteCreateInfoToRestore: PendingVoteCreateInfo?
     private var currentPhotoPermissionType: PhotoPermissionType = .album
+    private var lastTouchedField: String?
+    private var didCompleteVoteCreate = false
     
     var contentsLimitCount: Int {
         _contentsLimitCount
@@ -78,7 +82,7 @@ public final class CreateVoteViewModel: ObservableObject {
     }
 
     var isWritingInProgress: Bool {
-        category != nil || linkURL.isEmpty == false || price.isEmpty == false || title.isEmpty == false || contents.isEmpty == false
+        selectedPhotos.isEmpty == false || category != nil || linkURL.isEmpty == false || price.isEmpty == false || title.isEmpty == false || contents.isEmpty == false
     }
     
     private let _accessLevel: PHAccessLevel = .readWrite
@@ -90,12 +94,23 @@ public final class CreateVoteViewModel: ObservableObject {
     public init(
         uploadsRepository: UploadsRepository,
         feedRepository: FeedRepository,
-        pendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository
+        pendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository,
+        userRepository: UserRepository,
+        analytics: AnalyticsTracking
     ) {
         self.uploadsRepository = uploadsRepository
         self.feedRepository = feedRepository
         self.pendingVoteCreateInfoRepository = pendingVoteCreateInfoRepository
+        self.userRepository = userRepository
+        self.analytics = analytics
         bindPendingVoteCreateInfoAutoSave()
+        analytics.track(
+            name: "vote_create_started",
+            properties: [
+                "entry_source": "home",
+                "is_logged_in": userRepository.getCachedUser() != nil,
+            ]
+        )
     }
     
     func didChangeCategory(_ category: FeedCategory) {
@@ -103,6 +118,7 @@ public final class CreateVoteViewModel: ObservableObject {
             validatePost()
         }
         self.category = category
+        lastTouchedField = "category"
     }
     
     func didChangePrice(previous: String, text: String) {
@@ -122,12 +138,14 @@ public final class CreateVoteViewModel: ObservableObject {
             return
         }
         self.price = price.toCurrency
+        lastTouchedField = "price"
     }
     
     func didChangeContents(text: String) {
         if text.count > _contentsLimitCount {
             self.contents = String(text.prefix(_contentsLimitCount))
         }
+        lastTouchedField = "content"
     }
 
     func didChangeTitle(text: String) {
@@ -137,10 +155,12 @@ public final class CreateVoteViewModel: ObservableObject {
         if text.count > _titleLimitCount {
             self.title = String(text.prefix(_titleLimitCount))
         }
+        lastTouchedField = "title"
     }
 
     func didChangeLinkURL() {
         validatePost()
+        lastTouchedField = "link"
     }
 
     func didTapAddPhotoButton() {
@@ -276,6 +296,7 @@ public final class CreateVoteViewModel: ObservableObject {
             return
         }
         selectedPhotos.append(contentsOf: newPhotos)
+        lastTouchedField = "images"
     }
 
     func didPickCameraPhoto(image: Image, data: Data) {
@@ -294,6 +315,7 @@ public final class CreateVoteViewModel: ObservableObject {
             return
         }
         selectedPhotos.append(SelectedPhoto(image: image, data: data))
+        lastTouchedField = "images"
     }
     
     func didTapDeleteImage(at index: Int) {
@@ -472,13 +494,55 @@ public final class CreateVoteViewModel: ObservableObject {
                     )
                 }
             )
-            _ = try await feedRepository.postVoteFeed(info: info)
+            let feedId = try await feedRepository.postVoteFeed(info: info)
             NotificationCenter.default.post(name: .voteFeedDidCreate, object: nil)
+            didCompleteVoteCreate = true
+            analytics.track(
+                name: "vote_create_completed",
+                properties: [
+                    "item_id": feedId,
+                    "vote_title": title,
+                    "option_count": selectedPhotos.count,
+                ]
+            )
             return true
         } catch {
             print("[CreateVoteViewModel] postVote error: \(error)")
             return false
         }
+    }
+
+    func onDisappear() {
+        trackAbandonedIfNeeded()
+    }
+
+    private func trackAbandonedIfNeeded() {
+        guard didCompleteVoteCreate == false else { return }
+        let filledFields = analyticsFilledFields()
+        guard filledFields.isEmpty == false else { return }
+
+        var properties: AnalyticsProperties = [
+            "filled_fields": filledFields,
+        ]
+        if let lastTouchedField {
+            properties["last_step"] = lastTouchedField
+        }
+
+        analytics.track(
+            name: "vote_create_abandoned",
+            properties: properties
+        )
+    }
+
+    private func analyticsFilledFields() -> [String] {
+        var fields: [String] = []
+        if selectedPhotos.isEmpty == false { fields.append("images") }
+        if category != nil { fields.append("category") }
+        if price.isEmpty == false { fields.append("price") }
+        if linkURL.isEmpty == false { fields.append("link") }
+        if title.isEmpty == false { fields.append("title") }
+        if contents.isEmpty == false { fields.append("content") }
+        return fields
     }
 
     private static func detectContentType(_ data: Data) -> String? {

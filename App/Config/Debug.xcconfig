@@ -1,3 +1,4 @@
 #include "secret.xcconfig"
 
 APP_DISPLAY_NAME = 살까말까
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) DEBUG

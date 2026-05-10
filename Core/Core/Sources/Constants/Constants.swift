@@ -13,6 +13,7 @@ public struct Constants {
         case privacyPolicyURL = "PRIVACY_POLICY_URL"
         case userFeedbackURL = "USER_FEEDBACK_URL"
         case appStoreURL = "APP_STORE_URL"
+        case mixpanelToken = "MIXPANEL_TOKEN"
     }
     
     public static func getValue(with key: ConstantsKey) -> String {

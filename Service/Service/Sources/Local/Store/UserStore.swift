@@ -6,6 +6,8 @@
 //
 
 import Domain
+import Core
+import Foundation
 
 final class UserStore: EntityStore {
     let client: UserDefaultsClientProtocol
@@ -24,6 +26,7 @@ final class UserStore: EntityStore {
             socialAccount: user.socialAccount?.rawValue ?? ""
         )
         client.set(entity, for: key)
+        NotificationCenter.default.post(name: .analyticsUserIdDidChange, object: String(user.id))
     }
     
     func getUser() -> User? {
@@ -33,5 +36,6 @@ final class UserStore: EntityStore {
     
     func removeUser() {
         client.remove(for: key)
+        NotificationCenter.default.post(name: .analyticsUserIdDidChange, object: nil)
     }
 }

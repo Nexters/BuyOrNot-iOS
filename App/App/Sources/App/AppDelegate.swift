@@ -7,6 +7,7 @@
 
 import UIKit
 import DesignSystem
+import Core
 import UserNotifications
 import FirebaseCore
 import FirebaseMessaging
@@ -22,6 +23,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         BNFont.loadFonts()
         
         setupRemoteConfig()
+        setupAnalytics()
         
         return true
     }
@@ -41,5 +43,26 @@ extension AppDelegate {
         let settings = RemoteConfigSettings()
         settings.minimumFetchInterval = 3600
         remoteConfig.configSettings = settings
+    }
+
+    private func setupAnalytics() {
+#if DEBUG
+        AnalyticsCenter.tracker = DebugAnalyticsTracker()
+#else
+        let token = Constants.getValue(with: .mixpanelToken)
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown"
+        AnalyticsCenter.tracker = MixpanelAnalyticsTracker(token: token, appVersion: appVersion)
+#endif
+        AnalyticsCenter.tracker.setUserId(cachedUserIdString())
+    }
+
+    private func cachedUserIdString() -> String? {
+        let userDefaults = UserDefaults(suiteName: "com.buyornot.app") ?? .standard
+        guard let data = userDefaults.data(forKey: "USER"),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let id = json["id"] as? Int else {
+            return nil
+        }
+        return String(id)
     }
 }

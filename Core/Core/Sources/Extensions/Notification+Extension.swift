@@ -9,4 +9,5 @@ import Foundation
 
 public extension Notification.Name {
     static let authSessionDidExpire = Notification.Name("authSessionDidExpire")
+    static let analyticsUserIdDidChange = Notification.Name("analyticsUserIdDidChange")
 }
