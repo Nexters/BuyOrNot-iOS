@@ -10,6 +10,7 @@ import Auth
 import Splash
 import Domain
 import Vote
+import Core
 
 extension DIContainer {
     func registerViewModels(_ container: Container) {
@@ -80,10 +81,12 @@ extension DIContainer {
             let feedRepository: FeedRepository = resolver.resolve()
             let userRepository: UserRepository = resolver.resolve()
             let reportFeedRepository: ReportFeedRepository = resolver.resolve()
+            let analytics: AnalyticsTracking = resolver.resolve()
             return HomeViewModel(
                 feedRepository: feedRepository,
                 userRepository: userRepository,
                 reportFeedRepository: reportFeedRepository,
+                analytics: analytics,
                 argument: argument
             )
         }
@@ -92,10 +95,14 @@ extension DIContainer {
             let uploadsRepository: UploadsRepository = resolver.resolve()
             let feedRepository: FeedRepository = resolver.resolve()
             let pendingVoteCreateInfoRepository: PendingVoteCreateInfoRepository = resolver.resolve()
+            let userRepository: UserRepository = resolver.resolve()
+            let analytics: AnalyticsTracking = resolver.resolve()
             return CreateVoteViewModel(
                 uploadsRepository: uploadsRepository,
                 feedRepository: feedRepository,
-                pendingVoteCreateInfoRepository: pendingVoteCreateInfoRepository
+                pendingVoteCreateInfoRepository: pendingVoteCreateInfoRepository,
+                userRepository: userRepository,
+                analytics: analytics
             )
         }
 

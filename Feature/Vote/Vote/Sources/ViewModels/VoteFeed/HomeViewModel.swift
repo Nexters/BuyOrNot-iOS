@@ -8,11 +8,13 @@
 import SwiftUI
 import Domain
 import DesignSystem
+import Core
 
 public final class HomeViewModel: ObservableObject {
     private let feedRepository: FeedRepository
     private let userRepository: UserRepository
     private let reportFeedRepository: ReportFeedRepository
+    private let analytics: AnalyticsTracking
     private let navigator: VoteNavigator
     private let currentUserId: Int?
     private let pageSize = 10
@@ -36,15 +38,34 @@ public final class HomeViewModel: ObservableObject {
         feedRepository: FeedRepository,
         userRepository: UserRepository,
         reportFeedRepository: ReportFeedRepository,
+        analytics: AnalyticsTracking,
         argument: HomeViewModel.Argument
     ) {
         self.feedRepository = feedRepository
         self.userRepository = userRepository
         self.reportFeedRepository = reportFeedRepository
+        self.analytics = analytics
         self.navigator = argument.navigator
         self.currentUserId = userRepository.getCachedUser()?.id
         self.reportedFeedIds = reportFeedRepository.getReportFeed()?.ids ?? []
         self.removedFeedIds = reportedFeedIds
+    }
+
+    func trackFeedViewed(firstVisibleItemIndex: Int) {
+        analytics.track(
+            name: "feed_viewed",
+            properties: ["first_visible_item_index": firstVisibleItemIndex]
+        )
+    }
+
+    func trackFeedExited(timeSpentSeconds: Float, lastVisibleItemIndex: Int) {
+        analytics.track(
+            name: "feed_exited",
+            properties: [
+                "time_spent_seconds": timeSpentSeconds,
+                "last_visible_item_index": lastVisibleItemIndex,
+            ]
+        )
     }
 
     func didTapNotification() {
@@ -194,9 +215,20 @@ public final class HomeViewModel: ObservableObject {
     func vote(feedId: String, optionId: Int) async {
         guard let id = Int(feedId),
               let choice = voteChoice(for: optionId) else { return }
+        guard let targetFeed = feeds.first(where: { $0.id == feedId }) ?? myFeeds.first(where: { $0.id == feedId }) else {
+            return
+        }
         do {
             let result = try await feedRepository.voteFeed(feedId: id, choice: choice)
             applyVoteResult(result, selectedOptionId: optionId)
+            analytics.track(
+                name: "vote_submitted",
+                properties: [
+                    "feed_id": id,
+                    "vote_choice": optionId == 0 ? "YES" : "NO",
+                    "feed_category": feedCategoryName(from: targetFeed.category),
+                ]
+            )
         } catch {
             print("[HomeViewModel] vote error: \(error)")
         }
@@ -290,6 +322,10 @@ public final class HomeViewModel: ObservableObject {
 
     private func categoryParam() -> String? {
         selectedCategories.isEmpty ? nil : selectedCategories.map(\.rawValue).joined(separator: ",")
+    }
+
+    private func feedCategoryName(from displayName: String) -> String {
+        FeedCategory.allCases.first(where: { $0.displayName == displayName })?.rawValue ?? displayName
     }
 
     private func voteChoice(for optionId: Int) -> VoteChoice? {

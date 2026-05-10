@@ -8,6 +8,7 @@
 import SwiftUI
 import Domain
 import DesignSystem
+import Core
 
 public struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
@@ -17,6 +18,9 @@ public struct HomeView: View {
     @State private var showNavigationBar: Bool = true
     @State private var showCategoryFilter: Bool = true
     @State private var showFilterSheet = false
+    @State private var enterTime = Date()
+    @State private var visibleIndices: Set<Int> = []
+    @State private var currentTopVisibleIndex: Int = 0
 
     public init(viewModel: HomeViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -122,6 +126,19 @@ public struct HomeView: View {
         .task {
             await viewModel.fetchFeeds()
         }
+        .onAppear {
+            enterTime = Date()
+            visibleIndices.removeAll()
+            currentTopVisibleIndex = 0
+            viewModel.trackFeedViewed(firstVisibleItemIndex: currentTopVisibleIndex)
+        }
+        .onDisappear {
+            let elapsed = Float(Date().timeIntervalSince(enterTime))
+            viewModel.trackFeedExited(
+                timeSpentSeconds: elapsed,
+                lastVisibleItemIndex: currentTopVisibleIndex
+            )
+        }
         .onReceive(NotificationCenter.default.publisher(for: .voteFeedDidCreate)) { _ in
             Task { await viewModel.fetchFeeds() }
         }
@@ -189,7 +206,7 @@ public struct HomeView: View {
                 }
 
                 LazyVStack(spacing: 0) {
-                    ForEach(viewModel.feeds, id: \.id) { feed in
+                    ForEach(Array(viewModel.feeds.enumerated()), id: \.element.id) { index, feed in
                         VoteFeed(
                             data: feed,
                             showLinkTooltip: feed.id == voteFeedTooltipId,
@@ -201,7 +218,13 @@ public struct HomeView: View {
                             }
                         )
                         .onAppear {
+                            visibleIndices.insert(index)
+                            currentTopVisibleIndex = visibleIndices.min() ?? 0
                             Task { await viewModel.fetchMoreIfNeeded(currentFeedId: feed.id) }
+                        }
+                        .onDisappear {
+                            visibleIndices.remove(index)
+                            currentTopVisibleIndex = visibleIndices.min() ?? currentTopVisibleIndex
                         }
                     }
                 }
@@ -229,7 +252,7 @@ public struct HomeView: View {
 
         case .success:
             LazyVStack(spacing: 0) {
-                ForEach(viewModel.myFeeds, id: \.id) { feed in
+                ForEach(Array(viewModel.myFeeds.enumerated()), id: \.element.id) { index, feed in
                     VoteFeed(
                         data: feed,
                         showLinkTooltip: feed.id == myFeedTooltipId,
@@ -240,6 +263,14 @@ public struct HomeView: View {
                             Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
                         }
                     )
+                    .onAppear {
+                        visibleIndices.insert(index)
+                        currentTopVisibleIndex = visibleIndices.min() ?? 0
+                    }
+                    .onDisappear {
+                        visibleIndices.remove(index)
+                        currentTopVisibleIndex = visibleIndices.min() ?? currentTopVisibleIndex
+                    }
                 }
             }
 
@@ -574,6 +605,7 @@ private struct MockVoteNavigator: VoteNavigator {
             feedRepository: PreviewFeedRepository(),
             userRepository: PreviewUserRepository(),
             reportFeedRepository: PreviewReportFeedRepository(),
+            analytics: DebugAnalyticsTracker(),
             argument: .init(
                 navigator: MockVoteNavigator()
             )
