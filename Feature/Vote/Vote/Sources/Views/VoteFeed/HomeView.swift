@@ -89,6 +89,9 @@ public struct HomeView: View {
                 .simultaneousGesture(
                     DragGesture()
                         .onChanged { value in
+                            let verticalScrollSensitivity: CGFloat = 50
+                            let verticalScrollValue = abs(value.translation.height)
+                            guard abs(verticalScrollValue) >= verticalScrollSensitivity else { return }
                             let isScrollingDown = value.translation.height < 0
                             withAnimation(.easeInOut(duration: 0.25)) {
                                 showNavigationBar = !isScrollingDown
