@@ -9,9 +9,16 @@ import SwiftUI
 import DesignSystem
 
 public struct FeedDetailView: View {
+    private struct ImageViewerDestination: Hashable, Identifiable {
+        let imageURLs: [String]
+        let initialIndex: Int
+        var id: String { "\(imageURLs.joined(separator: "|"))-\(initialIndex)" }
+    }
+
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: FeedDetailViewModel
     let feedId: Int
+    @State private var imageViewerDestination: ImageViewerDestination?
 
     public init(viewModel: FeedDetailViewModel, feedId: Int) {
         self.viewModel = viewModel
@@ -61,6 +68,12 @@ public struct FeedDetailView: View {
                             },
                             onVote: { optionId in
                                 Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
+                            },
+                            onOpenImageViewer: { imageURLs, initialIndex in
+                                imageViewerDestination = ImageViewerDestination(
+                                    imageURLs: imageURLs,
+                                    initialIndex: initialIndex
+                                )
                             }
                         )
                         .padding(.horizontal, 20)
@@ -79,6 +92,12 @@ public struct FeedDetailView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .navigationBarHidden(true)
+        .navigationDestination(item: $imageViewerDestination) { destination in
+            FullScreenImageView(
+                imageURLs: destination.imageURLs,
+                initialIndex: destination.initialIndex
+            )
+        }
         .task {
             await viewModel.fetchFeed(feedId: feedId)
         }
