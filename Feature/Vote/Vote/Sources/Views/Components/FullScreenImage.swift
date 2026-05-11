@@ -38,7 +38,8 @@ public struct FullScreenImageView: View {
                             withAnimation(.easeInOut(duration: 0.2)) {
                                 showsChrome.toggle()
                             }
-                        }
+                        },
+                        onDismiss: { dismiss() }
                     )
                     .tag(index)
                 }
@@ -84,9 +85,14 @@ public struct FullScreenImageView: View {
 private struct ZoomableImageCell: View {
     let imageURL: String
     let onSingleTap: () -> Void
+    let onDismiss: () -> Void
 
     var body: some View {
-        ZoomableRemoteImageView(imageURL: imageURL, onSingleTap: onSingleTap)
+        ZoomableRemoteImageView(
+            imageURL: imageURL,
+            onSingleTap: onSingleTap,
+            onDismiss: onDismiss
+        )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
     }
@@ -97,9 +103,10 @@ private struct ZoomableImageCell: View {
 private struct ZoomableRemoteImageView: UIViewRepresentable {
     let imageURL: String
     let onSingleTap: () -> Void
+    let onDismiss: () -> Void
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onSingleTap: onSingleTap)
+        Coordinator(onSingleTap: onSingleTap, onDismiss: onDismiss)
     }
 
     func makeUIView(context: Context) -> UIScrollView {
@@ -135,6 +142,12 @@ private struct ZoomableRemoteImageView: UIViewRepresentable {
         imageView.addGestureRecognizer(singleTap)
         imageView.addGestureRecognizer(doubleTap)
 
+        let dismissPan = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleDismissPan(_:)))
+        dismissPan.delegate = context.coordinator
+        dismissPan.cancelsTouchesInView = false
+        scrollView.addGestureRecognizer(dismissPan)
+        context.coordinator.dismissPanGesture = dismissPan
+
         context.coordinator.loadImage(from: imageURL)
 
         return scrollView
@@ -151,12 +164,16 @@ private struct ZoomableRemoteImageView: UIViewRepresentable {
     final class Coordinator: NSObject, UIScrollViewDelegate {
         let imageView = UIImageView()
         var scrollView: UIScrollView?
+        weak var dismissPanGesture: UIPanGestureRecognizer?
         var currentURL: String?
         private var lastBoundsSize: CGSize = .zero
         private let onSingleTap: () -> Void
+        private let onDismiss: () -> Void
+        private var isDismissingByPan = false
 
-        init(onSingleTap: @escaping () -> Void) {
+        init(onSingleTap: @escaping () -> Void, onDismiss: @escaping () -> Void) {
             self.onSingleTap = onSingleTap
+            self.onDismiss = onDismiss
         }
 
         func loadImage(from urlString: String) {
@@ -164,20 +181,25 @@ private struct ZoomableRemoteImageView: UIViewRepresentable {
             imageView.image = nil
 
             guard let url = URL(string: urlString) else { return }
-            KingfisherManager.shared.retrieveImage(with: url) { [weak self] result in
+            KingfisherManager.shared.retrieveImage(
+                with: url,
+                options: [.callbackQueue(.mainAsync)]
+            ) { [weak self] result in
                 guard let self else { return }
-                switch result {
-                case .success(let value):
-                    self.imageView.image = value.image
-                    self.resetZoomState()
-                    self.updateImageFrame()
-                    self.updateContentInsetForCentering()
-                case .failure:
-                    self.imageView.image = UIImage(systemName: "photo")
-                    self.imageView.tintColor = .gray
-                    self.resetZoomState()
-                    self.updateImageFrame()
-                    self.updateContentInsetForCentering()
+                Task { @MainActor in
+                    switch result {
+                    case .success(let value):
+                        self.imageView.image = value.image
+                        self.resetZoomState()
+                        self.updateImageFrame()
+                        self.updateContentInsetForCentering()
+                    case .failure:
+                        self.imageView.image = UIImage(systemName: "photo")
+                        self.imageView.tintColor = .gray
+                        self.resetZoomState()
+                        self.updateImageFrame()
+                        self.updateContentInsetForCentering()
+                    }
                 }
             }
         }
@@ -188,6 +210,7 @@ private struct ZoomableRemoteImageView: UIViewRepresentable {
             scrollView.contentOffset = .zero
             scrollView.isScrollEnabled = false
             scrollView.contentInset = .zero
+            imageView.transform = .identity
         }
 
         func updateImageFrame() {
@@ -263,6 +286,39 @@ private struct ZoomableRemoteImageView: UIViewRepresentable {
             scrollView.zoom(to: zoomRect, animated: true)
         }
 
+        @objc func handleDismissPan(_ recognizer: UIPanGestureRecognizer) {
+            guard let scrollView else { return }
+            guard scrollView.zoomScale <= scrollView.minimumZoomScale + 0.01 else { return }
+
+            let translation = recognizer.translation(in: scrollView)
+            let velocity = recognizer.velocity(in: scrollView)
+
+            switch recognizer.state {
+            case .began:
+                isDismissingByPan = false
+            case .changed:
+                guard abs(translation.y) > abs(translation.x) else { return }
+                isDismissingByPan = true
+                let progress = min(abs(translation.y) / 420.0, 1.0)
+                let scale = 1.0 - (progress * 0.08)
+                imageView.transform = CGAffineTransform(translationX: 0, y: translation.y)
+                    .scaledBy(x: scale, y: scale)
+            case .ended, .cancelled, .failed:
+                guard isDismissingByPan else { return }
+                let shouldDismiss = abs(translation.y) > 140 || abs(velocity.y) > 1200
+                if shouldDismiss {
+                    onDismiss()
+                } else {
+                    UIView.animate(withDuration: 0.22, delay: 0, options: [.curveEaseOut]) {
+                        self.imageView.transform = .identity
+                    }
+                }
+                isDismissingByPan = false
+            default:
+                break
+            }
+        }
+
         func viewForZooming(in scrollView: UIScrollView) -> UIView? {
             imageView
         }
@@ -291,5 +347,11 @@ private struct ZoomableRemoteImageView: UIViewRepresentable {
                 height: size.height
             )
         }
+    }
+}
+
+extension ZoomableRemoteImageView.Coordinator: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        true
     }
 }

@@ -11,6 +11,12 @@ import DesignSystem
 import Core
 
 public struct HomeView: View {
+    private struct ImageViewerDestination: Hashable, Identifiable {
+        let imageURLs: [String]
+        let initialIndex: Int
+        var id: String { "\(imageURLs.joined(separator: "|"))-\(initialIndex)" }
+    }
+
     @StateObject var viewModel: HomeViewModel
 
     @State private var selectedTab: FeedTab = .voteFeed
@@ -21,6 +27,7 @@ public struct HomeView: View {
     @State private var enterTime = Date()
     @State private var visibleIndices: Set<Int> = []
     @State private var currentTopVisibleIndex: Int = 0
+    @State private var imageViewerDestination: ImageViewerDestination?
 
     public init(viewModel: HomeViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -166,6 +173,12 @@ public struct HomeView: View {
                 Task { await viewModel.fetchMyFeeds() }
             }
         }
+        .navigationDestination(item: $imageViewerDestination) { destination in
+            FullScreenImageView(
+                imageURLs: destination.imageURLs,
+                initialIndex: destination.initialIndex
+            )
+        }
     }
 
     private var voteFeedTooltipId: String? {
@@ -218,6 +231,12 @@ public struct HomeView: View {
                             onBlock: { Task { await viewModel.blockUser(userId: feed.userId, userName: feed.userName) } },
                             onVote: { optionId in
                                 Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
+                            },
+                            onOpenImageViewer: { imageURLs, initialIndex in
+                                imageViewerDestination = ImageViewerDestination(
+                                    imageURLs: imageURLs,
+                                    initialIndex: initialIndex
+                                )
                             }
                         )
                         .onAppear {
@@ -264,6 +283,12 @@ public struct HomeView: View {
                         onBlock: { Task { await viewModel.blockUser(userId: feed.userId, userName: feed.userName) } },
                         onVote: { optionId in
                             Task { await viewModel.vote(feedId: feed.id, optionId: optionId) }
+                        },
+                        onOpenImageViewer: { imageURLs, initialIndex in
+                            imageViewerDestination = ImageViewerDestination(
+                                imageURLs: imageURLs,
+                                initialIndex: initialIndex
+                            )
                         }
                     )
                     .onAppear {

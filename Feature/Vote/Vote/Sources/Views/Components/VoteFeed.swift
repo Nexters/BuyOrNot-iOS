@@ -78,12 +78,11 @@ public struct VoteFeed: View {
     let onReport: () -> Void
     let onBlock: () -> Void
     let onVote: (Int) -> Void
+    let onOpenImageViewer: ([String], Int) -> Void
 
     @State private var selectedVoteId: Int?
     @State private var showMenu: Bool = false
     @State private var showBlockAlert: Bool = false
-    @State private var showImageDetail: Bool = false
-    @State private var detailStartIndex: Int = 0
 
     public init(
         data: VoteFeedData,
@@ -91,7 +90,8 @@ public struct VoteFeed: View {
         onDelete: @escaping () -> Void = {},
         onReport: @escaping () -> Void = {},
         onBlock: @escaping () -> Void = {},
-        onVote: @escaping (Int) -> Void = { _ in }
+        onVote: @escaping (Int) -> Void = { _ in },
+        onOpenImageViewer: @escaping ([String], Int) -> Void = { _, _ in }
     ) {
         self.data = data
         self.showLinkTooltip = showLinkTooltip
@@ -100,6 +100,7 @@ public struct VoteFeed: View {
         self.onReport = onReport
         self.onBlock = onBlock
         self.onVote = onVote
+        self.onOpenImageViewer = onOpenImageViewer
     }
 
     public var body: some View {
@@ -132,8 +133,7 @@ public struct VoteFeed: View {
                         onVote(optionId)
                     },
                     onImageTap: { index in
-                        detailStartIndex = index
-                        showImageDetail = true
+                        onOpenImageViewer(Array(data.productImageURLs.prefix(3)), index)
                     }
                 )
             }
@@ -179,12 +179,6 @@ public struct VoteFeed: View {
                 ]
             )
         )
-        .navigationDestination(isPresented: $showImageDetail) {
-            FullScreenImageView(
-                imageURLs: Array(data.productImageURLs.prefix(3)),
-                initialIndex: detailStartIndex
-            )
-        }
     }
 }
 
