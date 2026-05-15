@@ -16,7 +16,7 @@ struct CategoryEmptyView: View {
             BNImage(.category_empty_image)
                 .resizable()
                 .scaledToFit()
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: 240)
 
             BNText("첫번째 투표를 올려보세요!")
                 .style(style: .t1b, color: ColorPalette.gray800)

@@ -202,7 +202,7 @@ public struct HomeView: View {
                 CategoryEmptyView {
                     viewModel.didTapCreateVote()
                 }
-                .padding(.top, 60)
+                .padding(.top, 90)
             } else {
                 if showBanner {
                     VStack {
@@ -308,7 +308,7 @@ public struct HomeView: View {
             CategoryEmptyView {
                 viewModel.didTapCreateVote()
             }
-            .padding(.top, 60)
+            .padding(.top, 90)
 
         case .error:
             FeedErrorView {
