@@ -512,7 +512,7 @@ public final class CreateVoteViewModel: ObservableObject {
         }
     }
 
-    func onDisappear() {
+    func trackAbandonedOnNavigateBack() {
         trackAbandonedIfNeeded()
     }
 

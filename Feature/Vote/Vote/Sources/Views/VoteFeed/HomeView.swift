@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 import Domain
 import DesignSystem
 import Core
@@ -27,6 +28,8 @@ public struct HomeView: View {
     @State private var enterTime = Date()
     @State private var visibleIndices: Set<Int> = []
     @State private var currentTopVisibleIndex: Int = 0
+    @State private var currentLastVisibleIndex: Int = 0
+    @State private var isFeedSessionActive = false
     @State private var imageViewerDestination: ImageViewerDestination?
 
     public init(viewModel: HomeViewModel) {
@@ -137,17 +140,16 @@ public struct HomeView: View {
             await viewModel.fetchFeeds()
         }
         .onAppear {
-            enterTime = Date()
-            visibleIndices.removeAll()
-            currentTopVisibleIndex = 0
-            viewModel.trackFeedViewed(firstVisibleItemIndex: currentTopVisibleIndex)
+            startFeedSessionIfNeeded()
         }
         .onDisappear {
-            let elapsed = Float(Date().timeIntervalSince(enterTime))
-            viewModel.trackFeedExited(
-                timeSpentSeconds: elapsed,
-                lastVisibleItemIndex: currentTopVisibleIndex
-            )
+            stopFeedSessionIfNeeded()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            startFeedSessionIfNeeded()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+            stopFeedSessionIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .voteFeedDidCreate)) { _ in
             Task { await viewModel.fetchFeeds() }
@@ -241,12 +243,12 @@ public struct HomeView: View {
                         )
                         .onAppear {
                             visibleIndices.insert(index)
-                            currentTopVisibleIndex = visibleIndices.min() ?? 0
+                            updateVisibleIndices()
                             Task { await viewModel.fetchMoreIfNeeded(currentFeedId: feed.id) }
                         }
                         .onDisappear {
                             visibleIndices.remove(index)
-                            currentTopVisibleIndex = visibleIndices.min() ?? currentTopVisibleIndex
+                            updateVisibleIndices()
                         }
                     }
                 }
@@ -293,11 +295,11 @@ public struct HomeView: View {
                     )
                     .onAppear {
                         visibleIndices.insert(index)
-                        currentTopVisibleIndex = visibleIndices.min() ?? 0
+                        updateVisibleIndices()
                     }
                     .onDisappear {
                         visibleIndices.remove(index)
-                        currentTopVisibleIndex = visibleIndices.min() ?? currentTopVisibleIndex
+                        updateVisibleIndices()
                     }
                 }
             }
@@ -314,6 +316,29 @@ public struct HomeView: View {
             }
             .padding(.top, 140)
         }
+    }
+
+    private func updateVisibleIndices() {
+        guard visibleIndices.isEmpty == false else { return }
+        currentTopVisibleIndex = visibleIndices.min() ?? currentTopVisibleIndex
+        currentLastVisibleIndex = visibleIndices.max() ?? currentLastVisibleIndex
+    }
+
+    private func startFeedSessionIfNeeded() {
+        guard isFeedSessionActive == false else { return }
+        isFeedSessionActive = true
+        enterTime = Date()
+        viewModel.trackFeedViewed(firstVisibleItemIndex: currentTopVisibleIndex)
+    }
+
+    private func stopFeedSessionIfNeeded() {
+        guard isFeedSessionActive else { return }
+        isFeedSessionActive = false
+        let elapsed = Float(Date().timeIntervalSince(enterTime))
+        viewModel.trackFeedExited(
+            timeSpentSeconds: elapsed,
+            lastVisibleItemIndex: currentLastVisibleIndex
+        )
     }
 }
 

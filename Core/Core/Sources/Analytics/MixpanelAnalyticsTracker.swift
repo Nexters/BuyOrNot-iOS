@@ -10,6 +10,7 @@ public final class MixpanelAnalyticsTracker: AnalyticsTracking {
         instance.registerSuperProperties([
             "platform": "ios",
             "app_version": appVersion,
+            "user_id": NSNull(),
         ])
         observeUserIdChanges()
     }
@@ -20,9 +21,10 @@ public final class MixpanelAnalyticsTracker: AnalyticsTracking {
 
     public func setUserId(_ userId: String?) {
         if let userId {
+            instance.identify(distinctId: userId)
             instance.registerSuperProperties(["user_id": userId])
         } else {
-            instance.unregisterSuperProperty("user_id")
+            instance.registerSuperProperties(["user_id": NSNull()])
         }
     }
 

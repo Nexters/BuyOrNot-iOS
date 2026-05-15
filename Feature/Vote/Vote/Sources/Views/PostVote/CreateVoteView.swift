@@ -92,9 +92,6 @@ public struct CreateVoteView: View {
             let shouldShowRestoreAlert = viewModel.checkPendingVoteCreateInfoOnAppear()
             self.focusState = shouldShowRestoreAlert ? nil : .price
         }
-        .onDisappear {
-            viewModel.onDisappear()
-        }
         .onChange(of: viewModel.showRestorePendingAlert) { _, isPresented in
             if isPresented {
                 focusState = nil
@@ -168,6 +165,7 @@ public struct CreateVoteView: View {
                         text: "나가기",
                         type: .secondaryLarge
                     ) {
+                        viewModel.trackAbandonedOnNavigateBack()
                         viewModel.removePendingVoteCreateInfo()
                         dismiss()
                     },
