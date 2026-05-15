@@ -56,9 +56,10 @@ public struct CreateVoteView: View {
                         )
                     }
                     HStack(spacing: 6) {
-                        if viewModel.isKeyboardVisible {
-                            subAddPhoto
-                        }
+                        // 260515 임시 비활성
+//                        if viewModel.isKeyboardVisible {
+//                            subAddPhoto
+//                        }
                         Spacer()
                         if viewModel.createButtonState == .enabled && !viewModel.isKeyboardVisible {
                             VotePostTooltip()
