@@ -22,6 +22,7 @@ public struct VoteFeedData {
     public let title: String?
     public let content: String
     public let productImageURLs: [String]
+    public let firstImageSize: CGSize?
     public let price: String
     public let link: String?
     public let voteOptions: [VoteGroup.VoteOption]
@@ -41,6 +42,7 @@ public struct VoteFeedData {
         title: String? = nil,
         content: String,
         productImageURLs: [String],
+        firstImageSize: CGSize? = nil,
         price: String,
         link: String? = nil,
         voteOptions: [VoteGroup.VoteOption],
@@ -59,6 +61,7 @@ public struct VoteFeedData {
         self.title = title
         self.content = content
         self.productImageURLs = productImageURLs
+        self.firstImageSize = firstImageSize
         self.price = price
         self.link = link
         self.voteOptions = voteOptions
@@ -121,6 +124,7 @@ public struct VoteFeed: View {
                     title: data.title,
                     content: data.content,
                     productImageURLs: data.productImageURLs,
+                    firstImageSize: data.firstImageSize,
                     price: data.price,
                     link: data.link,
                     showLinkTooltip: showLinkTooltip,
@@ -242,6 +246,7 @@ private struct FeedContent: View {
     let title: String?
     let content: String
     let productImageURLs: [String]
+    let firstImageSize: CGSize?
     let price: String
     let link: String?
     let showLinkTooltip: Bool
@@ -271,6 +276,7 @@ private struct FeedContent: View {
             if !productImageURLs.isEmpty {
                 ProductImageCarousel(
                     imageURLs: productImageURLs,
+                    firstImageSize: firstImageSize,
                     price: price,
                     link: link,
                     showLinkTooltip: showLinkTooltip,
@@ -295,6 +301,7 @@ private struct FeedContent: View {
 
 private struct ProductImageCarousel: View {
     let imageURLs: [String]
+    let firstImageSize: CGSize?
     let price: String
     let link: String?
     let showLinkTooltip: Bool
@@ -305,6 +312,11 @@ private struct ProductImageCarousel: View {
     private var prefixedImages: [String] { Array(imageURLs.prefix(3)) }
     private var hasMultipleImages: Bool { prefixedImages.count > 1 }
 
+    private var isSquare: Bool {
+        guard let size = firstImageSize, size.width != 0, size.height != 0 else { return true }
+        return size.width == size.height
+    }
+
     @State private var carouselHeight: CGFloat = UIScreen.main.bounds.width - 40
     @State private var safariURL: URL?
     @State private var tooltipDismissed = false
@@ -313,31 +325,32 @@ private struct ProductImageCarousel: View {
         GeometryReader { geometry in
             let fullWidth = geometry.size.width
             let imageWidth = fullWidth - 40
+            let imageHeight = isSquare ? imageWidth : imageWidth * 4 / 5
 
             ZStack(alignment: .topLeading) {
                 if hasMultipleImages {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 10) {
                             ForEach(Array(prefixedImages.enumerated()), id: \.offset) { index, url in
-                                imageCell(url: url, index: index, size: imageWidth)
+                                imageCell(url: url, index: index, width: imageWidth, height: imageHeight)
                             }
                         }
                         .scrollTargetLayout()
                     }
                     .contentMargins(.horizontal, 20, for: .scrollContent)
                     .scrollTargetBehavior(.viewAligned)
-                    .frame(width: fullWidth, height: imageWidth)
+                    .frame(width: fullWidth, height: imageHeight)
                 } else if let url = prefixedImages.first {
                     ScrollView(.horizontal, showsIndicators: false) {
-                        imageCell(url: url, index: 0, size: imageWidth)
+                        imageCell(url: url, index: 0, width: imageWidth, height: imageHeight)
                     }
                     .contentMargins(.horizontal, 20, for: .scrollContent)
                     .scrollDisabled(true)
-                    .frame(width: fullWidth, height: imageWidth)
+                    .frame(width: fullWidth, height: imageHeight)
                 }
             }
-            .frame(width: fullWidth, height: imageWidth)
-            .onAppear { carouselHeight = imageWidth }
+            .frame(width: fullWidth, height: imageHeight)
+            .onAppear { carouselHeight = imageHeight }
         }
         .frame(maxWidth: .infinity)
         .frame(height: carouselHeight)
@@ -353,7 +366,7 @@ private struct ProductImageCarousel: View {
     }
 
     @ViewBuilder
-    private func imageCell(url: String, index: Int, size: CGFloat) -> some View {
+    private func imageCell(url: String, index: Int, width: CGFloat, height: CGFloat) -> some View {
         ZStack(alignment: .bottomLeading) {
             KFImage.url(URL(string: url))
                 .placeholder { Color(ColorPalette.gray200) }
@@ -369,7 +382,7 @@ private struct ProductImageCarousel: View {
                 }
                 .resizable()
                 .scaledToFill()
-                .frame(width: size, height: size)
+                .frame(width: width, height: height)
                 .clipped()
                 .clipShape(RoundedRectangle(cornerRadius: 14))
 
@@ -381,7 +394,7 @@ private struct ProductImageCarousel: View {
                 startPoint: UnitPoint(x: 0.5, y: 0.61),
                 endPoint: UnitPoint(x: 0.5, y: 1.12)
             )
-            .frame(width: size, height: size)
+            .frame(width: width, height: height)
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .allowsHitTesting(false)
 
@@ -393,7 +406,7 @@ private struct ProductImageCarousel: View {
                     .padding(.bottom, 16)
             }
         }
-        .frame(width: size, height: size)
+        .frame(width: width, height: height)
         .overlay {
             RoundedRectangle(cornerRadius: 14)
                 .stroke(ColorPalette.gray300, lineWidth: 1)

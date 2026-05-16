@@ -403,6 +403,7 @@ public final class HomeViewModel: ObservableObject {
             title: vote.title,
             content: vote.content,
             productImageURLs: vote.images.map(\.imageUrl),
+            firstImageSize: vote.images.first.map { CGSize(width: $0.imageWidth, height: $0.imageHeight) },
             price: formatPrice(vote.price),
             link: vote.link,
             voteOptions: voteOptions(
