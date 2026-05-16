@@ -30,7 +30,11 @@ public struct BNChip: View {
 
     public var body: some View {
         Button {
-            onTap()
+            var transaction = Transaction(animation: nil)
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                onTap()
+            }
         } label: {
             BNText(title)
                 .style(style: fontStyle, color: foregroundColor)
