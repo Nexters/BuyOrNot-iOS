@@ -202,7 +202,7 @@ public struct HomeView: View {
                 CategoryEmptyView {
                     viewModel.didTapCreateVote()
                 }
-                .padding(.top, 60)
+                .padding(.top, 90)
             } else {
                 if showBanner {
                     VStack {
@@ -308,7 +308,7 @@ public struct HomeView: View {
             CategoryEmptyView {
                 viewModel.didTapCreateVote()
             }
-            .padding(.top, 60)
+            .padding(.top, 90)
 
         case .error:
             FeedErrorView {
@@ -435,7 +435,7 @@ struct FeedCategoryFilterBar: View {
                             state: selectedCategories.isEmpty ? .selected : .unselected,
                             onTap: {
                                 selectedCategories = []
-                                withAnimation { proxy.scrollTo(allChipId, anchor: .center) }
+                                proxy.scrollTo(allChipId, anchor: .center)
                             }
                         )
                         .id(allChipId)
@@ -450,9 +450,9 @@ struct FeedCategoryFilterBar: View {
                                         selectedCategories.insert(category)
                                         if selectedCategories.count == FeedCategory.allCases.count {
                                             selectedCategories = []
-                                            withAnimation { proxy.scrollTo(allChipId, anchor: .center) }
+                                            proxy.scrollTo(allChipId, anchor: .center)
                                         } else {
-                                            withAnimation { proxy.scrollTo(category.rawValue, anchor: .center) }
+                                            proxy.scrollTo(category.rawValue, anchor: .center)
                                         }
                                     }
                                 }

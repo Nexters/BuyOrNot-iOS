@@ -364,6 +364,7 @@ public final class HomeViewModel: ObservableObject {
                 title: item.title,
                 content: item.content,
                 productImageURLs: item.productImageURLs,
+                firstImageSize: item.firstImageSize,
                 price: item.price,
                 link: item.link,
                 voteOptions: updatedOptions,
@@ -403,6 +404,7 @@ public final class HomeViewModel: ObservableObject {
             title: vote.title,
             content: vote.content,
             productImageURLs: vote.images.map(\.imageUrl),
+            firstImageSize: vote.images.first.map { CGSize(width: $0.imageWidth, height: $0.imageHeight) },
             price: formatPrice(vote.price),
             link: vote.link,
             voteOptions: voteOptions(

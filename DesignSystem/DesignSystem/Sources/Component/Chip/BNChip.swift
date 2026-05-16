@@ -30,7 +30,11 @@ public struct BNChip: View {
 
     public var body: some View {
         Button {
-            onTap()
+            var transaction = Transaction(animation: nil)
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                onTap()
+            }
         } label: {
             BNText(title)
                 .style(style: fontStyle, color: foregroundColor)
@@ -45,8 +49,9 @@ public struct BNChip: View {
                             .stroke(ColorPalette.gray300, lineWidth: 1)
                     }
                 }
+                .animation(.none, value: state)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(NoFeedbackButtonStyle())
     }
 
     // MARK: - Computed Properties
@@ -77,6 +82,12 @@ public struct BNChip: View {
         case .hover:
             return ColorPalette.gray200
         }
+    }
+}
+
+private struct NoFeedbackButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
     }
 }
 
