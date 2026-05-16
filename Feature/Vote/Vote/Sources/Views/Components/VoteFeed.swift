@@ -183,6 +183,10 @@ public struct VoteFeed: View {
                 ]
             )
         )
+        .onChange(of: data.selectedVoteId) { _, newValue in
+            guard selectedVoteId == nil, let newValue else { return }
+            selectedVoteId = newValue
+        }
     }
 }
 

@@ -22,6 +22,8 @@ public struct VoteButton: View {
     var action: (() -> Void)?
 
     @State private var animatedWidth: CGFloat = 0
+    @State private var containerWidth: CGFloat = 0
+    @State private var didInitialDisplay = false
 
     private enum Layout {
         static let height: CGFloat = 46
@@ -55,31 +57,55 @@ public struct VoteButton: View {
 
     public var body: some View {
         Button(action: { action?() }) {
-            GeometryReader { geometry in
-                let targetWidth = geometry.size.width * CGFloat(percent) / 100
+            ZStack(alignment: .leading) {
+                buttonContent(textColor: showPercent && style == .gray ? style.textColor : VoteButtonStyle.plain.textColor)
+                    .background(VoteButtonStyle.plain.backgroundColor)
 
-                ZStack(alignment: .leading) {
-                    buttonContent(textColor: showPercent && style == .gray ? style.textColor : VoteButtonStyle.plain.textColor)
-                            .background(VoteButtonStyle.plain.backgroundColor)
-
-                    if showPercent {
-                        buttonContent(textColor: style.textColor)
-                            .background(style.backgroundColor)
-                            .mask(progressMask)
-                            .onAppear {
-                                if isPeriodDone {
-                                    animatedWidth = targetWidth
-                                } else {
-                                    animateProgress(to: targetWidth)
-                                }
-                            }
-                    }
+                if showPercent {
+                    buttonContent(textColor: style.textColor)
+                        .background(style.backgroundColor)
+                        .mask(progressMask)
+                }
+            }
+            .background {
+                GeometryReader { geometry in
+                    Color.clear
+                        .onAppear { containerWidth = geometry.size.width }
+                        .onChange(of: geometry.size.width) { _, w in containerWidth = w }
                 }
             }
         }
         .frame(height: 46)
         .clipShape(RoundedRectangle(cornerRadius: Layout.cornerRadius))
         .overlay(strokeBorder)
+        .onChange(of: containerWidth) { _, newWidth in
+            guard showPercent, newWidth > 0, !didInitialDisplay else { return }
+            // 초기 로드: 이미 투표한 피드 → 애니메이션 없이 즉시 표시
+            animatedWidth = newWidth * CGFloat(percent) / 100
+            didInitialDisplay = true
+        }
+        .onChange(of: showPercent) { _, newValue in
+            guard newValue else { animatedWidth = 0; didInitialDisplay = false; return }
+            // 방금 투표: false→true 전환 → 애니메이션으로 표시
+            didInitialDisplay = true
+            let tw = containerWidth * CGFloat(percent) / 100
+            Task { @MainActor in
+                withAnimation(.easeInOut(duration: Layout.animationDuration)) {
+                    animatedWidth = tw
+                }
+            }
+        }
+        .onChange(of: percent) { _, newPercent in
+            guard showPercent, containerWidth > 0 else { return }
+            let tw = containerWidth * CGFloat(newPercent) / 100
+            if isPeriodDone {
+                animatedWidth = tw
+            } else {
+                withAnimation(.easeInOut(duration: Layout.animationDuration)) {
+                    animatedWidth = tw
+                }
+            }
+        }
     }
 
     // MARK: - Subviews
@@ -137,11 +163,5 @@ public struct VoteButton: View {
             .stroke(ColorPalette.gray300, lineWidth: 1)
     }
 
-    // MARK: - Methods
 
-    private func animateProgress(to targetWidth: CGFloat) {
-        withAnimation(.easeInOut(duration: Layout.animationDuration)) {
-            animatedWidth = targetWidth
-        }
-    }
 }

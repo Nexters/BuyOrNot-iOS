@@ -364,6 +364,7 @@ public final class HomeViewModel: ObservableObject {
                 title: item.title,
                 content: item.content,
                 productImageURLs: item.productImageURLs,
+                firstImageSize: item.firstImageSize,
                 price: item.price,
                 link: item.link,
                 voteOptions: updatedOptions,
