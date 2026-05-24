@@ -152,9 +152,14 @@ public struct VoteButton: View {
     }
 
     private var progressMask: some View {
-        HStack(spacing: 0) {
-            Rectangle().frame(width: animatedWidth)
-            Spacer(minLength: 0)
+        GeometryReader { geo in
+            HStack(spacing: 0) {
+                Rectangle()
+                    .frame(width: didInitialDisplay
+                           ? animatedWidth
+                           : geo.size.width * CGFloat(percent) / 100)
+                Spacer(minLength: 0)
+            }
         }
     }
 
