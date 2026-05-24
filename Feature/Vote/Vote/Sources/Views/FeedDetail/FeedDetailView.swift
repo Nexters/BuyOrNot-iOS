@@ -52,6 +52,7 @@ public struct FeedDetailView: View {
                     if let feed = viewModel.feed {
                         VoteFeed(
                             data: feed,
+                            showBottomDivider: false,
                             onDelete: {
                                 Task {
                                     await viewModel.deleteFeed(feedId: feed.id)
@@ -76,7 +77,6 @@ public struct FeedDetailView: View {
                                 )
                             }
                         )
-                        .padding(.horizontal, 20)
                         .frame(maxWidth: .infinity, alignment: .top)
                     }
                 }

@@ -77,6 +77,7 @@ public struct VoteFeedData {
 public struct VoteFeed: View {
     let data: VoteFeedData
     let showLinkTooltip: Bool
+    let showBottomDivider: Bool
     let onDelete: () -> Void
     let onReport: () -> Void
     let onBlock: () -> Void
@@ -90,6 +91,7 @@ public struct VoteFeed: View {
     public init(
         data: VoteFeedData,
         showLinkTooltip: Bool = false,
+        showBottomDivider: Bool = true,
         onDelete: @escaping () -> Void = {},
         onReport: @escaping () -> Void = {},
         onBlock: @escaping () -> Void = {},
@@ -98,6 +100,7 @@ public struct VoteFeed: View {
     ) {
         self.data = data
         self.showLinkTooltip = showLinkTooltip
+        self.showBottomDivider = showBottomDivider
         self._selectedVoteId = State(initialValue: data.selectedVoteId)
         self.onDelete = onDelete
         self.onReport = onReport
@@ -166,8 +169,10 @@ public struct VoteFeed: View {
                     .padding(.trailing, 20)
                 }
             }
-            BNDivider(size: .s)
-                .padding(.horizontal, 20)
+            if showBottomDivider {
+                BNDivider(size: .s)
+                    .padding(.horizontal, 20)
+            }
         }
         .bnAlert(
             isPresented: $showBlockAlert,
@@ -316,20 +321,40 @@ private struct ProductImageCarousel: View {
     private var prefixedImages: [String] { Array(imageURLs.prefix(3)) }
     private var hasMultipleImages: Bool { prefixedImages.count > 1 }
 
-    private var isSquare: Bool {
-        guard let size = firstImageSize, size.width != 0, size.height != 0 else { return true }
-        return size.width == size.height
+    private static func computeImageHeight(size: CGSize?, imageWidth: CGFloat) -> CGFloat {
+        guard let size, size.width != 0, size.height != 0 else { return imageWidth }
+        if size.width == size.height   { return imageWidth }            // 1:1
+        else if size.width > size.height { return imageWidth * 4 / 5 } // 5:4 (가로 > 세로)
+        else                           { return imageWidth * 5 / 4 }   // 4:5 (가로 < 세로)
     }
 
-    @State private var carouselHeight: CGFloat = UIScreen.main.bounds.width - 40
+    @State private var carouselHeight: CGFloat
     @State private var safariURL: URL?
     @State private var tooltipDismissed = false
+
+    init(
+        imageURLs: [String],
+        firstImageSize: CGSize?,
+        price: String,
+        link: String?,
+        showLinkTooltip: Bool,
+        onImageTap: @escaping (Int) -> Void
+    ) {
+        self.imageURLs = imageURLs
+        self.firstImageSize = firstImageSize
+        self.price = price
+        self.link = link
+        self.showLinkTooltip = showLinkTooltip
+        self.onImageTap = onImageTap
+        let imageWidth = UIScreen.main.bounds.width - 40
+        _carouselHeight = State(initialValue: Self.computeImageHeight(size: firstImageSize, imageWidth: imageWidth))
+    }
 
     var body: some View {
         GeometryReader { geometry in
             let fullWidth = geometry.size.width
             let imageWidth = fullWidth - 40
-            let imageHeight = isSquare ? imageWidth : imageWidth * 4 / 5
+            let imageHeight = Self.computeImageHeight(size: firstImageSize, imageWidth: imageWidth)
 
             ZStack(alignment: .topLeading) {
                 if hasMultipleImages {
@@ -454,7 +479,7 @@ private struct ProductImageCarousel: View {
             LinkTooltipArrow()
                 .fill(tooltipBg)
                 .frame(width: 10, height: 5)
-                .padding(.trailing, 23)
+                .padding(.trailing, 15)
 
             BNText("상품 링크를 확인해보세요!")
                 .style(style: .b5m, color: ColorPalette.gray0)
