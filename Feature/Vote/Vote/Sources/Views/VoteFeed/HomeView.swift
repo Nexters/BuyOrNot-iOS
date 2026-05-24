@@ -152,7 +152,10 @@ public struct HomeView: View {
             stopFeedSessionIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .voteFeedDidCreate)) { _ in
-            Task { await viewModel.fetchFeeds() }
+            Task {
+                await viewModel.fetchFeeds()
+                await viewModel.fetchMyFeeds()
+            }
         }
         .onChange(of: viewModel.selectedFilter) { _, _ in
             switch selectedTab {
@@ -369,9 +372,7 @@ struct FeedSegmentedControl: View {
                         isSelected: selectedTab == tab,
                         namespace: namespace,
                         onTap: {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                selectedTab = tab
-                            }
+                            selectedTab = tab
                         }
                     )
                     .fixedSize()

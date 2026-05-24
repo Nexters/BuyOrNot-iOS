@@ -77,6 +77,7 @@ public struct VoteFeedData {
 public struct VoteFeed: View {
     let data: VoteFeedData
     let showLinkTooltip: Bool
+    let showBottomDivider: Bool
     let onDelete: () -> Void
     let onReport: () -> Void
     let onBlock: () -> Void
@@ -90,6 +91,7 @@ public struct VoteFeed: View {
     public init(
         data: VoteFeedData,
         showLinkTooltip: Bool = false,
+        showBottomDivider: Bool = true,
         onDelete: @escaping () -> Void = {},
         onReport: @escaping () -> Void = {},
         onBlock: @escaping () -> Void = {},
@@ -98,6 +100,7 @@ public struct VoteFeed: View {
     ) {
         self.data = data
         self.showLinkTooltip = showLinkTooltip
+        self.showBottomDivider = showBottomDivider
         self._selectedVoteId = State(initialValue: data.selectedVoteId)
         self.onDelete = onDelete
         self.onReport = onReport
@@ -166,8 +169,10 @@ public struct VoteFeed: View {
                     .padding(.trailing, 20)
                 }
             }
-            BNDivider(size: .s)
-                .padding(.horizontal, 20)
+            if showBottomDivider {
+                BNDivider(size: .s)
+                    .padding(.horizontal, 20)
+            }
         }
         .bnAlert(
             isPresented: $showBlockAlert,
@@ -454,7 +459,7 @@ private struct ProductImageCarousel: View {
             LinkTooltipArrow()
                 .fill(tooltipBg)
                 .frame(width: 10, height: 5)
-                .padding(.trailing, 23)
+                .padding(.trailing, 15)
 
             BNText("상품 링크를 확인해보세요!")
                 .style(style: .b5m, color: ColorPalette.gray0)
