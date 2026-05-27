@@ -30,20 +30,21 @@ public struct ImageCropView: View {
     }
 
     public var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                ColorPalette.black
-                    .ignoresSafeArea()
+        ZStack {
+            ColorPalette.black
+                .ignoresSafeArea()
 
-                VStack(spacing: 0) {
-                    navigationBar
-                    imageArea
-                    bottomBar
-                }
-                .padding(.top, proxy.safeAreaInsets.top + 6)
-                .padding(.bottom, proxy.safeAreaInsets.bottom + 6)
+            VStack(spacing: 0) {
+                navigationBar
+                Spacer(minLength: 0)
+                imageArea
+                Spacer(minLength: 0)
+                bottomBar
             }
+            .padding(.vertical, 6)
         }
+        .toolbar(.hidden, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
     }
 
     private var navigationBar: some View {
@@ -55,7 +56,6 @@ public struct ImageCropView: View {
                     .frame(width: 40, height: 40)
             }
             .padding(.leading, 10)
-            .padding(.top, 10)
             .padding(.bottom, 10)
 
             Spacer(minLength: 0)
@@ -72,13 +72,13 @@ public struct ImageCropView: View {
     private var imageArea: some View {
         image
             .resizable()
-            .scaledToFill()
+            .scaledToFit()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .clipped()
     }
 
     private var bottomBar: some View {
         HStack(spacing: 20) {
+            Spacer()
             actionButton(
                 imageAsset: .crop,
                 title: "자르기",
@@ -89,7 +89,7 @@ public struct ImageCropView: View {
                 title: "회전",
                 action: onRotate
             )
-            Spacer(minLength: 0)
+            Spacer()
         }
         .padding(20)
     }

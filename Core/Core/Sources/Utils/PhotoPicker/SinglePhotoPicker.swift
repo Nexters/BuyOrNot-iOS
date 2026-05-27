@@ -11,14 +11,28 @@ import UniformTypeIdentifiers
 
 public struct SinglePhotoPicker: UIViewControllerRepresentable {
     private let onPicked: (Image, Data) -> Void
+    private let onCancel: () -> Void
+    private let dismissOnPick: Bool
     
-    public init(onPicked: @escaping (Image) -> Void) {
+    public init(
+        dismissOnPick: Bool = true,
+        onCancel: @escaping () -> Void = {},
+        onPicked: @escaping (Image) -> Void
+    ) {
+        self.dismissOnPick = dismissOnPick
+        self.onCancel = onCancel
         self.onPicked = { image, _ in
             onPicked(image)
         }
     }
     
-    public init(onPicked: @escaping (Image, Data) -> Void) {
+    public init(
+        dismissOnPick: Bool = true,
+        onCancel: @escaping () -> Void = {},
+        onPicked: @escaping (Image, Data) -> Void
+    ) {
+        self.dismissOnPick = dismissOnPick
+        self.onCancel = onCancel
         self.onPicked = onPicked
     }
     
@@ -46,10 +60,16 @@ public struct SinglePhotoPicker: UIViewControllerRepresentable {
         }
         
         public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            picker.dismiss(animated: true)
-
             guard let firstResult = results.first else {
+                if parent.dismissOnPick {
+                    picker.dismiss(animated: true)
+                }
+                parent.onCancel()
                 return
+            }
+
+            if parent.dismissOnPick {
+                picker.dismiss(animated: true)
             }
             
             loadPickedPhoto(from: firstResult.itemProvider) { pickedPhoto in

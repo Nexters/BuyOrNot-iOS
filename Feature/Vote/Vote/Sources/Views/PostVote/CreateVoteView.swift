@@ -106,23 +106,26 @@ public struct CreateVoteView: View {
         .interactiveDismissDisabled(true)
         .padding(.top, 20)
         .padding(.bottom, 10)
-        .sheet(isPresented: $viewModel.showPhotoPicker) {
-            SinglePhotoPicker { image, data in
-                viewModel.didPickPhoto(image: image, data: data)
+        .fullScreenCover(isPresented: $viewModel.showPhotoPicker) {
+            NavigationStack {
+                AlbumCropFlowView(
+                    onDone: { image, data in
+                        viewModel.didPickPhoto(image: image, data: data)
+                    }
+                )
+                .toolbar(.hidden, for: .navigationBar)
             }
-            .presentationDetents([.large])
-            .presentationCornerRadius(18)
+            .ignoresSafeArea()
         }
         .fullScreenCover(isPresented: $viewModel.showCameraPicker) {
-            CameraPhotoPicker(
-                onPicked: { image, data in
-                    viewModel.didPickPhoto(image: image, data: data)
-                    viewModel.showCameraPicker = false
-                },
-                onCancel: {
-                    viewModel.showCameraPicker = false
-                }
-            )
+            NavigationStack {
+                CameraCropFlowView(
+                    onDone: { image, data in
+                        viewModel.didPickPhoto(image: image, data: data)
+                    }
+                )
+                .toolbar(.hidden, for: .navigationBar)
+            }
             .ignoresSafeArea()
         }
         .optionBottomSheet(
@@ -429,6 +432,98 @@ public struct CreateVoteView: View {
             }
         }
         .disabled(viewModel.isPhotoPickerEnabled == false)
+    }
+}
+
+private struct CropDraft {
+    let image: Image
+    let data: Data
+}
+
+private struct AlbumCropFlowView: View {
+    let onDone: (Image, Data) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var cropDraft: CropDraft?
+
+    var body: some View {
+        SinglePhotoPicker(
+            dismissOnPick: false,
+            onCancel: { dismiss() },
+            onPicked: { image, data in
+                cropDraft = CropDraft(image: image, data: data)
+            }
+        )
+        .ignoresSafeArea()
+        .navigationDestination(
+            isPresented: Binding(
+                get: { cropDraft != nil },
+                set: { isPresented in
+                    if isPresented == false {
+                        cropDraft = nil
+                        dismiss()
+                    }
+                }
+            )
+        ) {
+            if let cropDraft {
+                ImageCropView(
+                    image: cropDraft.image,
+                    onBack: {
+                        dismiss()
+                    },
+                    onDone: {
+                        onDone(cropDraft.image, cropDraft.data)
+                        dismiss()
+                    }
+                )
+                .toolbar(.hidden, for: .navigationBar)
+            } else {
+                EmptyView()
+            }
+        }
+    }
+}
+
+private struct CameraCropFlowView: View {
+    let onDone: (Image, Data) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var cropDraft: CropDraft?
+
+    var body: some View {
+        CameraPhotoPicker(
+            onPicked: { image, data in
+                cropDraft = CropDraft(image: image, data: data)
+            },
+            onCancel: { dismiss() }
+        )
+        .ignoresSafeArea()
+        .navigationDestination(
+            isPresented: Binding(
+                get: { cropDraft != nil },
+                set: { isPresented in
+                    if isPresented == false {
+                        cropDraft = nil
+                        dismiss()
+                    }
+                }
+            )
+        ) {
+            if let cropDraft {
+                ImageCropView(
+                    image: cropDraft.image,
+                    onBack: {
+                        dismiss()
+                    },
+                    onDone: {
+                        onDone(cropDraft.image, cropDraft.data)
+                        dismiss()
+                    }
+                )
+                .toolbar(.hidden, for: .navigationBar)
+            } else {
+                EmptyView()
+            }
+        }
     }
 }
 
