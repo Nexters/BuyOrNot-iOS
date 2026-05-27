@@ -10,47 +10,22 @@ import PhotosUI
 import UniformTypeIdentifiers
 
 public struct SinglePhotoPicker: UIViewControllerRepresentable {
-    public struct PickedPhoto {
-        public let image: Image
-        public let data: Data
-
-        public init(image: Image, data: Data) {
-            self.image = image
-            self.data = data
-        }
-    }
-
-    private let selectionLimit: Int
     private let onPicked: (Image, Data) -> Void
-    private let onPickedItems: ([PickedPhoto]) -> Void
     
     public init(onPicked: @escaping (Image) -> Void) {
-        self.selectionLimit = 1
         self.onPicked = { image, _ in
             onPicked(image)
         }
-        self.onPickedItems = { _ in }
     }
     
     public init(onPicked: @escaping (Image, Data) -> Void) {
-        self.selectionLimit = 1
         self.onPicked = onPicked
-        self.onPickedItems = { _ in }
-    }
-
-    public init(
-        selectionLimit: Int,
-        onPickedItems: @escaping ([PickedPhoto]) -> Void
-    ) {
-        self.selectionLimit = max(1, selectionLimit)
-        self.onPicked = { _, _ in }
-        self.onPickedItems = onPickedItems
     }
     
     public func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration(photoLibrary: .shared())
         config.filter = .images
-        config.selectionLimit = selectionLimit
+        config.selectionLimit = 1
         
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = context.coordinator
@@ -73,52 +48,26 @@ public struct SinglePhotoPicker: UIViewControllerRepresentable {
         public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             picker.dismiss(animated: true)
 
-            guard results.isEmpty == false else {
+            guard let firstResult = results.first else {
                 return
             }
-
-            let lock = NSLock()
-            let group = DispatchGroup()
-            var loadedItems: [(Int, PickedPhoto)] = []
-
-            for (index, result) in results.enumerated() {
-                group.enter()
-                loadPickedPhoto(from: result.itemProvider) { pickedPhoto in
-                    defer { group.leave() }
-                    guard let pickedPhoto else { return }
-                    lock.lock()
-                    loadedItems.append((index, pickedPhoto))
-                    lock.unlock()
-                }
-            }
-
-            group.notify(queue: .main) {
-                let orderedItems = loadedItems
-                    .sorted { $0.0 < $1.0 }
-                    .map { $0.1 }
-                guard orderedItems.isEmpty == false else {
+            
+            loadPickedPhoto(from: firstResult.itemProvider) { pickedPhoto in
+                guard let pickedPhoto else {
                     return
                 }
-                self.parent.onPickedItems(orderedItems)
-                if let first = orderedItems.first {
-                    self.parent.onPicked(first.image, first.data)
-                }
+                self.parent.onPicked(pickedPhoto.image, pickedPhoto.data)
             }
         }
         
         private func loadPickedPhoto(
             from itemProvider: NSItemProvider,
-            completion: @escaping (PickedPhoto?) -> Void
+            completion: @escaping ((image: Image, data: Data)?) -> Void
         ) {
             if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                 itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in
                     if let data, let uiImage = UIImage(data: data) {
-                        completion(
-                            PickedPhoto(
-                                image: Image(uiImage: uiImage),
-                                data: data
-                            )
-                        )
+                        completion((image: Image(uiImage: uiImage), data: data))
                         return
                     }
                     self.loadUIImageFallback(from: itemProvider, completion: completion)
@@ -130,7 +79,7 @@ public struct SinglePhotoPicker: UIViewControllerRepresentable {
 
         private func loadUIImageFallback(
             from itemProvider: NSItemProvider,
-            completion: @escaping (PickedPhoto?) -> Void
+            completion: @escaping ((image: Image, data: Data)?) -> Void
         ) {
             guard itemProvider.canLoadObject(ofClass: UIImage.self) else {
                 completion(nil)
@@ -145,7 +94,7 @@ public struct SinglePhotoPicker: UIViewControllerRepresentable {
                     completion(nil)
                     return
                 }
-                completion(PickedPhoto(image: Image(uiImage: uiImage), data: data))
+                completion((image: Image(uiImage: uiImage), data: data))
             }
         }
     }

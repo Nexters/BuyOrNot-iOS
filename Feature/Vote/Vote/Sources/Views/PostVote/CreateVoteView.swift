@@ -107,10 +107,8 @@ public struct CreateVoteView: View {
         .padding(.top, 20)
         .padding(.bottom, 10)
         .sheet(isPresented: $viewModel.showPhotoPicker) {
-            SinglePhotoPicker(
-                selectionLimit: max(1, viewModel.remainingSelectablePhotoCount)
-            ) { photos in
-                viewModel.didSelectPhotos(photos)
+            SinglePhotoPicker { image, data in
+                viewModel.didPickPhoto(image: image, data: data)
             }
             .presentationDetents([.large])
             .presentationCornerRadius(18)
@@ -118,7 +116,7 @@ public struct CreateVoteView: View {
         .fullScreenCover(isPresented: $viewModel.showCameraPicker) {
             CameraPhotoPicker(
                 onPicked: { image, data in
-                    viewModel.didPickCameraPhoto(image: image, data: data)
+                    viewModel.didPickPhoto(image: image, data: data)
                     viewModel.showCameraPicker = false
                 },
                 onCancel: {

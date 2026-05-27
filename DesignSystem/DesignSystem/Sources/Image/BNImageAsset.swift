@@ -25,6 +25,8 @@ public enum BNImageAsset: String {
     case close = "close"
     case completed = "completed"
     case left = "left"
+    case crop = "crop"
+    case rotate_left = "rotate_left"
     case my = "my"
     case notification_fill = "notification_fill"
     case notification = "notification"
