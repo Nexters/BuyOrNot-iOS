@@ -15,7 +15,8 @@ extension VoteResultResponse {
             choice: choice,
             yesCount: self.yesCount,
             noCount: self.noCount,
-            totalCount: self.totalCount
+            totalCount: self.totalCount,
+            myProfileImage: self.myProfileImage
         )
     }
 }

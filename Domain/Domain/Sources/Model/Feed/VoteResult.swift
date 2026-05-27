@@ -11,12 +11,21 @@ public struct VoteResult {
     public let yesCount: Int
     public let noCount: Int
     public let totalCount: Int
+    public let myProfileImage: String
 
-    public init(feedId: Int, choice: VoteChoice, yesCount: Int, noCount: Int, totalCount: Int) {
+    public init(
+        feedId: Int,
+        choice: VoteChoice,
+        yesCount: Int,
+        noCount: Int,
+        totalCount: Int,
+        myProfileImage: String = ""
+    ) {
         self.feedId = feedId
         self.choice = choice
         self.yesCount = yesCount
         self.noCount = noCount
         self.totalCount = totalCount
+        self.myProfileImage = myProfileImage
     }
 }

@@ -101,18 +101,21 @@ public final class FeedDetailViewModel: ObservableObject {
 
     private func applyVoteResult(_ result: VoteResult, selectedOptionId: Int) {
         guard let item = feed else { return }
+        let selectedProfileImageURL = result.myProfileImage.isEmpty
+            ? item.userProfileImageURL
+            : result.myProfileImage
         let updatedOptions: [VoteGroup.VoteOption] = [
             .init(
                 id: 0,
                 text: "사! 가즈아!",
                 voteCount: result.yesCount,
-                imageURL: selectedOptionId == 0 ? item.userProfileImageURL : nil
+                imageURL: selectedOptionId == 0 ? selectedProfileImageURL : nil
             ),
             .init(
                 id: 1,
                 text: "애매하긴 해..",
                 voteCount: result.noCount,
-                imageURL: selectedOptionId == 1 ? item.userProfileImageURL : nil
+                imageURL: selectedOptionId == 1 ? selectedProfileImageURL : nil
             )
         ]
         feed = VoteFeedData(
@@ -151,7 +154,7 @@ public final class FeedDetailViewModel: ObservableObject {
             userId: vote.author.id,
             userName: vote.author.nickname,
             userProfileImageURL: vote.author.profileImage,
-            category: categoryDisplayName(vote.category),
+            category: vote.category.displayName,
             timeAgo: timeAgoText(from: vote.createdAt),
             title: vote.title,
             content: vote.content,
@@ -193,20 +196,6 @@ public final class FeedDetailViewModel: ObservableObject {
                 imageURL: selectedOptionId == 1 ? userProfileImageURL : nil
             )
         ]
-    }
-
-    private func categoryDisplayName(_ category: FeedCategory) -> String {
-        switch category {
-        case .luxury: return "명품"
-        case .fashion: return "패션"
-        case .beauty: return "뷰티"
-        case .food: return "음식"
-        case .electronics: return "전자기기"
-        case .travel: return "여행"
-        case .health: return "건강"
-        case .book: return "도서"
-        case .etc: return "기타"
-        }
     }
 
     private func formatPrice(_ price: Int) -> String {

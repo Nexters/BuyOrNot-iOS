@@ -13,4 +13,5 @@ struct VoteResultResponse: Decodable {
     let yesCount: Int
     let noCount: Int
     let totalCount: Int
+    let myProfileImage: String
 }
