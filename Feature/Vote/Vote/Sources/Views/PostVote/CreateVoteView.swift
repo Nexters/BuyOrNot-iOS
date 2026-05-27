@@ -440,6 +440,11 @@ private struct CropDraft {
     let data: Data
 }
 
+private enum ImageDataFormat {
+    case jpeg
+    case png
+}
+
 private struct AlbumCropFlowView: View {
     let onDone: (Image, Data) -> Void
     @Environment(\.dismiss) private var dismiss
@@ -471,8 +476,12 @@ private struct AlbumCropFlowView: View {
                     onBack: {
                         dismiss()
                     },
-                    onDone: {
-                        onDone(cropDraft.image, cropDraft.data)
+                    onDone: { quarterTurns in
+                        let output = makeRotatedOutput(
+                            from: cropDraft,
+                            quarterTurns: quarterTurns
+                        )
+                        onDone(output.image, output.data)
                         dismiss()
                     }
                 )
@@ -514,8 +523,12 @@ private struct CameraCropFlowView: View {
                     onBack: {
                         dismiss()
                     },
-                    onDone: {
-                        onDone(cropDraft.image, cropDraft.data)
+                    onDone: { quarterTurns in
+                        let output = makeRotatedOutput(
+                            from: cropDraft,
+                            quarterTurns: quarterTurns
+                        )
+                        onDone(output.image, output.data)
                         dismiss()
                     }
                 )
@@ -525,6 +538,83 @@ private struct CameraCropFlowView: View {
             }
         }
     }
+}
+
+private func makeRotatedOutput(
+    from draft: CropDraft,
+    quarterTurns: Int
+) -> CropDraft {
+    let normalizedTurns = ((quarterTurns % 4) + 4) % 4
+    guard normalizedTurns != 0 else {
+        return draft
+    }
+    guard let sourceImage = UIImage(data: draft.data) else {
+        return draft
+    }
+
+    let rotatedImage = rotateLeft(
+        image: normalizeOrientation(sourceImage),
+        quarterTurns: normalizedTurns
+    )
+    let format = detectImageDataFormat(draft.data)
+    let rotatedData: Data?
+    switch format {
+    case .png:
+        rotatedData = rotatedImage.pngData()
+    case .jpeg:
+        rotatedData = rotatedImage.jpegData(compressionQuality: 0.9)
+    }
+
+    guard let rotatedData else {
+        return draft
+    }
+    return CropDraft(
+        image: Image(uiImage: rotatedImage),
+        data: rotatedData
+    )
+}
+
+private func normalizeOrientation(_ image: UIImage) -> UIImage {
+    guard image.imageOrientation != .up else {
+        return image
+    }
+    let format = UIGraphicsImageRendererFormat.default()
+    format.scale = image.scale
+    format.opaque = false
+    let renderer = UIGraphicsImageRenderer(size: image.size, format: format)
+    return renderer.image { _ in
+        image.draw(in: CGRect(origin: .zero, size: image.size))
+    }
+}
+
+private func rotateLeft(image: UIImage, quarterTurns: Int) -> UIImage {
+    var current = image
+    for _ in 0..<quarterTurns {
+        current = rotateLeft90(current)
+    }
+    return current
+}
+
+private func rotateLeft90(_ image: UIImage) -> UIImage {
+    guard let cgImage = image.cgImage else {
+        return image
+    }
+    let oriented = UIImage(
+        cgImage: cgImage,
+        scale: image.scale,
+        orientation: .left
+    )
+    return normalizeOrientation(oriented)
+}
+
+private func detectImageDataFormat(_ data: Data) -> ImageDataFormat {
+    let bytes = [UInt8](data.prefix(8))
+    let isPNG = bytes.count >= 4
+        && bytes[0] == 0x89
+        && bytes[1] == 0x50
+        && bytes[2] == 0x4E
+        && bytes[3] == 0x47
+    return isPNG ? .png : .jpeg
 }
 
 

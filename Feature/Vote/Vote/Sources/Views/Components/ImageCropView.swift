@@ -11,14 +11,15 @@ import DesignSystem
 public struct ImageCropView: View {
     private let image: Image
     private let onBack: () -> Void
-    private let onDone: () -> Void
+    private let onDone: (Int) -> Void
     private let onCrop: () -> Void
     private let onRotate: () -> Void
+    @State private var rotationQuarterTurns: Int = 0
 
     public init(
         image: Image = Image(systemName: "photo"),
         onBack: @escaping () -> Void = {},
-        onDone: @escaping () -> Void = {},
+        onDone: @escaping (Int) -> Void = { _ in },
         onCrop: @escaping () -> Void = {},
         onRotate: @escaping () -> Void = {}
     ) {
@@ -60,7 +61,9 @@ public struct ImageCropView: View {
 
             Spacer(minLength: 0)
 
-            Button(action: onDone) {
+            Button {
+                onDone(rotationQuarterTurns)
+            } label: {
                 BNText("완료")
                     .style(style: .s3sb, color: ColorPalette.gray0)
                     .padding(10)
@@ -70,10 +73,19 @@ public struct ImageCropView: View {
     }
 
     private var imageArea: some View {
-        image
-            .resizable()
-            .scaledToFit()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        GeometryReader { proxy in
+            let size = proxy.size
+            image
+                .resizable()
+                .scaledToFit()
+                .frame(
+                    width: isRightAngleRotation ? size.height : size.width,
+                    height: isRightAngleRotation ? size.width : size.height
+                )
+                .rotationEffect(rotationAngle)
+                .frame(width: size.width, height: size.height)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var bottomBar: some View {
@@ -87,11 +99,19 @@ public struct ImageCropView: View {
             actionButton(
                 imageAsset: .rotate_left,
                 title: "회전",
-                action: onRotate
+                action: rotateLeft
             )
             Spacer()
         }
         .padding(20)
+    }
+
+    private var rotationAngle: Angle {
+        .degrees(Double(rotationQuarterTurns * -90))
+    }
+
+    private var isRightAngleRotation: Bool {
+        rotationQuarterTurns % 2 != 0
     }
 
     private func actionButton(
@@ -107,5 +127,12 @@ public struct ImageCropView: View {
                     .style(style: .s3sb, color: ColorPalette.gray0)
             }
         }
+    }
+
+    private func rotateLeft() {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            rotationQuarterTurns += 1
+        }
+        onRotate()
     }
 }
