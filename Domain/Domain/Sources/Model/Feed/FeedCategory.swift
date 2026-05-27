@@ -14,6 +14,8 @@ public enum FeedCategory: String, CaseIterable {
     case travel = "TRAVEL"
     case health = "HEALTH"
     case book = "BOOK"
+    case interior = "INTERIOR"
+    case kitchen = "KITCHEN"
     case etc = "ETC"
 
     public var displayName: String {
@@ -34,6 +36,10 @@ public enum FeedCategory: String, CaseIterable {
             return "헬스 ∙ 운동용품"
         case .book:
             return "도서"
+        case .interior:
+            return "인테리어"
+        case .kitchen:
+            return "주방 ∙ 식기"
         case .etc:
             return "기타"
         }
