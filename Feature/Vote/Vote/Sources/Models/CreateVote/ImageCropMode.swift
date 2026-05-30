@@ -6,6 +6,7 @@
 //
 
 import DesignSystem
+import CoreGraphics
 
 enum ImageCropMode: CaseIterable {
     case free
@@ -36,6 +37,19 @@ enum ImageCropMode: CaseIterable {
             return "3:4"
         case .landscape4x3:
             return "4:3"
+        }
+    }
+
+    var fixedAspectRatio: CGFloat? {
+        switch self {
+        case .free:
+            return nil
+        case .square:
+            return 1
+        case .portrait3x4:
+            return 3.0 / 4.0
+        case .landscape4x3:
+            return 4.0 / 3.0
         }
     }
 }

@@ -438,6 +438,7 @@ public struct CreateVoteView: View {
 private struct CropDraft {
     let image: Image
     let data: Data
+    let imageSize: CGSize
 }
 
 private enum ImageDataFormat {
@@ -455,7 +456,11 @@ private struct AlbumCropFlowView: View {
             dismissOnPick: false,
             onCancel: { dismiss() },
             onPicked: { image, data in
-                cropDraft = CropDraft(image: image, data: data)
+                cropDraft = CropDraft(
+                    image: image,
+                    data: data,
+                    imageSize: extractNormalizedImageSize(from: data)
+                )
             }
         )
         .ignoresSafeArea()
@@ -473,6 +478,7 @@ private struct AlbumCropFlowView: View {
             if let cropDraft {
                 ImageEditView(
                     image: cropDraft.image,
+                    sourceImageSize: cropDraft.imageSize,
                     onBack: {
                         dismiss()
                     },
@@ -501,7 +507,11 @@ private struct CameraCropFlowView: View {
     var body: some View {
         CameraPhotoPicker(
             onPicked: { image, data in
-                cropDraft = CropDraft(image: image, data: data)
+                cropDraft = CropDraft(
+                    image: image,
+                    data: data,
+                    imageSize: extractNormalizedImageSize(from: data)
+                )
             },
             onCancel: { dismiss() }
         )
@@ -520,6 +530,7 @@ private struct CameraCropFlowView: View {
             if let cropDraft {
                 ImageEditView(
                     image: cropDraft.image,
+                    sourceImageSize: cropDraft.imageSize,
                     onBack: {
                         dismiss()
                     },
@@ -570,7 +581,8 @@ private func makeRotatedOutput(
     }
     return CropDraft(
         image: Image(uiImage: rotatedImage),
-        data: rotatedData
+        data: rotatedData,
+        imageSize: rotatedImage.size
     )
 }
 
@@ -615,6 +627,13 @@ private func detectImageDataFormat(_ data: Data) -> ImageDataFormat {
         && bytes[2] == 0x4E
         && bytes[3] == 0x47
     return isPNG ? .png : .jpeg
+}
+
+private func extractNormalizedImageSize(from data: Data) -> CGSize {
+    guard let image = UIImage(data: data) else {
+        return .zero
+    }
+    return normalizeOrientation(image).size
 }
 
 
