@@ -471,7 +471,7 @@ private struct AlbumCropFlowView: View {
             )
         ) {
             if let cropDraft {
-                ImageCropView(
+                ImageEditView(
                     image: cropDraft.image,
                     onBack: {
                         dismiss()
@@ -518,7 +518,7 @@ private struct CameraCropFlowView: View {
             )
         ) {
             if let cropDraft {
-                ImageCropView(
+                ImageEditView(
                     image: cropDraft.image,
                     onBack: {
                         dismiss()
