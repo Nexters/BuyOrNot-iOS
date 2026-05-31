@@ -26,6 +26,31 @@ extension ImageCropAnchors {
         [topLeft, topRight, bottomRight, bottomLeft]
     }
 
+    var minX: CGFloat { min(topLeft.x, bottomLeft.x) }
+    var maxX: CGFloat { max(topRight.x, bottomRight.x) }
+    var minY: CGFloat { min(topLeft.y, topRight.y) }
+    var maxY: CGFloat { max(bottomLeft.y, bottomRight.y) }
+    var width: CGFloat { maxX - minX }
+    var height: CGFloat { maxY - minY }
+
+    var center: CGPoint {
+        CGPoint(x: (minX + maxX) / 2, y: (minY + maxY) / 2)
+    }
+
+    static func from(
+        minX: CGFloat,
+        maxX: CGFloat,
+        minY: CGFloat,
+        maxY: CGFloat
+    ) -> ImageCropAnchors {
+        ImageCropAnchors(
+            topLeft: CGPoint(x: minX, y: minY),
+            topRight: CGPoint(x: maxX, y: minY),
+            bottomRight: CGPoint(x: maxX, y: maxY),
+            bottomLeft: CGPoint(x: minX, y: maxY)
+        )
+    }
+
     func projectedPoints(in rect: CGRect) -> [CGPoint] {
         orderedNormalizedPoints.map { normalized in
             CGPoint(
