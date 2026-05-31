@@ -74,7 +74,9 @@ public final class NotificationViewModel: ObservableObject {
         } catch is CancellationError {
             state = hasData ? previousState : .error
         } catch {
+#if DEBUG
             print("[NotificationViewModel] fetchNotifications error: \(error)")
+#endif
             state = .error
         }
     }

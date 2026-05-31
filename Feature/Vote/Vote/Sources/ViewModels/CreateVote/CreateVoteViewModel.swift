@@ -480,7 +480,9 @@ public final class CreateVoteViewModel: ObservableObject {
             )
             return true
         } catch {
+#if DEBUG
             print("[CreateVoteViewModel] postVote error: \(error)")
+#endif
             return false
         }
     }

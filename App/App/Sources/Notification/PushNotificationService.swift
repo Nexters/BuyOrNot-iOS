@@ -10,6 +10,7 @@ import UserNotifications
 import UIKit
 import FirebaseMessaging
 import Domain
+import Core
 
 final class PushNotificationService {
     static let shared = PushNotificationService()
@@ -37,20 +38,14 @@ final class PushNotificationService {
     }
 
     func syncFCMTokenIfPossible(userRepository: UserRepository?) async {
-        #if DEBUG
-        print("🔔 [PushNotificationService] syncFCMTokenIfPossible called")
-        #endif
+        bnPrint("🔔 [PushNotificationService] syncFCMTokenIfPossible called")
         guard let userRepository else { return }
 
         let settings = await notificationCenter.notificationSettings()
         let status = settings.authorizationStatus
-        #if DEBUG
-        print("🔔 [PushNotificationService] authorizationStatus: \(status.rawValue)")
-        #endif
+        bnPrint("🔔 [PushNotificationService] authorizationStatus: \(status.rawValue)")
         guard status == .authorized || status == .provisional || status == .ephemeral else {
-            #if DEBUG
-            print("🔔 [PushNotificationService] authorization not granted. skip")
-            #endif
+            bnPrint("🔔 [PushNotificationService] authorization not granted. skip")
             return
         }
 
@@ -59,30 +54,22 @@ final class PushNotificationService {
         }
 
         guard Messaging.messaging().apnsToken != nil else {
-            #if DEBUG
-            print("🔔 [PushNotificationService] APNS token not set yet. skip FCM token")
-            #endif
+            bnPrint("🔔 [PushNotificationService] APNS token not set yet. skip FCM token")
             return
         }
 
         do {
             let token = try await Messaging.messaging().token()
-            #if DEBUG
-            print("🔔 [PushNotificationService] FCM token fetched: \(token)")
-            #endif
+            bnPrint("🔔 [PushNotificationService] FCM token fetched: \(token)")
             guard !token.isEmpty else { return }
             let lastToken = defaults.string(forKey: lastTokenKey)
             guard token != lastToken else { return }
 
             try await userRepository.updateFCMToken(token)
             defaults.set(token, forKey: lastTokenKey)
-            #if DEBUG
-            print("✅ [PushNotificationService] FCM token synced to server")
-            #endif
+            bnPrint("✅ [PushNotificationService] FCM token synced to server")
         } catch {
-            #if DEBUG
-            print("❌ [PushNotificationService] sync failed: \(error)")
-            #endif
+            bnPrint("❌ [PushNotificationService] sync failed: \(error)")
             // Intentionally ignore to avoid blocking UI flow
         }
     }

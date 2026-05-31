@@ -18,10 +18,16 @@ let package = Package(
         // Swinject
         .package(url: "https://github.com/Swinject/Swinject.git", from: "2.8.0"),
         // KakaoSDKCommon, KakaoSDKAuth, KakaoSDKUser
-        .package(url: "https://github.com/kakao/kakao-ios-sdk.git", branch: "master"),
+        .package(
+            url: "https://github.com/kakao/kakao-ios-sdk.git",
+            revision: "5978979157a5a0521c9c56fd0156aec794caa21c"
+        ),
         // GoogleSignInSwift, GoogleSignIn
         .package(url: "https://github.com/google/GoogleSignIn-iOS", exact: "9.1.0"),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk", branch: "main"),
+        .package(
+            url: "https://github.com/firebase/firebase-ios-sdk",
+            revision: "a8fbda0ea351034a581341517791927c781d8ec0"
+        ),
         .package(url: "https://github.com/devxoul/Then", from: "3.0.0"),
         .package(url: "https://github.com/airbnb/lottie-spm.git", from: "4.6.0"),
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.0.0"),

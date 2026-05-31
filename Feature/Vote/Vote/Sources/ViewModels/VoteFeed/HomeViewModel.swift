@@ -113,7 +113,9 @@ public final class HomeViewModel: ObservableObject {
             hasMorePages = page.hasNext
             voteFeedState = .success
         } catch {
+#if DEBUG
             print("[HomeViewModel] fetchFeeds error: \(error)")
+#endif
             voteFeedState = .error
         }
     }
@@ -165,7 +167,9 @@ public final class HomeViewModel: ObservableObject {
             }
             await backfillFeedIfNeeded()
         } catch {
+#if DEBUG
             print("[HomeViewModel] deleteFeed error: \(error)")
+#endif
         }
     }
 
@@ -192,7 +196,9 @@ public final class HomeViewModel: ObservableObject {
             }
             await backfillFeedIfNeeded()
         } catch {
+#if DEBUG
             print("[HomeViewModel] reportFeed error: \(error)")
+#endif
         }
     }
 
@@ -207,7 +213,9 @@ public final class HomeViewModel: ObservableObject {
             await fetchFeeds()
             await fetchMyFeeds()
         } catch {
+#if DEBUG
             print("[HomeViewModel] blockUser error: \(error)")
+#endif
         }
     }
 
@@ -230,7 +238,9 @@ public final class HomeViewModel: ObservableObject {
                 ]
             )
         } catch {
+#if DEBUG
             print("[HomeViewModel] vote error: \(error)")
+#endif
         }
     }
 
@@ -257,7 +267,9 @@ public final class HomeViewModel: ObservableObject {
                 myVoteState = .success
             }
         } catch {
+#if DEBUG
             print("[HomeViewModel] fetchMyFeeds error: \(error)")
+#endif
             myVoteState = .error
         }
     }

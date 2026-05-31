@@ -26,7 +26,9 @@ public final class BlockedAccountsViewModel: ObservableObject {
         do {
             blockedUsers = try await userRepository.getBlockedUsers()
         } catch {
+#if DEBUG
             print("[BlockedAccountsViewModel] fetchBlockedUsers error: \(error)")
+#endif
         }
         isLoading = false
     }
@@ -41,7 +43,9 @@ public final class BlockedAccountsViewModel: ObservableObject {
             )
             snackBar.addItem(item)
         } catch {
+#if DEBUG
             print("[BlockedAccountsViewModel] unblockUser error: \(error)")
+#endif
         }
     }
 }

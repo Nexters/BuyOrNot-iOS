@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Core
 
 public protocol UserDefaultsClientProtocol {
     func get<T: Codable>(for key: UserDefaultsKey) -> T?
@@ -35,12 +36,10 @@ final class UserDefaultsClient: UserDefaultsClientProtocol {
         do {
             return try decoder.decode(T.self, from: data)
         } catch(let error) {
-#if DEBUG
-            print("🚨 UserDefaultsClient Decoding failed: \(error)")
+            bnPrint("🚨 UserDefaultsClient Decoding failed: \(error)")
             if let jsonString = data.prettyPrintedJSON {
-                print("📦 Data:\n\(jsonString)")
+                bnPrint("📦 Data:\n\(jsonString)")
             }
-#endif
             return nil
         }
     }
@@ -53,16 +52,11 @@ final class UserDefaultsClient: UserDefaultsClientProtocol {
         do {
             let data = try encoder.encode(value)
             userDefaults.set(data, forKey: key.rawValue)
-#if DEBUG
             if let jsonString = data.prettyPrintedJSON {
-                print("✅ UserDefaultsClient Save Success: \(key) \n\(jsonString)")
+                bnPrint("✅ UserDefaultsClient Save Success: \(key) \n\(jsonString)")
             }
-            
-#endif
         } catch(let error) {
-#if DEBUG
-            print("🚨 UserDefaultsClient Encoding failed: \(error)")
-#endif
+            bnPrint("🚨 UserDefaultsClient Encoding failed: \(error)")
         }
     }
     

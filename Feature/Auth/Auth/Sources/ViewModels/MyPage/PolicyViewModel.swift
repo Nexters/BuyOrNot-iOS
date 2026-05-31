@@ -25,7 +25,9 @@ final class PolicyViewModel: ObservableObject {
         type: Constants.ConstantsKey
     ) {
         let urlString = Constants.getValue(with: type)
+#if DEBUG
         print(urlString)
+#endif
         guard let url = URL(string: urlString) else {
             return
         }

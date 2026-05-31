@@ -32,7 +32,9 @@ public final class FeedDetailViewModel: ObservableObject {
             feed = toVoteFeedData(vote)
             state = .success
         } catch {
+#if DEBUG
             print("[FeedDetailViewModel] fetchFeed error: \(error)")
+#endif
             state = .error
         }
     }
@@ -45,7 +47,9 @@ public final class FeedDetailViewModel: ObservableObject {
             let result = try await feedRepository.voteFeed(feedId: id, choice: choice)
             applyVoteResult(result, selectedOptionId: optionId)
         } catch {
+#if DEBUG
             print("[FeedDetailViewModel] vote error: \(error)")
+#endif
         }
     }
 
@@ -56,7 +60,9 @@ public final class FeedDetailViewModel: ObservableObject {
             try await feedRepository.deleteVoteFeed(feedId: id)
             feed = nil
         } catch {
+#if DEBUG
             print("[FeedDetailViewModel] deleteFeed error: \(error)")
+#endif
         }
     }
 
@@ -73,7 +79,9 @@ public final class FeedDetailViewModel: ObservableObject {
             snackBar.addItem(item)
             feed = nil
         } catch {
+#if DEBUG
             print("[FeedDetailViewModel] reportFeed error: \(error)")
+#endif
         }
     }
 
@@ -87,7 +95,9 @@ public final class FeedDetailViewModel: ObservableObject {
             )
             snackBar.addItem(item)
         } catch {
+#if DEBUG
             print("[FeedDetailViewModel] blockUser error: \(error)")
+#endif
         }
     }
 

@@ -60,12 +60,10 @@ final class NetworkClient: NetworkClientProtocol {
             do {
                 return try decoder.decode(T.self, from: data)
             } catch {
-                #if DEBUG
-                print("🚨 Decoding failed: \(error)")
+                bnPrint("🚨 Decoding failed: \(error)")
                 if let jsonString = data.prettyPrintedJSON {
-                    print("📦 Response data:\n\(jsonString)")
+                    bnPrint("📦 Response data:\n\(jsonString)")
                 }
-                #endif
                 throw NetworkError.decodingFailed(error)
             }
         } catch let error as NetworkError {
@@ -76,9 +74,7 @@ final class NetworkClient: NetworkClientProtocol {
             }
             throw error
         } catch {
-            #if DEBUG
-            print("🚨 Network request failed: \(error.localizedDescription)")
-            #endif
+            bnPrint("🚨 Network request failed: \(error.localizedDescription)")
             throw NetworkError.requestFailed(error)
         }
     }
@@ -102,9 +98,7 @@ final class NetworkClient: NetworkClientProtocol {
             }
             throw error
         } catch {
-            #if DEBUG
-            print("🚨 Network request failed: \(error.localizedDescription)")
-            #endif
+            bnPrint("🚨 Network request failed: \(error.localizedDescription)")
             throw NetworkError.requestFailed(error)
         }
     }
@@ -154,16 +148,12 @@ final class NetworkClient: NetworkClientProtocol {
 
     private func buildRequest(from endpoint: Endpoint) throws -> URLRequest {
         guard let baseURL = endpoint.baseURL else {
-            #if DEBUG
-            print("🚨 Invalid Base URL: baseURL is null")
-            #endif
+            bnPrint("🚨 Invalid Base URL: baseURL is null")
             throw NetworkError.invalidBaseURL
         }
         
         guard var urlComponents = URLComponents(string: baseURL + endpoint.path) else {
-            #if DEBUG
-            print("🚨 Invalid URL: \(baseURL + endpoint.path)")
-            #endif
+            bnPrint("🚨 Invalid URL: \(baseURL + endpoint.path)")
             throw NetworkError.invalidURL
         }
 
@@ -180,9 +170,7 @@ final class NetworkClient: NetworkClientProtocol {
         }
 
         guard let url = urlComponents.url else {
-            #if DEBUG
-            print("🚨 Failed to create URL from components")
-            #endif
+            bnPrint("🚨 Failed to create URL from components")
             throw NetworkError.invalidURL
         }
 
@@ -207,75 +195,55 @@ final class NetworkClient: NetworkClientProtocol {
             do {
                 request.httpBody = try encoder.encode(body)
             } catch {
-                #if DEBUG
-                print("🚨 Encoding failed: \(error)")
-                #endif
+                bnPrint("🚨 Encoding failed: \(error)")
                 throw NetworkError.encodingFailed
             }
         }
 
-        #if DEBUG
-        print("\n🌐 [\(endpoint.method.rawValue)] \(url.absoluteString)")
+        bnPrint("\n🌐 [\(endpoint.method.rawValue)] \(url.absoluteString)")
         if let httpBody = request.httpBody,
            let bodyString = String(data: httpBody, encoding: .utf8) {
-            print("📤 Request Body: \(bodyString)")
+            bnPrint("📤 Request Body: \(bodyString)")
         }
         if let headers = endpoint.headers {
-            print("📋 Custom Headers: \(headers)")
+            bnPrint("📋 Custom Headers: \(headers)")
         }
-        print("🔑 Bearer Token: \(accessToken.isEmpty ? "Null" : accessToken)")
-        #endif
+        bnPrint("🔑 Bearer Token: \(accessToken.isEmpty ? "Null" : accessToken)")
 
         return request
     }
 
     private func validateResponse(_ response: URLResponse, data: Data?) throws {
         guard let httpResponse = response as? HTTPURLResponse else {
-            #if DEBUG
-            print("🚨 Invalid HTTP response")
-            #endif
+            bnPrint("🚨 Invalid HTTP response")
             throw NetworkError.unknown
         }
 
-        #if DEBUG
-        print("📥 Status Code: \(httpResponse.statusCode)")
+        bnPrint("📥 Status Code: \(httpResponse.statusCode)")
         if let responseString = data?.prettyPrintedJSON {
-            print("📦 Response:\n\(responseString)")
+            bnPrint("📦 Response:\n\(responseString)")
         }
-        #endif
 
         switch httpResponse.statusCode {
         case 200...299:
             return
         case 401:
-            #if DEBUG
-            print("🚨 Unauthorized (401)")
-            #endif
+            bnPrint("🚨 Unauthorized (401)")
             throw NetworkError.unauthorized
         case 403:
-            #if DEBUG
-            print("🚨 Forbidden (403)")
-            #endif
+            bnPrint("🚨 Forbidden (403)")
             throw NetworkError.forbidden
         case 404:
-            #if DEBUG
-            print("🚨 Not Found (404)")
-            #endif
+            bnPrint("🚨 Not Found (404)")
             throw NetworkError.notFound
         case 400...499:
-            #if DEBUG
-            print("🚨 Client Error (\(httpResponse.statusCode))")
-            #endif
+            bnPrint("🚨 Client Error (\(httpResponse.statusCode))")
             throw NetworkError.serverError(statusCode: httpResponse.statusCode, data: data)
         case 500...599:
-            #if DEBUG
-            print("🚨 Server Error (\(httpResponse.statusCode))")
-            #endif
+            bnPrint("🚨 Server Error (\(httpResponse.statusCode))")
             throw NetworkError.serverError(statusCode: httpResponse.statusCode, data: data)
         default:
-            #if DEBUG
-            print("🚨 Unknown status code: \(httpResponse.statusCode)")
-            #endif
+            bnPrint("🚨 Unknown status code: \(httpResponse.statusCode)")
             throw NetworkError.unknown
         }
     }
