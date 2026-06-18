@@ -32,6 +32,8 @@ public final class CreateVoteViewModel: ObservableObject {
     struct SelectedPhoto {
         let image: Image
         let data: Data
+        let sourceData: Data
+        let editState: ImageEditState
     }
 
     @Published var title: String = ""
@@ -272,14 +274,14 @@ public final class CreateVoteViewModel: ObservableObject {
         }
     }
     
-    func didPickPhoto(image: Image, data: Data) {
+    func didPickPhoto(_ result: ImageEditResult, sourceData: Data) {
         defer {
             validatePost()
         }
         guard remainingSelectablePhotoCount > 0 else {
             return
         }
-        guard data.isEmpty == false else {
+        guard result.data.isEmpty == false, sourceData.isEmpty == false else {
             snackBar.addItem(
                 BNSnackBarItem(
                     text: "사진 데이터를 불러오지 못했어요. 다시 시도해 주세요."
@@ -287,7 +289,40 @@ public final class CreateVoteViewModel: ObservableObject {
             )
             return
         }
-        selectedPhotos.append(SelectedPhoto(image: image, data: data))
+        selectedPhotos.append(
+            SelectedPhoto(
+                image: result.image,
+                data: result.data,
+                sourceData: sourceData,
+                editState: result.state
+            )
+        )
+        lastTouchedField = "images"
+    }
+
+    func didEditPhoto(at index: Int, result: ImageEditResult) {
+        defer {
+            validatePost()
+        }
+        guard selectedPhotos.indices.contains(index) else {
+            return
+        }
+        guard result.data.isEmpty == false else {
+            snackBar.addItem(
+                BNSnackBarItem(
+                    text: "사진 데이터를 불러오지 못했어요. 다시 시도해 주세요."
+                )
+            )
+            return
+        }
+
+        let sourceData = selectedPhotos[index].sourceData
+        selectedPhotos[index] = SelectedPhoto(
+            image: result.image,
+            data: result.data,
+            sourceData: sourceData,
+            editState: result.state
+        )
         lastTouchedField = "images"
     }
     
