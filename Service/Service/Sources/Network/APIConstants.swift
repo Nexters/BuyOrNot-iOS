@@ -20,6 +20,7 @@ public enum APIConstants {
             }
         }
     }
+    
     private static var buildScheme: BuildScheme {
         .debug
     }

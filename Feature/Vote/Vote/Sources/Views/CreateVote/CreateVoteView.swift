@@ -15,6 +15,7 @@ public struct CreateVoteView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject private var viewModel: CreateVoteViewModel
     @FocusState private var focusState: FocusedTextField?
+    @State private var photoEditDraft: PhotoEditDraft?
     
     public init(viewModel: CreateVoteViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -109,8 +110,8 @@ public struct CreateVoteView: View {
         .fullScreenCover(isPresented: $viewModel.showPhotoPicker) {
             NavigationStack {
                 AlbumCropFlowView(
-                    onDone: { image, data in
-                        viewModel.didPickPhoto(image: image, data: data)
+                    onDone: { result, sourceData in
+                        viewModel.didPickPhoto(result, sourceData: sourceData)
                     }
                 )
                 .toolbar(.hidden, for: .navigationBar)
@@ -120,13 +121,46 @@ public struct CreateVoteView: View {
         .fullScreenCover(isPresented: $viewModel.showCameraPicker) {
             NavigationStack {
                 CameraCropFlowView(
-                    onDone: { image, data in
-                        viewModel.didPickPhoto(image: image, data: data)
+                    onDone: { result, sourceData in
+                        viewModel.didPickPhoto(result, sourceData: sourceData)
                     }
                 )
                 .toolbar(.hidden, for: .navigationBar)
             }
             .ignoresSafeArea()
+        }
+        .fullScreenCover(
+            isPresented: Binding(
+                get: { photoEditDraft != nil },
+                set: { isPresented in
+                    if isPresented == false {
+                        photoEditDraft = nil
+                    }
+                }
+            )
+        ) {
+            if let photoEditDraft {
+                NavigationStack {
+                    ImageEditView(
+                        sourceData: photoEditDraft.sourceData,
+                        initialEditState: photoEditDraft.editState,
+                        onBack: {
+                            self.photoEditDraft = nil
+                        },
+                        onDone: { result in
+                            viewModel.didEditPhoto(
+                                at: photoEditDraft.index,
+                                result: result
+                            )
+                            self.photoEditDraft = nil
+                        }
+                    )
+                    .toolbar(.hidden, for: .navigationBar)
+                }
+                .ignoresSafeArea()
+            } else {
+                EmptyView()
+            }
         }
         .optionBottomSheet(
             isPresented: $viewModel.showCategoryBottomSheet,
@@ -388,6 +422,7 @@ public struct CreateVoteView: View {
                     .resizable()
                     .scaledToFill()
                     .frame(width: 68, height: 68)
+                    .contentShape(RoundedRectangle(cornerRadius: 12))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay {
                         RoundedRectangle(cornerRadius: 12)
@@ -412,6 +447,14 @@ public struct CreateVoteView: View {
                                 Spacer()
                             }
                         }
+                    }
+                    .onTapGesture {
+                        focusState = nil
+                        photoEditDraft = PhotoEditDraft(
+                            index: index,
+                            sourceData: photo.sourceData,
+                            editState: photo.editState
+                        )
                     }
             }
             Spacer()
@@ -439,8 +482,14 @@ private struct CropDraft {
     let data: Data
 }
 
+private struct PhotoEditDraft {
+    let index: Int
+    let sourceData: Data
+    let editState: ImageEditState
+}
+
 private struct AlbumCropFlowView: View {
-    let onDone: (Image, Data) -> Void
+    let onDone: (ImageEditResult, Data) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var cropDraft: CropDraft?
 
@@ -472,8 +521,8 @@ private struct AlbumCropFlowView: View {
                     onBack: {
                         dismiss()
                     },
-                    onDone: { image, data in
-                        onDone(image, data)
+                    onDone: { result in
+                        onDone(result, cropDraft.data)
                         dismiss()
                     }
                 )
@@ -486,7 +535,7 @@ private struct AlbumCropFlowView: View {
 }
 
 private struct CameraCropFlowView: View {
-    let onDone: (Image, Data) -> Void
+    let onDone: (ImageEditResult, Data) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var cropDraft: CropDraft?
 
@@ -517,8 +566,8 @@ private struct CameraCropFlowView: View {
                     onBack: {
                         dismiss()
                     },
-                    onDone: { image, data in
-                        onDone(image, data)
+                    onDone: { result in
+                        onDone(result, cropDraft.data)
                         dismiss()
                     }
                 )

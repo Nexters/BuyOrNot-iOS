@@ -21,13 +21,13 @@ private enum CropAnchorHandle: CaseIterable {
     case bottomLeft
 }
 
-public struct ImageEditView: View {
+struct ImageEditView: View {
     private let cropAnchorSize: CGFloat = 22
     private let cropHorizontalPaddingFromScreen: CGFloat = 20
     private let minimumCropPixelLength: CGFloat = 1
 
     private let onBack: () -> Void
-    private let onDone: (Image, Data) -> Void
+    private let onDone: (ImageEditResult) -> Void
     private let onCrop: () -> Void
     private let onRotate: () -> Void
     private let sourceFormat: ImageDataFormat
@@ -40,22 +40,40 @@ public struct ImageEditView: View {
     @State private var sourceImage: UIImage
     @State private var workingImage: UIImage
 
+    @State private var appliedRotationQuarterTurns: Int
     @State private var previewRotationQuarterTurns: Int = 0
     @State private var isRotationAnimating: Bool = false
 
     @State private var draggingAnchorStart: ImageCropAnchors?
     @State private var movingCropStart: ImageCropAnchors?
 
-    public init(
+    init(
         sourceData: Data,
+        initialEditState: ImageEditState = .identity,
         onBack: @escaping () -> Void = {},
-        onDone: @escaping (Image, Data) -> Void = { _, _ in },
+        onDone: @escaping (ImageEditResult) -> Void = { _ in },
         onCrop: @escaping () -> Void = {},
         onRotate: @escaping () -> Void = {}
     ) {
+        let normalizedEditState = ImageEditState(
+            rotationQuarterTurns: initialEditState.rotationQuarterTurns,
+            cropAnchors: initialEditState.cropAnchors
+        )
         let initialUIImage = Self.makeInitialImage(from: sourceData)
-        _sourceImage = State(initialValue: initialUIImage)
-        _workingImage = State(initialValue: initialUIImage)
+        let initialSourceImage = Self.rotateLeft(
+            initialUIImage,
+            quarterTurns: normalizedEditState.rotationQuarterTurns
+        )
+        let initialWorkingImage = Self.makeWorkingImage(
+            from: initialSourceImage,
+            anchors: normalizedEditState.cropAnchors,
+            minimumCropPixelLength: 1
+        )
+        _committedCropAnchors = State(initialValue: normalizedEditState.cropAnchors)
+        _editingCropAnchors = State(initialValue: normalizedEditState.cropAnchors ?? .full)
+        _sourceImage = State(initialValue: initialSourceImage)
+        _workingImage = State(initialValue: initialWorkingImage)
+        _appliedRotationQuarterTurns = State(initialValue: normalizedEditState.rotationQuarterTurns)
         sourceFormat = Self.detectImageDataFormat(sourceData)
         self.onBack = onBack
         self.onDone = onDone
@@ -227,6 +245,7 @@ public struct ImageEditView: View {
             sourceImage = rotatedSource
             committedCropAnchors = rotatedCommittedAnchors
             workingImage = rotatedWorking
+            appliedRotationQuarterTurns = ImageEditState.normalize(appliedRotationQuarterTurns + 1)
             withAnimation(.none) {
                 previewRotationQuarterTurns = 0
             }
@@ -272,7 +291,16 @@ public struct ImageEditView: View {
         guard let outputData = encodedData(from: workingImage, format: sourceFormat) else {
             return
         }
-        onDone(Image(uiImage: workingImage), outputData)
+        onDone(
+            ImageEditResult(
+                image: Image(uiImage: workingImage),
+                data: outputData,
+                state: ImageEditState(
+                    rotationQuarterTurns: appliedRotationQuarterTurns,
+                    cropAnchors: committedCropAnchors
+                )
+            )
+        )
     }
 
     @ViewBuilder
@@ -689,10 +717,11 @@ public struct ImageEditView: View {
         from image: UIImage,
         anchors: ImageCropAnchors?
     ) -> UIImage {
-        guard let anchors else {
-            return image
-        }
-        return cropImage(image, with: anchors) ?? image
+        Self.makeWorkingImage(
+            from: image,
+            anchors: anchors,
+            minimumCropPixelLength: minimumCropPixelLength
+        )
     }
 
     private func rotateAnchorsLeft90(_ anchors: ImageCropAnchors) -> ImageCropAnchors {
@@ -705,34 +734,11 @@ public struct ImageEditView: View {
     }
 
     private func cropImage(_ image: UIImage, with anchors: ImageCropAnchors) -> UIImage? {
-        let normalized = Self.normalizeOrientation(image)
-        guard let cgImage = normalized.cgImage else { return nil }
-
-        let imageWidth = CGFloat(cgImage.width)
-        let imageHeight = CGFloat(cgImage.height)
-
-        let minimumWidth = min(1, minimumCropPixelLength / max(imageWidth, 1))
-        let minimumHeight = min(1, minimumCropPixelLength / max(imageHeight, 1))
-
-        let minX = clamp(anchors.minX, min: 0, max: 1)
-        let minY = clamp(anchors.minY, min: 0, max: 1)
-        let width = clamp(anchors.width, min: minimumWidth, max: 1)
-        let height = clamp(anchors.height, min: minimumHeight, max: 1)
-
-        var cropRect = CGRect(
-            x: minX * imageWidth,
-            y: minY * imageHeight,
-            width: width * imageWidth,
-            height: height * imageHeight
-        ).integral
-
-        cropRect.origin.x = clamp(cropRect.origin.x, min: 0, max: imageWidth - 1)
-        cropRect.origin.y = clamp(cropRect.origin.y, min: 0, max: imageHeight - 1)
-        cropRect.size.width = clamp(cropRect.size.width, min: 1, max: imageWidth - cropRect.origin.x)
-        cropRect.size.height = clamp(cropRect.size.height, min: 1, max: imageHeight - cropRect.origin.y)
-
-        guard let croppedCGImage = cgImage.cropping(to: cropRect) else { return nil }
-        return UIImage(cgImage: croppedCGImage, scale: normalized.scale, orientation: .up)
+        Self.cropImage(
+            image,
+            with: anchors,
+            minimumCropPixelLength: minimumCropPixelLength
+        )
     }
 
     private func encodedData(from image: UIImage, format: ImageDataFormat) -> Data? {
@@ -803,6 +809,69 @@ public struct ImageEditView: View {
         return normalizeOrientation(oriented)
     }
 
+    private static func rotateLeft(_ image: UIImage, quarterTurns: Int) -> UIImage {
+        let normalizedQuarterTurns = ImageEditState.normalize(quarterTurns)
+        guard normalizedQuarterTurns > 0 else {
+            return image
+        }
+
+        var rotatedImage = image
+        for _ in 0..<normalizedQuarterTurns {
+            rotatedImage = rotateLeft90(rotatedImage)
+        }
+        return rotatedImage
+    }
+
+    private static func makeWorkingImage(
+        from image: UIImage,
+        anchors: ImageCropAnchors?,
+        minimumCropPixelLength: CGFloat
+    ) -> UIImage {
+        guard let anchors else {
+            return image
+        }
+        return cropImage(
+            image,
+            with: anchors,
+            minimumCropPixelLength: minimumCropPixelLength
+        ) ?? image
+    }
+
+    private static func cropImage(
+        _ image: UIImage,
+        with anchors: ImageCropAnchors,
+        minimumCropPixelLength: CGFloat
+    ) -> UIImage? {
+        let normalized = normalizeOrientation(image)
+        guard let cgImage = normalized.cgImage else { return nil }
+
+        let imageWidth = CGFloat(cgImage.width)
+        let imageHeight = CGFloat(cgImage.height)
+
+        let minimumWidth = min(1, minimumCropPixelLength / max(imageWidth, 1))
+        let minimumHeight = min(1, minimumCropPixelLength / max(imageHeight, 1))
+
+        let minX = clamp(anchors.minX, min: 0, max: 1)
+        let minY = clamp(anchors.minY, min: 0, max: 1)
+        let width = clamp(anchors.width, min: minimumWidth, max: 1)
+        let height = clamp(anchors.height, min: minimumHeight, max: 1)
+
+        var cropRect = CGRect(
+            x: minX * imageWidth,
+            y: minY * imageHeight,
+            width: width * imageWidth,
+            height: height * imageHeight
+        ).integral
+
+        cropRect.origin.x = clamp(cropRect.origin.x, min: 0, max: imageWidth - 1)
+        cropRect.origin.y = clamp(cropRect.origin.y, min: 0, max: imageHeight - 1)
+        cropRect.size.width = clamp(cropRect.size.width, min: 1, max: imageWidth - cropRect.origin.x)
+        cropRect.size.height = clamp(cropRect.size.height, min: 1, max: imageHeight - cropRect.origin.y)
+
+        guard let croppedCGImage = cgImage.cropping(to: cropRect) else { return nil }
+        return UIImage(cgImage: croppedCGImage, scale: normalized.scale, orientation: .up)
+    }
+
     private static func detectImageDataFormat(_ data: Data) -> ImageDataFormat {
         let bytes = [UInt8](data.prefix(8))
         let isPNG = bytes.count >= 4
@@ -811,5 +880,9 @@ public struct ImageEditView: View {
             && bytes[2] == 0x4E
             && bytes[3] == 0x47
         return isPNG ? .png : .jpeg
+    }
+
+    private static func clamp(_ value: CGFloat, min lower: CGFloat, max upper: CGFloat) -> CGFloat {
+        max(lower, min(upper, value))
     }
 }
