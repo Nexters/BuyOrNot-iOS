@@ -461,6 +461,7 @@ struct FeedCategoryFilterBar: View {
                             .id(category.rawValue)
                         }
                     }
+                    .padding(.trailing, 20)
                 }
                 .padding(.leading, 20)
                 .frame(height: 36)

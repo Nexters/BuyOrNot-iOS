@@ -88,21 +88,21 @@ public struct VoteButton: View {
             guard newValue else { animatedWidth = 0; didInitialDisplay = false; return }
             // 방금 투표: false→true 전환 → 애니메이션으로 표시
             didInitialDisplay = true
-            let tw = containerWidth * CGFloat(percent) / 100
+            let width = containerWidth * CGFloat(percent) / 100
             Task { @MainActor in
                 withAnimation(.easeInOut(duration: Layout.animationDuration)) {
-                    animatedWidth = tw
+                    animatedWidth = width
                 }
             }
         }
         .onChange(of: percent) { _, newPercent in
             guard showPercent, containerWidth > 0 else { return }
-            let tw = containerWidth * CGFloat(newPercent) / 100
+            let width = containerWidth * CGFloat(newPercent) / 100
             if isPeriodDone {
-                animatedWidth = tw
+                animatedWidth = width
             } else {
                 withAnimation(.easeInOut(duration: Layout.animationDuration)) {
-                    animatedWidth = tw
+                    animatedWidth = width
                 }
             }
         }
