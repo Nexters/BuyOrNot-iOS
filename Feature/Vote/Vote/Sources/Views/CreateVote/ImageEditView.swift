@@ -90,6 +90,8 @@ struct ImageEditView: View {
                 navigationBar
                 Spacer(minLength: 0)
                 imageArea
+                    .padding(.top, imageEditMode == .crop ? 12 + cropAnchorSize/2 : 0)
+                    .padding(.bottom, imageEditMode == .crop ? cropAnchorSize/2 : 0)
                 Spacer(minLength: 0)
                 if imageEditMode == .crop {
                     cropBottomBar
@@ -106,7 +108,7 @@ struct ImageEditView: View {
     private var navigationBar: some View {
         HStack(spacing: 0) {
             Button(action: handleBackButtonTap) {
-                BNImage(imageEditMode == .crop ? .close : .left)
+                BNImage(.close)
                     .style(color: ColorPalette.gray0, size: 20)
                     .padding(10)
                     .frame(width: 40, height: 40)
