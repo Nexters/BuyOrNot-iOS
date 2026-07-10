@@ -12,6 +12,17 @@ import DesignSystem
 import Core
 
 public struct HomeView: View {
+    private enum ScrollAnimation {
+        static let sensitivity: CGFloat = 50
+        static let navigationBarTravelDistance: CGFloat = 72
+        static let categoryFilterTravelDistance: CGFloat = 64
+    }
+
+    private struct ScrollSample {
+        let translation: CGFloat
+        let time: Date
+    }
+
     private struct ImageViewerDestination: Hashable, Identifiable {
         let imageURLs: [String]
         let initialIndex: Int
@@ -31,6 +42,8 @@ public struct HomeView: View {
     @State private var currentLastVisibleIndex: Int = 0
     @State private var isFeedSessionActive = false
     @State private var imageViewerDestination: ImageViewerDestination?
+    @State private var lastScrollSample: ScrollSample?
+    @State private var gestureStartSample: ScrollSample?
 
     public init(viewModel: HomeViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -65,6 +78,7 @@ public struct HomeView: View {
                         onLoginTap: { viewModel.didTapLogin() }
                     )
                     .background(Color.white)
+                    .transition(.move(edge: .top).combined(with: .opacity))
                     .zIndex(2)
                 }
 
@@ -99,14 +113,11 @@ public struct HomeView: View {
                 .simultaneousGesture(
                     DragGesture()
                         .onChanged { value in
-                            let verticalScrollSensitivity: CGFloat = 50
-                            let verticalScrollValue = abs(value.translation.height)
-                            guard abs(verticalScrollValue) >= verticalScrollSensitivity else { return }
-                            let isScrollingDown = value.translation.height < 0
-                            withAnimation(.easeInOut(duration: 0.25)) {
-                                showNavigationBar = !isScrollingDown
-                                showCategoryFilter = !isScrollingDown
-                            }
+                            handleScrollChanged(with: value)
+                        }
+                        .onEnded { _ in
+                            lastScrollSample = nil
+                            gestureStartSample = nil
                         }
                 )
             }
@@ -188,6 +199,61 @@ public struct HomeView: View {
 
     private var voteFeedTooltipId: String? {
         viewModel.feeds.first(where: { $0.link != nil && !($0.link!.isEmpty) })?.id
+    }
+
+    private func handleScrollChanged(with value: DragGesture.Value) {
+        let currentSample = ScrollSample(
+            translation: value.translation.height,
+            time: value.time
+        )
+        if gestureStartSample == nil {
+            gestureStartSample = currentSample
+        }
+
+        defer { lastScrollSample = currentSample }
+
+        let verticalTranslation = currentSample.translation
+        let verticalScrollValue = abs(verticalTranslation)
+        guard verticalScrollValue >= ScrollAnimation.sensitivity else { return }
+
+        let shouldShowBars = verticalTranslation > 0
+        guard showNavigationBar != shouldShowBars || showCategoryFilter != shouldShowBars else {
+            return
+        }
+
+        let duration = scrollAnimationDuration(for: currentSample)
+
+        withAnimation(.easeInOut(duration: duration)) {
+            showNavigationBar = shouldShowBars
+            showCategoryFilter = shouldShowBars
+        }
+    }
+
+    private func scrollAnimationDuration(for currentSample: ScrollSample) -> Double {
+        let chromeTravelDistance = ScrollAnimation.navigationBarTravelDistance
+            + (shouldHideFilter ? 0 : ScrollAnimation.categoryFilterTravelDistance)
+
+        if let lastScrollSample {
+            let deltaTranslation = abs(currentSample.translation - lastScrollSample.translation)
+            let deltaTime = currentSample.time.timeIntervalSince(lastScrollSample.time)
+
+            if deltaTranslation > 0, deltaTime > 0 {
+                let pointsPerSecond = deltaTranslation / deltaTime
+                return chromeTravelDistance / pointsPerSecond
+            }
+        }
+
+        if let gestureStartSample {
+            let totalTranslation = abs(currentSample.translation - gestureStartSample.translation)
+            let totalTime = currentSample.time.timeIntervalSince(gestureStartSample.time)
+
+            if totalTranslation > 0, totalTime > 0 {
+                let pointsPerSecond = totalTranslation / totalTime
+                return chromeTravelDistance / pointsPerSecond
+            }
+        }
+
+        return 0.25
     }
 
     private var myFeedTooltipId: String? {
