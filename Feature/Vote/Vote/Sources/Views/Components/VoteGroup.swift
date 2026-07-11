@@ -122,13 +122,24 @@ public struct VoteGroup: View {
     }
 
     private func style(for optionId: Int) -> VoteButtonStyle {
-        if isPeriodDone && totalVotes == 0 {
-            return .plain
-        } else if isPeriodDone || isVotingLocked {
+        if totalVotes == 0 {
+            if isPeriodDone {
+                return .gray
+            }
+
+            if isVotingLocked {
+                return .plain
+            }
+        }
+
+        if isPeriodDone || isVotingLocked {
             return optionId == winnerOptionId ? .black : .gray
-        } else if let selected = selectedOptionId {
+        }
+
+        if let selected = selectedOptionId {
             return optionId == selected ? .black : .gray
         }
+
         return .plain
     }
 }
