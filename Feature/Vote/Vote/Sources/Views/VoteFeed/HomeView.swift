@@ -297,6 +297,7 @@ public struct HomeView: View {
                         VoteFeed(
                             data: feed,
                             showLinkTooltip: feed.id == voteFeedTooltipId,
+                            showBottomDivider: index < viewModel.feeds.count - 1,
                             onDelete: { Task { await viewModel.deleteFeed(feedId: feed.id) } },
                             onReport: { Task { await viewModel.reportFeed(feedId: feed.id) } },
                             onBlock: { Task { await viewModel.blockUser(userId: feed.userId, userName: feed.userName) } },
@@ -349,6 +350,7 @@ public struct HomeView: View {
                     VoteFeed(
                         data: feed,
                         showLinkTooltip: feed.id == myFeedTooltipId,
+                        showBottomDivider: index < viewModel.myFeeds.count - 1,
                         onDelete: { Task { await viewModel.deleteFeed(feedId: feed.id) } },
                         onReport: { Task { await viewModel.reportFeed(feedId: feed.id) } },
                         onBlock: { Task { await viewModel.blockUser(userId: feed.userId, userName: feed.userName) } },
