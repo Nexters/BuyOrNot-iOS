@@ -13,11 +13,11 @@ public struct BNChip: View {
         case unselected
         case hover
     }
-
+    
     private let title: String
     private let state: ChipState
     private let onTap: () -> Void
-
+    
     public init(
         title: String,
         state: ChipState = .unselected,
@@ -27,7 +27,7 @@ public struct BNChip: View {
         self.state = state
         self.onTap = onTap
     }
-
+    
     public var body: some View {
         Button {
             var transaction = Transaction(animation: nil)
@@ -41,19 +41,20 @@ public struct BNChip: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 10)
                 .frame(height: 36)
-                .background(backgroundColor)
-                .clipShape(Capsule())
+                .background {
+                    Capsule().fill(backgroundColor)
+                }
                 .overlay {
                     if state == .unselected {
                         Capsule()
-                            .stroke(ColorPalette.gray300, lineWidth: 1)
+                            .strokeBorder(ColorPalette.gray300, lineWidth: 1)
                     }
                 }
                 .animation(.none, value: state)
         }
         .buttonStyle(NoFeedbackButtonStyle())
     }
-
+    
     // MARK: - Computed Properties
     private var fontStyle: BNFontStyle {
         switch state {
@@ -63,7 +64,7 @@ public struct BNChip: View {
             return .b5m
         }
     }
-
+    
     private var foregroundColor: Color {
         switch state {
         case .selected:
@@ -72,7 +73,7 @@ public struct BNChip: View {
             return ColorPalette.gray950
         }
     }
-
+    
     private var backgroundColor: Color {
         switch state {
         case .selected:
@@ -95,25 +96,30 @@ private struct NoFeedbackButtonStyle: ButtonStyle {
 
 #Preview {
     let _ = BNFont.loadFonts()
-
-    HStack(spacing: 16) {
-        BNChip(
-            title: "Chip",
-            state: .selected,
-            onTap: { print("Selected tapped") }
-        )
-
-        BNChip(
-            title: "Chip",
-            state: .unselected,
-            onTap: { print("Unselected tapped") }
-        )
-
-        BNChip(
-            title: "Chip",
-            state: .hover,
-            onTap: { print("Hover tapped") }
-        )
+    let titles: [String] = [
+        "Chip",
+        "Long Long Chip",
+        "한글칩",
+        "엄청 긴 긴 한글칩",
+    ]
+    let states: [BNChip.ChipState] = [
+        .selected,
+        .unselected,
+        .hover
+    ]
+    
+    VStack {
+        ForEach(titles, id: \.self) { title in
+            HStack(spacing: 16) {
+                ForEach(states, id: \.self) { state in
+                    BNChip(
+                        title: title,
+                        state: state,
+                        onTap: { print("\(state) tapped") }
+                    )
+                }
+            }
+        }
     }
     .padding()
 }
