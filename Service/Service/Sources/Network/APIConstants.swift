@@ -22,7 +22,7 @@ public enum APIConstants {
     }
     
     private static var buildScheme: BuildScheme {
-        .debug
+        .release
     }
     
     public static var baseURL: String? {

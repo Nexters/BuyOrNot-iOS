@@ -54,7 +54,7 @@ struct NavigationBar: View {
                 )
                 .cornerRadius(10)
             } else {
-                HStack(spacing: 24) {
+                HStack(spacing: 0) {
                     Button {
                         onNotificationTap()
                     } label: {
@@ -62,6 +62,13 @@ struct NavigationBar: View {
                             .resizable()
                             .frame(width: 20, height: 20)
                             .foregroundColor(ColorPalette.gray500)
+                            .padding(10)
+                    }
+                    .overlay(alignment: .bottomLeading) {
+                        if notificationCount > 0 {
+                            NotificationBadge(count: notificationCount)
+                                .offset(x: 18, y: -20)
+                        }
                     }
 
                     Button {
@@ -71,6 +78,7 @@ struct NavigationBar: View {
                             .resizable()
                             .frame(width: 20, height: 20)
                             .foregroundColor(ColorPalette.gray500)
+                            .padding(10)
                     }
                 }
             }

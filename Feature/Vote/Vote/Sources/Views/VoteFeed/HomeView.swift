@@ -73,7 +73,7 @@ public struct HomeView: View {
                 if showNavigationBar {
                     NavigationBar(
                         isGuest: !viewModel.isAuthenticated,
-                        notificationCount: viewModel.notificationCount,
+                        notificationCount: 100, //viewModel.notificationCount,
                         onNotificationTap: { viewModel.didTapNotification() },
                         onProfileTap: { viewModel.didTapProfile() },
                         onLoginTap: { viewModel.didTapLogin() }
