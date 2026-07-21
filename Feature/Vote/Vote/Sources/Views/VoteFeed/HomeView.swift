@@ -73,6 +73,7 @@ public struct HomeView: View {
                 if showNavigationBar {
                     NavigationBar(
                         isGuest: !viewModel.isAuthenticated,
+                        notificationCount: viewModel.notificationCount,
                         onNotificationTap: { viewModel.didTapNotification() },
                         onProfileTap: { viewModel.didTapProfile() },
                         onLoginTap: { viewModel.didTapLogin() }
@@ -152,12 +153,18 @@ public struct HomeView: View {
         }
         .onAppear {
             startFeedSessionIfNeeded()
+            Task {
+                await viewModel.refreshNotificationCount()
+            }
         }
         .onDisappear {
             stopFeedSessionIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             startFeedSessionIfNeeded()
+            Task {
+                await viewModel.refreshNotificationCount()
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
             stopFeedSessionIfNeeded()
@@ -201,6 +208,7 @@ public struct HomeView: View {
         viewModel.feeds.first(where: { $0.link != nil && !($0.link!.isEmpty) })?.id
     }
 
+    // 스크롤 방향과 이동량을 기준으로 상단 바 노출 상태를 갱신합니다.
     private func handleScrollChanged(with value: DragGesture.Value) {
         let currentSample = ScrollSample(
             translation: value.translation.height,
@@ -229,6 +237,7 @@ public struct HomeView: View {
         }
     }
 
+    // 스크롤 속도를 기반으로 상단 바 애니메이션 시간을 계산합니다.
     private func scrollAnimationDuration(for currentSample: ScrollSample) -> Double {
         let chromeTravelDistance = ScrollAnimation.navigationBarTravelDistance
             + (shouldHideFilter ? 0 : ScrollAnimation.categoryFilterTravelDistance)
@@ -389,12 +398,14 @@ public struct HomeView: View {
         }
     }
 
+    // 현재 화면에 보이는 피드 인덱스의 시작과 끝 값을 갱신합니다.
     private func updateVisibleIndices() {
         guard visibleIndices.isEmpty == false else { return }
         currentTopVisibleIndex = visibleIndices.min() ?? currentTopVisibleIndex
         currentLastVisibleIndex = visibleIndices.max() ?? currentLastVisibleIndex
     }
 
+    // 피드 체류 세션이 비활성 상태일 때만 조회 추적을 시작합니다.
     private func startFeedSessionIfNeeded() {
         guard isFeedSessionActive == false else { return }
         isFeedSessionActive = true
@@ -402,6 +413,7 @@ public struct HomeView: View {
         viewModel.trackFeedViewed(firstVisibleItemIndex: currentTopVisibleIndex)
     }
 
+    // 진행 중인 피드 체류 세션을 종료하고 이탈 이벤트를 기록합니다.
     private func stopFeedSessionIfNeeded() {
         guard isFeedSessionActive else { return }
         isFeedSessionActive = false
@@ -713,6 +725,12 @@ private struct PreviewReportFeedRepository: ReportFeedRepository {
     func removeReportFeed() {}
 }
 
+private struct PreviewNotificationRepository: NotificationRepository {
+    func getNotifications(type: String?) async throws -> [AppNotification] { [] }
+    func patchNotificationRead(id: String) async throws {}
+    func getNotificationUnreadCount() async throws -> Int { 3 }
+}
+
 private struct MockVoteNavigator: VoteNavigator {
     func navigateToNotification() {}
     func navigateToMyPage() {}
@@ -726,6 +744,7 @@ private struct MockVoteNavigator: VoteNavigator {
     HomeView(
         viewModel: HomeViewModel(
             feedRepository: PreviewFeedRepository(),
+            notificationRepository: PreviewNotificationRepository(),
             userRepository: PreviewUserRepository(),
             reportFeedRepository: PreviewReportFeedRepository(),
             analytics: DebugAnalyticsTracker(),

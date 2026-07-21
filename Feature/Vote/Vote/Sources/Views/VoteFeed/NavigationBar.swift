@@ -10,9 +10,24 @@ import DesignSystem
 
 struct NavigationBar: View {
     let isGuest: Bool
+    let notificationCount: Int
     let onNotificationTap: () -> Void
     let onProfileTap: () -> Void
     let onLoginTap: () -> Void
+    
+    init(
+        isGuest: Bool,
+        notificationCount: Int = 0,
+        onNotificationTap: @escaping () -> Void,
+        onProfileTap: @escaping () -> Void,
+        onLoginTap: @escaping () -> Void
+    ) {
+        self.isGuest = isGuest
+        self.notificationCount = notificationCount
+        self.onNotificationTap = onNotificationTap
+        self.onProfileTap = onProfileTap
+        self.onLoginTap = onLoginTap
+    }
 
     var body: some View {
         HStack {

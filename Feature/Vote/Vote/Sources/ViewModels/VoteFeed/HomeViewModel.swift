@@ -12,6 +12,7 @@ import Core
 
 public final class HomeViewModel: ObservableObject {
     private let feedRepository: FeedRepository
+    private let notificationRepository: NotificationRepository
     private let userRepository: UserRepository
     private let reportFeedRepository: ReportFeedRepository
     private let analytics: AnalyticsTracking
@@ -28,6 +29,8 @@ public final class HomeViewModel: ObservableObject {
     @Published var myVoteState: MyVoteState = .loading
     @Published var myFeeds: [VoteFeedData] = []
     @Published var snackBar = BNSnackBarManager()
+    
+    @Published var notificationCount = 0
 
     private var cursor: Int?
     private var hasMorePages: Bool = true
@@ -36,12 +39,14 @@ public final class HomeViewModel: ObservableObject {
 
     public init(
         feedRepository: FeedRepository,
+        notificationRepository: NotificationRepository,
         userRepository: UserRepository,
         reportFeedRepository: ReportFeedRepository,
         analytics: AnalyticsTracking,
         argument: HomeViewModel.Argument
     ) {
         self.feedRepository = feedRepository
+        self.notificationRepository = notificationRepository
         self.userRepository = userRepository
         self.reportFeedRepository = reportFeedRepository
         self.analytics = analytics
@@ -90,6 +95,21 @@ public final class HomeViewModel: ObservableObject {
 
     var isAuthenticated: Bool {
         currentUserId != nil
+    }
+
+    @MainActor
+    func refreshNotificationCount() async {
+        guard isAuthenticated else {
+            notificationCount = 0
+            return
+        }
+        do {
+            notificationCount = try await notificationRepository.getNotificationUnreadCount()
+        } catch {
+#if DEBUG
+            print("[HomeViewModel] refreshNotificationCount error: \(error)")
+#endif
+        }
     }
 
     @MainActor

@@ -79,11 +79,13 @@ extension DIContainer {
 
         container.register(HomeViewModel.self) { (resolver: Resolver, argument: HomeViewModel.Argument) in
             let feedRepository: FeedRepository = resolver.resolve()
+            let notificationRepository: NotificationRepository = resolver.resolve()
             let userRepository: UserRepository = resolver.resolve()
             let reportFeedRepository: ReportFeedRepository = resolver.resolve()
             let analytics: AnalyticsTracking = resolver.resolve()
             return HomeViewModel(
                 feedRepository: feedRepository,
+                notificationRepository: notificationRepository,
                 userRepository: userRepository,
                 reportFeedRepository: reportFeedRepository,
                 analytics: analytics,
