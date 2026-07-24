@@ -24,6 +24,10 @@ public enum BNFontStyle: String, CaseIterable {
     case t2b // Title/T2_Bold
     case t3b // Title/T3_Bold
     case t4b // Title/T4_Bold
+    case t5b // Title/T5_Bold
+    case t6b // Title/T6_Bold
+    case t7b // Title/T7_Bold
+    case t8b // Title/T8_Bold
     
     /// SubTitle
     case s1sb // SubTitle/S1_Semibold
@@ -79,6 +83,10 @@ extension BNFontStyle {
         case .t2b: (.bold, 16, 1.25)
         case .t3b: (.bold, 15, 1.25)
         case .t4b: (.bold, 14, 1.25)
+        case .t5b: (.bold, 13, 1.25)
+        case .t6b: (.bold, 12, 1.25)
+        case .t7b: (.bold, 11, 1.25)
+        case .t8b: (.bold, 10, 1.25)
             
             /// SubTitle
         case .s1sb: (.semibold, 18, 1.2)
@@ -105,10 +113,10 @@ extension BNFontStyle {
         case .c3r: (.regular, 10, 1.4)
             
             /// Paragraph
-        case .p1m: (.medium, 16, 1.4)
-        case .p2m: (.medium, 15, 1.4)
-        case .p3m: (.medium, 14, 1.4)
-        case .p4m: (.medium, 13, 1.4)
+        case .p1m: (.medium, 16, 1.5)
+        case .p2m: (.medium, 15, 1.5)
+        case .p3m: (.medium, 14, 1.5)
+        case .p4m: (.medium, 13, 1.5)
         case .p1r: (.regular, 16, 1.4)
         case .p2r: (.regular, 15, 1.4)
         case .p3r: (.regular, 14, 1.4)

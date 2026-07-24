@@ -16,7 +16,7 @@ public struct NotificationBadge: View {
 
     public var body: some View {
         BNText(displayCount)
-            .style(style: .c2r, color: ColorPalette.gray0)
+            .style(style: .t7b, color: ColorPalette.gray0)
             .lineLimit(1)
             .padding(.horizontal, count < 10 ? 6.5 : 4)
             .padding(.vertical, 2)
