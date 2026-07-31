@@ -10,6 +10,7 @@ enum FeedEndpoint: Endpoint {
     case getMyFeeds(cursor: Int?, size: Int?, feedStatus: String?, category: String?)
     case postFeeds(PostFeedRequest)
     case postVote(feedId: Int, body: PostVoteRequest)
+    case postGuestVote(feedId: Int, body: PostVoteRequest)
     case postFeedsReport(Int)
     case deleteFeeds(Int)
     case getFeed(feedId: Int)
@@ -27,6 +28,8 @@ enum FeedEndpoint: Endpoint {
                 ""
             case .postVote(let feedId, _):
                 "/\(feedId)/votes"
+            case .postGuestVote(let feedId, _):
+                "/\(feedId)/votes/guest"
             case .postFeedsReport(let feedId):
                 "/\(feedId)/report"
             case .deleteFeeds(let feedId):
@@ -55,7 +58,7 @@ enum FeedEndpoint: Endpoint {
                 .get
         case .postFeeds:
                 .post
-        case .postVote:
+        case .postVote, .postGuestVote:
                 .post
         case .postFeedsReport:
                 .post
@@ -88,6 +91,8 @@ enum FeedEndpoint: Endpoint {
         case .postFeeds(let postFeedRequest):
             postFeedRequest
         case .postVote(_, let body):
+            body
+        case .postGuestVote(_, let body):
             body
         case .postFeedsReport:
             nil

@@ -680,6 +680,9 @@ private struct PreviewFeedRepository: FeedRepository {
     func voteFeed(feedId: Int, choice: Domain.VoteChoice) async throws -> Domain.VoteResult {
         VoteResult(feedId: feedId, choice: choice, yesCount: 0, noCount: 0, totalCount: 0)
     }
+    func voteGuestFeed(feedId: Int, choice: Domain.VoteChoice) async throws -> Domain.VoteResult {
+        VoteResult(feedId: feedId, choice: choice, yesCount: 0, noCount: 0, totalCount: 0)
+    }
     func reportVoteFeed(feedId: Int) async throws {}
     func deleteVoteFeed(feedId: Int) async throws {}
     func getFeedDetail(feedId: Int) async throws -> Vote {
@@ -712,6 +715,7 @@ private struct PreviewUserRepository: UserRepository {
     func getCachedUser() -> User? {
         User(id: 1, nickname: "preview", profileImage: "", socialAccount: "KAKAO", email: "")
     }
+    func postAppOpen() async throws {}
     func updateFCMToken(_ token: String) async throws {}
     func deleteAccount() async throws {}
     func blockUser(userId: Int) async throws {}

@@ -44,7 +44,7 @@ public final class FeedDetailViewModel: ObservableObject {
         guard let id = Int(feedId),
               let choice = voteChoice(for: optionId) else { return }
         do {
-            let result = try await feedRepository.voteFeed(feedId: id, choice: choice)
+            let result = try await submitVote(feedId: id, choice: choice)
             applyVoteResult(result, selectedOptionId: optionId)
         } catch {
 #if DEBUG
@@ -107,6 +107,15 @@ public final class FeedDetailViewModel: ObservableObject {
         case 1: return .no
         default: return nil
         }
+    }
+
+    private func submitVote(feedId: Int, choice: VoteChoice) async throws -> VoteResult {
+#if DEBUG
+        if currentUserId == nil {
+            return try await feedRepository.voteGuestFeed(feedId: feedId, choice: choice)
+        }
+#endif
+        return try await feedRepository.voteFeed(feedId: feedId, choice: choice)
     }
 
     private func applyVoteResult(_ result: VoteResult, selectedOptionId: Int) {

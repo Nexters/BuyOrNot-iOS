@@ -624,6 +624,9 @@ private struct MockFeedRepository: FeedRepository {
     func voteFeed(feedId: Int, choice: VoteChoice) async throws -> VoteResult {
         VoteResult(feedId: feedId, choice: choice, yesCount: 0, noCount: 0, totalCount: 0)
     }
+    func voteGuestFeed(feedId: Int, choice: VoteChoice) async throws -> VoteResult {
+        VoteResult(feedId: feedId, choice: choice, yesCount: 0, noCount: 0, totalCount: 0)
+    }
     func reportVoteFeed(feedId: Int) async throws {}
     func deleteVoteFeed(feedId: Int) async throws {}
     func getFeedDetail(feedId: Int) async throws -> Vote {
