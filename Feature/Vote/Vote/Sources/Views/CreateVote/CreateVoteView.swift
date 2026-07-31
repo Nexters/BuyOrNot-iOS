@@ -660,6 +660,7 @@ private struct MockUserRepository: UserRepository {
     func clearCachedUser() {}
     func getMe() async throws -> User { User(id: 0, nickname: "", profileImage: "", socialAccount: "", email: "") }
     func getCachedUser() -> User? { nil }
+    func postAppOpen() async throws {}
     func updateFCMToken(_ token: String) async throws {}
     func deleteAccount() async throws {}
     func blockUser(userId: Int) async throws {}
