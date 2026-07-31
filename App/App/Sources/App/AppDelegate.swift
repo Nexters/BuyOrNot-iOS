@@ -67,7 +67,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         )
         print("foreground push notification:", payload.notification)
         print("foreground push data:", payload.data)
-        return [.banner, .sound, .badge]
+        return [.list, .banner, .sound, .badge]
     }
 
     // 사용자가 알림을 탭해 앱과 상호작용했을 때 payload를 처리합니다.
@@ -77,6 +77,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         )
         print("push tap notification:", payload.notification)
         print("push tap data:", payload.data)
+        NotificationCenter.default.post(
+            name: .didTapRemotePushPayload,
+            object: nil,
+            userInfo: payload.data
+        )
     }
 }
 

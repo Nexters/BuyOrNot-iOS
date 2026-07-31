@@ -16,6 +16,7 @@ public struct CreateVoteView: View {
     @StateObject private var viewModel: CreateVoteViewModel
     @FocusState private var focusState: FocusedTextField?
     @State private var photoEditDraft: PhotoEditDraft?
+    @State private var pendingExternalNavigationUserInfo: [AnyHashable: Any]?
     
     public init(viewModel: CreateVoteViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -103,6 +104,19 @@ public struct CreateVoteView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
             viewModel.keyboardWillHide()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .requestCreateVoteDismissForExternalNavigation)) { notification in
+            guard let userInfo = notification.userInfo else {
+                return
+            }
+
+            pendingExternalNavigationUserInfo = userInfo
+            if viewModel.isWritingInProgress {
+                viewModel.didTapCancel()
+            } else {
+                viewModel.removePendingVoteCreateInfo()
+                dismiss()
+            }
         }
         .interactiveDismissDisabled(true)
         .padding(.top, 20)
@@ -207,7 +221,15 @@ public struct CreateVoteView: View {
                     BNAlertButtonConfig(
                         text: "유지하기",
                         type: .primary
-                    ) { }
+                    ) {
+                        if pendingExternalNavigationUserInfo != nil {
+                            pendingExternalNavigationUserInfo = nil
+                            NotificationCenter.default.post(
+                                name: .cancelCreateVoteExternalNavigation,
+                                object: nil
+                            )
+                        }
+                    }
                 ]
             )
         )
@@ -230,6 +252,9 @@ public struct CreateVoteView: View {
                 ]
             )
         )
+        .onDisappear {
+            pendingExternalNavigationUserInfo = nil
+        }
     }
     
     @ViewBuilder
