@@ -74,9 +74,9 @@ public struct HomeView: View {
                     NavigationBar(
                         isGuest: !viewModel.isAuthenticated,
                         notificationCount: viewModel.notificationCount,
-                        onNotificationTap: { viewModel.didTapNotification() },
-                        onProfileTap: { viewModel.didTapProfile() },
-                        onLoginTap: { viewModel.didTapLogin() }
+                        onNotificationTap: viewModel.didTapNotification,
+                        onProfileTap: viewModel.didTapProfile,
+                        onLoginTap: viewModel.didTapLogin
                     )
                     .background(Color.white)
                     .transition(.move(edge: .top).combined(with: .opacity))
@@ -126,7 +126,7 @@ public struct HomeView: View {
             if !isShowingCategoryEmpty {
                 FloatingButton(
                     state: .close,
-                    onVoteCreate: { viewModel.didTapCreateVote() }
+                    onVoteCreate: viewModel.didTapCreateVote
                 )
             }
 
@@ -549,7 +549,7 @@ struct FeedCategoryFilterBar: View {
 
             HStack(spacing: 0) {
                 Color.white
-                    .frame(width: 19, height: 36)
+                    .frame(width: 28, height: 36)
                 LinearGradient(
                     stops: [
                         .init(color: Color.white.opacity(0.0001), location: 0.1848),
