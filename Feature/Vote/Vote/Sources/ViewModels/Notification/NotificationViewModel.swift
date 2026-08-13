@@ -99,12 +99,25 @@ public final class NotificationViewModel: ObservableObject {
         NotificationItemData(
             id: String(notification.notificationId),
             imageURL: notification.viewUrl ?? "",
-            status: "투표 종료",
+            status: statusText(for: notification.type),
             message: notification.feedTitle,
             timeAgo: timeAgoText(from: notification.voteClosedAt),
             isRead: notification.isRead,
             feedId: notification.feedId
         )
+    }
+
+    private func statusText(for type: AppNotificationType) -> String {
+        switch type {
+        case .myFeedVoted1:
+            "첫 투표 참여"
+        case .myFeedVoted10:
+            "10명 참여"
+        case .myFeedClosed, .participatedFeedClosed:
+            "투표 종료"
+        case .marketingNoVote:
+            "투표 등록"
+        }
     }
 
     private func timeAgoText(from components: DateComponents) -> String {

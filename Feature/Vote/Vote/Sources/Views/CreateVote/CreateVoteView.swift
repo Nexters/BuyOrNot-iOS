@@ -16,6 +16,7 @@ public struct CreateVoteView: View {
     @StateObject private var viewModel: CreateVoteViewModel
     @FocusState private var focusState: FocusedTextField?
     @State private var photoEditDraft: PhotoEditDraft?
+    @State private var pendingExternalNavigationUserInfo: [AnyHashable: Any]?
     
     public init(viewModel: CreateVoteViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -103,6 +104,19 @@ public struct CreateVoteView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
             viewModel.keyboardWillHide()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .requestCreateVoteDismissForExternalNavigation)) { notification in
+            guard let userInfo = notification.userInfo else {
+                return
+            }
+
+            pendingExternalNavigationUserInfo = userInfo
+            if viewModel.isWritingInProgress {
+                viewModel.didTapCancel()
+            } else {
+                viewModel.removePendingVoteCreateInfo()
+                dismiss()
+            }
         }
         .interactiveDismissDisabled(true)
         .padding(.top, 20)
@@ -207,7 +221,15 @@ public struct CreateVoteView: View {
                     BNAlertButtonConfig(
                         text: "유지하기",
                         type: .primary
-                    ) { }
+                    ) {
+                        if pendingExternalNavigationUserInfo != nil {
+                            pendingExternalNavigationUserInfo = nil
+                            NotificationCenter.default.post(
+                                name: .cancelCreateVoteExternalNavigation,
+                                object: nil
+                            )
+                        }
+                    }
                 ]
             )
         )
@@ -230,6 +252,9 @@ public struct CreateVoteView: View {
                 ]
             )
         )
+        .onDisappear {
+            pendingExternalNavigationUserInfo = nil
+        }
     }
     
     @ViewBuilder
@@ -599,6 +624,9 @@ private struct MockFeedRepository: FeedRepository {
     func voteFeed(feedId: Int, choice: VoteChoice) async throws -> VoteResult {
         VoteResult(feedId: feedId, choice: choice, yesCount: 0, noCount: 0, totalCount: 0)
     }
+    func voteGuestFeed(feedId: Int, choice: VoteChoice) async throws -> VoteResult {
+        VoteResult(feedId: feedId, choice: choice, yesCount: 0, noCount: 0, totalCount: 0)
+    }
     func reportVoteFeed(feedId: Int) async throws {}
     func deleteVoteFeed(feedId: Int) async throws {}
     func getFeedDetail(feedId: Int) async throws -> Vote {
@@ -632,6 +660,7 @@ private struct MockUserRepository: UserRepository {
     func clearCachedUser() {}
     func getMe() async throws -> User { User(id: 0, nickname: "", profileImage: "", socialAccount: "", email: "") }
     func getCachedUser() -> User? { nil }
+    func postAppOpen() async throws {}
     func updateFCMToken(_ token: String) async throws {}
     func deleteAccount() async throws {}
     func blockUser(userId: Int) async throws {}

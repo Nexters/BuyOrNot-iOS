@@ -101,6 +101,8 @@ private final class MockUserRepository: UserRepository {
         )
     }
     
+    func postAppOpen() async throws {}
+    
     func getMe() async throws -> User {
         User(
             id: 0,

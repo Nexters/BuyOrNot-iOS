@@ -162,6 +162,7 @@ private struct MockAuthNavigator: AuthNavigator {
 private final class MockUserRepository: UserRepository {
     func cacheUser(_ user: User) {}
     func clearCachedUser() {}
+    func postAppOpen() async throws {}
 
     func getCachedUser() -> User? {
         User(

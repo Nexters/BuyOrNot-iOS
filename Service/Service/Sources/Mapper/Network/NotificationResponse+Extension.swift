@@ -14,7 +14,7 @@ extension NotificationResponse {
             notificationId: self.notificationId,
             feedId: self.feedId,
             feedTitle: self.feedTitle,
-            type: AppNotificationType(rawValue: self.type) ?? .myFeedClosed,
+            type: AppNotificationType(rawValue: self.type) ?? .marketingNoVote,
             title: self.title,
             body: self.body,
             isRead: self.isRead,

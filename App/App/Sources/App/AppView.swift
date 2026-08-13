@@ -17,6 +17,11 @@ struct AppView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject var viewModel: AppViewModel
     @State private var router = Router()
+    @State private var isAwaitingCreateVoteDismissForPush = false
+    @State private var didResolveInitialAppDestination = false
+    @State private var hasReportedAppOpenOnLaunch = false
+    @State private var isReportingAppOpen = false
+    private let pushPendingStore = AppPushPendingStore.shared
     
     private var authNavigator: AuthNavigator {
         AppAuthNavigator(
@@ -94,6 +99,9 @@ struct AppView: View {
         }
         .task {
             await PushNotificationService.shared.requestAuthorizationIfNeeded()
+            await MainActor.run {
+                processPendingPushNavigationIfPossible()
+            }
         }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
@@ -102,15 +110,104 @@ struct AppView: View {
                 await PushNotificationService.shared.syncFCMTokenIfPossible(
                     userRepository: userRepository
                 )
+                await MainActor.run {
+                    processPendingPushNavigationIfPossible()
+                }
+            }
+        }
+        .onChange(of: viewModel.appDestination) { _, destination in
+            guard destination != .splash else { return }
+
+            if didResolveInitialAppDestination == false {
+                didResolveInitialAppDestination = true
+
+                if destination == .main {
+                    Task {
+                        let userRepository: UserRepository = container.resolve()
+                        await reportAppOpenIfNeeded(userRepository: userRepository)
+                    }
+                }
+            }
+
+            Task { @MainActor in
+                processPendingPushNavigationIfPossible()
+            }
+        }
+        .onChange(of: router.showCreateVote) { _, isPresented in
+            if isPresented == false {
+                isAwaitingCreateVoteDismissForPush = false
+                processPendingPushNavigationIfPossible()
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .authSessionDidExpire)) { _ in
             Task { @MainActor in
+                clearPendingPushNavigation()
                 router.popToRoot()
                 withAnimation(.easeInOut(duration: 0.3)) {
                     viewModel.appDestination = .login
                 }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .didTapRemotePushPayload)) { notification in
+            guard let userInfo = notification.userInfo else {
+                return
+            }
+            pushPendingStore.save(userInfo: userInfo)
+            processPendingPushNavigationIfPossible()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .cancelCreateVoteExternalNavigation)) { _ in
+            clearPendingPushNavigation()
+        }
+    }
+
+    @MainActor
+    private func processPendingPushNavigationIfPossible() {
+        guard let destination = pushPendingStore.pendingDestination else { return }
+        guard viewModel.appDestination == .main else { return }
+
+        if router.showCreateVote {
+            guard isAwaitingCreateVoteDismissForPush == false else { return }
+            isAwaitingCreateVoteDismissForPush = true
+            NotificationCenter.default.post(
+                name: .requestCreateVoteDismissForExternalNavigation,
+                object: nil,
+                userInfo: destination.userInfo
+            )
+            return
+        }
+
+        pushPendingStore.clear()
+        switch destination {
+        case .notification:
+            router.navigate(to: VoteDestination.notification)
+        case .feedDetail(let feedId):
+            router.navigate(to: VoteDestination.feedDetail(feedId: feedId))
+        }
+    }
+
+    @MainActor
+    private func clearPendingPushNavigation() {
+        pushPendingStore.clear()
+        isAwaitingCreateVoteDismissForPush = false
+    }
+
+    @MainActor
+    private func reportAppOpenIfNeeded(userRepository: UserRepository) async {
+        guard hasReportedAppOpenOnLaunch == false else { return }
+        guard isReportingAppOpen == false else { return }
+        guard userRepository.getCachedUser() != nil else { return }
+
+        isReportingAppOpen = true
+
+        do {
+            try await userRepository.postAppOpen()
+            hasReportedAppOpenOnLaunch = true
+            isReportingAppOpen = false
+        } catch {
+            isReportingAppOpen = false
+#if DEBUG
+            print("[AppView] postAppOpen error: \(error)")
+#endif
         }
     }
 }

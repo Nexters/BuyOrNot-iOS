@@ -12,6 +12,7 @@ import Core
 
 public final class HomeViewModel: ObservableObject {
     private let feedRepository: FeedRepository
+    private let notificationRepository: NotificationRepository
     private let userRepository: UserRepository
     private let reportFeedRepository: ReportFeedRepository
     private let analytics: AnalyticsTracking
@@ -28,6 +29,8 @@ public final class HomeViewModel: ObservableObject {
     @Published var myVoteState: MyVoteState = .loading
     @Published var myFeeds: [VoteFeedData] = []
     @Published var snackBar = BNSnackBarManager()
+    
+    @Published var notificationCount = 0
 
     private var cursor: Int?
     private var hasMorePages: Bool = true
@@ -36,12 +39,14 @@ public final class HomeViewModel: ObservableObject {
 
     public init(
         feedRepository: FeedRepository,
+        notificationRepository: NotificationRepository,
         userRepository: UserRepository,
         reportFeedRepository: ReportFeedRepository,
         analytics: AnalyticsTracking,
         argument: HomeViewModel.Argument
     ) {
         self.feedRepository = feedRepository
+        self.notificationRepository = notificationRepository
         self.userRepository = userRepository
         self.reportFeedRepository = reportFeedRepository
         self.analytics = analytics
@@ -90,6 +95,21 @@ public final class HomeViewModel: ObservableObject {
 
     var isAuthenticated: Bool {
         currentUserId != nil
+    }
+
+    @MainActor
+    func refreshNotificationCount() async {
+        guard isAuthenticated else {
+            notificationCount = 0
+            return
+        }
+        do {
+            notificationCount = try await notificationRepository.getNotificationUnreadCount()
+        } catch {
+#if DEBUG
+            print("[HomeViewModel] refreshNotificationCount error: \(error)")
+#endif
+        }
     }
 
     @MainActor
@@ -227,7 +247,7 @@ public final class HomeViewModel: ObservableObject {
             return
         }
         do {
-            let result = try await feedRepository.voteFeed(feedId: id, choice: choice)
+            let result = try await submitVote(feedId: id, choice: choice)
             applyVoteResult(result, selectedOptionId: optionId)
             analytics.track(
                 name: "vote_submitted",
@@ -348,10 +368,22 @@ public final class HomeViewModel: ObservableObject {
         }
     }
 
+    private func submitVote(feedId: Int, choice: VoteChoice) async throws -> VoteResult {
+#if DEBUG
+        if currentUserId == nil {
+            return try await feedRepository.voteGuestFeed(feedId: feedId, choice: choice)
+        }
+#endif
+        return try await feedRepository.voteFeed(feedId: feedId, choice: choice)
+    }
+
     private func applyVoteResult(_ result: VoteResult, selectedOptionId: Int) {
         let feedId = String(result.feedId)
 
         func update(_ item: VoteFeedData) -> VoteFeedData {
+            let adjustedCounts = result.optimisticCounts(
+                hadExistingVote: item.selectedVoteId != nil
+            )
             let selectedProfileImageURL = result.myProfileImage.isEmpty
                 ? item.userProfileImageURL
                 : result.myProfileImage
@@ -359,13 +391,13 @@ public final class HomeViewModel: ObservableObject {
                 .init(
                     id: 0,
                     text: "사! 가즈아!",
-                    voteCount: result.yesCount,
+                    voteCount: adjustedCounts.yes,
                     imageURL: selectedOptionId == 0 ? selectedProfileImageURL : nil
                 ),
                 .init(
                     id: 1,
                     text: "애매하긴 해..",
-                    voteCount: result.noCount,
+                    voteCount: adjustedCounts.no,
                     imageURL: selectedOptionId == 1 ? selectedProfileImageURL : nil
                 )
             ]

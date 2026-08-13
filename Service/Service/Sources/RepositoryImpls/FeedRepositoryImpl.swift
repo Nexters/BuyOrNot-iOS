@@ -79,6 +79,19 @@ public class FeedRepositoryImpl: FeedRepository {
         }
         return result
     }
+
+    public func voteGuestFeed(feedId: Int, choice: VoteChoice) async throws -> VoteResult {
+        let body = PostVoteRequest(choice: choice.apiValue)
+        let response: BaseResponse<VoteResultResponse> = try await request(
+            .postGuestVote(feedId: feedId, body: body)
+        )
+        guard let result = response.data.toDomain() else {
+            throw NetworkError.decodingFailed(
+                NSError(domain: "VoteResultResponse", code: -1)
+            )
+        }
+        return result
+    }
     
     public func reportVoteFeed(feedId: Int) async throws {
         try await request(.postFeedsReport(feedId))

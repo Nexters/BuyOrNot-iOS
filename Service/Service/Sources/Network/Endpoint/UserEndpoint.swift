@@ -8,6 +8,7 @@
 enum UserEndpoint: Endpoint {
     case getMe
     case deleteMe
+    case postAppOpen
     case patchFcmToken(UpdateFCMTokenRequest)
     case blockUser(Int)
     case getBlockedUsers
@@ -18,6 +19,8 @@ enum UserEndpoint: Endpoint {
         let path = switch self {
         case .getMe, .deleteMe:
             "/me"
+        case .postAppOpen:
+            "/app-open"
         case .patchFcmToken:
             "/fcm"
         case .blockUser(let userId), .unblockUser(let userId):
@@ -34,10 +37,10 @@ enum UserEndpoint: Endpoint {
                 .get
         case .deleteMe, .unblockUser:
                 .delete
+        case .postAppOpen, .blockUser:
+                .post
         case .patchFcmToken:
                 .patch
-        case .blockUser:
-                .post
         }
     }
     

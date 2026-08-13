@@ -10,9 +10,24 @@ import DesignSystem
 
 struct NavigationBar: View {
     let isGuest: Bool
+    let notificationCount: Int
     let onNotificationTap: () -> Void
     let onProfileTap: () -> Void
     let onLoginTap: () -> Void
+    
+    init(
+        isGuest: Bool,
+        notificationCount: Int = 0,
+        onNotificationTap: @escaping () -> Void,
+        onProfileTap: @escaping () -> Void,
+        onLoginTap: @escaping () -> Void
+    ) {
+        self.isGuest = isGuest
+        self.notificationCount = notificationCount
+        self.onNotificationTap = onNotificationTap
+        self.onProfileTap = onProfileTap
+        self.onLoginTap = onLoginTap
+    }
 
     var body: some View {
         HStack {
@@ -39,7 +54,7 @@ struct NavigationBar: View {
                 )
                 .cornerRadius(10)
             } else {
-                HStack(spacing: 24) {
+                HStack(spacing: 0) {
                     Button {
                         onNotificationTap()
                     } label: {
@@ -47,6 +62,13 @@ struct NavigationBar: View {
                             .resizable()
                             .frame(width: 20, height: 20)
                             .foregroundColor(ColorPalette.gray500)
+                            .padding(10)
+                    }
+                    .overlay(alignment: .bottomLeading) {
+                        if notificationCount > 0 {
+                            NotificationBadge(count: notificationCount)
+                                .offset(x: 18, y: -20)
+                        }
                     }
 
                     Button {
@@ -56,11 +78,13 @@ struct NavigationBar: View {
                             .resizable()
                             .frame(width: 20, height: 20)
                             .foregroundColor(ColorPalette.gray500)
+                            .padding(10)
                     }
                 }
             }
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 20)
+        .padding(.leading, 20)
+        .padding(.trailing, 10)
+        .padding(.vertical, 10)
     }
 }

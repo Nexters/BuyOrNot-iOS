@@ -43,6 +43,10 @@ public class UserRepositoryImpl: UserRepository {
         userStore.getUser()
     }
 
+    public func postAppOpen() async throws {
+        try await request(.postAppOpen)
+    }
+
     public func updateFCMToken(_ token: String) async throws {
         let body = UpdateFCMTokenRequest(fcmToken: token)
         try await request(.patchFcmToken(body))
