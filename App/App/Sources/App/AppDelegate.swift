@@ -16,6 +16,7 @@ import FirebaseRemoteConfig
 
 class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
     private let container = DIContainer()
+    private let pushPendingStore = AppPushPendingStore.shared
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         FirebaseApp.configure()
@@ -27,6 +28,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
         
         setupRemoteConfig()
         setupAnalytics()
+        cachePendingPushDestinationIfNeeded(from: launchOptions)
         
         return true
     }
@@ -77,6 +79,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         )
         print("push tap notification:", payload.notification)
         print("push tap data:", payload.data)
+        pushPendingStore.save(userInfo: payload.data)
         NotificationCenter.default.post(
             name: .didTapRemotePushPayload,
             object: nil,
@@ -100,6 +103,14 @@ extension AppDelegate {
 
 // MARK: - RemoteConfig
 extension AppDelegate {
+    private func cachePendingPushDestinationIfNeeded(from launchOptions: [UIApplication.LaunchOptionsKey : Any]?) {
+        guard let userInfo = launchOptions?[.remoteNotification] as? [AnyHashable: Any] else {
+            return
+        }
+        let payload = RemotePushPayload(userInfo: userInfo)
+        pushPendingStore.save(userInfo: payload.data)
+    }
+
     private func setupRemoteConfig() {
         let remoteConfig = RemoteConfig.remoteConfig()
         let settings = RemoteConfigSettings()

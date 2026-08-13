@@ -2,7 +2,7 @@
 //  NotificationBadge.swift
 //  DesignSystem
 //
-//  Created by Codex on 7/21/26.
+//  Created by 문종식 on 7/21/26.
 //
 
 import SwiftUI

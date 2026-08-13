@@ -2,7 +2,7 @@
 //  CameraPhotoPicker.swift
 //  Core
 //
-//  Created by Codex on 4/26/26.
+//  Created by 문종식 on 4/26/26.
 //
 
 import SwiftUI

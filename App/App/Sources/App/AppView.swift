@@ -17,11 +17,11 @@ struct AppView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject var viewModel: AppViewModel
     @State private var router = Router()
-    @State private var pendingPushDestination: AppPushDestination?
     @State private var isAwaitingCreateVoteDismissForPush = false
     @State private var didResolveInitialAppDestination = false
     @State private var hasReportedAppOpenOnLaunch = false
     @State private var isReportingAppOpen = false
+    private let pushPendingStore = AppPushPendingStore.shared
     
     private var authNavigator: AuthNavigator {
         AppAuthNavigator(
@@ -99,6 +99,9 @@ struct AppView: View {
         }
         .task {
             await PushNotificationService.shared.requestAuthorizationIfNeeded()
+            await MainActor.run {
+                processPendingPushNavigationIfPossible()
+            }
         }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
@@ -138,6 +141,7 @@ struct AppView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .authSessionDidExpire)) { _ in
             Task { @MainActor in
+                clearPendingPushNavigation()
                 router.popToRoot()
                 withAnimation(.easeInOut(duration: 0.3)) {
                     viewModel.appDestination = .login
@@ -145,22 +149,20 @@ struct AppView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .didTapRemotePushPayload)) { notification in
-            guard let userInfo = notification.userInfo,
-                  let destination = AppPushDestination(userInfo: userInfo) else {
+            guard let userInfo = notification.userInfo else {
                 return
             }
-            pendingPushDestination = destination
+            pushPendingStore.save(userInfo: userInfo)
             processPendingPushNavigationIfPossible()
         }
         .onReceive(NotificationCenter.default.publisher(for: .cancelCreateVoteExternalNavigation)) { _ in
-            pendingPushDestination = nil
-            isAwaitingCreateVoteDismissForPush = false
+            clearPendingPushNavigation()
         }
     }
 
     @MainActor
     private func processPendingPushNavigationIfPossible() {
-        guard let destination = pendingPushDestination else { return }
+        guard let destination = pushPendingStore.pendingDestination else { return }
         guard viewModel.appDestination == .main else { return }
 
         if router.showCreateVote {
@@ -174,13 +176,19 @@ struct AppView: View {
             return
         }
 
-        pendingPushDestination = nil
+        pushPendingStore.clear()
         switch destination {
         case .notification:
             router.navigate(to: VoteDestination.notification)
         case .feedDetail(let feedId):
             router.navigate(to: VoteDestination.feedDetail(feedId: feedId))
         }
+    }
+
+    @MainActor
+    private func clearPendingPushNavigation() {
+        pushPendingStore.clear()
+        isAwaitingCreateVoteDismissForPush = false
     }
 
     @MainActor

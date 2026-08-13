@@ -2,7 +2,7 @@
 //  AppPushDestination.swift
 //  App
 //
-//  Created by Codex on 7/31/26.
+//  Created by 문종식 on 7/31/26.
 //
 
 import Foundation

@@ -2,9 +2,8 @@
 //  ImageEditState.swift
 //  Vote
 //
-//  Created by Codex on 6/18/26.
+//  Created by 문종식 on 6/18/26.
 //
-
 import SwiftUI
 
 struct ImageEditState: Equatable {

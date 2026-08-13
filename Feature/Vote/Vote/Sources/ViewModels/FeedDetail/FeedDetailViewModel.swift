@@ -120,6 +120,9 @@ public final class FeedDetailViewModel: ObservableObject {
 
     private func applyVoteResult(_ result: VoteResult, selectedOptionId: Int) {
         guard let item = feed else { return }
+        let adjustedCounts = result.optimisticCounts(
+            hadExistingVote: item.selectedVoteId != nil
+        )
         let selectedProfileImageURL = result.myProfileImage.isEmpty
             ? item.userProfileImageURL
             : result.myProfileImage
@@ -127,13 +130,13 @@ public final class FeedDetailViewModel: ObservableObject {
             .init(
                 id: 0,
                 text: "사! 가즈아!",
-                voteCount: result.yesCount,
+                voteCount: adjustedCounts.yes,
                 imageURL: selectedOptionId == 0 ? selectedProfileImageURL : nil
             ),
             .init(
                 id: 1,
                 text: "애매하긴 해..",
-                voteCount: result.noCount,
+                voteCount: adjustedCounts.no,
                 imageURL: selectedOptionId == 1 ? selectedProfileImageURL : nil
             )
         ]
