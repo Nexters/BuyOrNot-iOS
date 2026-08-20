@@ -89,6 +89,11 @@ private func getAppInfoPlistValues() -> [String: Plist.Value] {
                     .string("$REVERSED_CLIENT_ID"),
                 ]),
             ]),
+            .dictionary([
+                "CFBundleURLSchemes": .array([
+                    .string("buy-or-not"),
+                ]),
+            ]),
         ]),
     ]
     
