@@ -48,7 +48,10 @@ public struct CreateVoteView: View {
                     }
                     .padding(.horizontal, 20)
                 }
-                .onTapGesture { focusState = nil }
+                .onTapGesture {
+                    focusState = nil
+                    dismissKeyboard()
+                }
                 VStack(spacing: 10) {
                     Spacer()
                     if viewModel.snackBar.barState == .active {
@@ -59,9 +62,9 @@ public struct CreateVoteView: View {
                     }
                     HStack(spacing: 6) {
                         // 260515 임시 비활성
-//                        if viewModel.isKeyboardVisible {
-//                            subAddPhoto
-//                        }
+                        //                        if viewModel.isKeyboardVisible {
+                        //                            subAddPhoto
+                        //                        }
                         Spacer()
                         if viewModel.createButtonState == .enabled && !viewModel.isKeyboardVisible {
                             VotePostTooltip()
@@ -97,6 +100,7 @@ public struct CreateVoteView: View {
         .onChange(of: viewModel.showRestorePendingAlert) { _, isPresented in
             if isPresented {
                 focusState = nil
+                dismissKeyboard()
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
@@ -109,7 +113,7 @@ public struct CreateVoteView: View {
             guard let userInfo = notification.userInfo else {
                 return
             }
-
+            
             pendingExternalNavigationUserInfo = userInfo
             if viewModel.isWritingInProgress {
                 viewModel.didTapCancel()
@@ -379,32 +383,20 @@ public struct CreateVoteView: View {
     @ViewBuilder
     private var contents: some View {
         VStack(spacing: 0) {
-            TextField(
-                "",
-                text: $viewModel.contents,
-                axis: .vertical
-            )
-            .font(.p2m)
-            .foregroundStyle(ColorPalette.gray950)
-            .tint(ColorPalette.gray950)
-            .focused($focusState, equals: .contents)
-            .lineLimit(nil)
-            .scrollContentBackground(.hidden)
-            .frame(height: 84, alignment: .topLeading)
-            .onChange(of: viewModel.contents) { oldValue, newValue in
-                viewModel.didChangeContents(text: newValue)
-            }
-            .overlay {
+            ZStack(alignment: .topLeading) {
                 if viewModel.contents.isEmpty {
-                    VStack {
-                        HStack {
-                            BNText("고민 이유를 자세히 적을수록 더 정확한 투표 결과를 얻을 수 있어요!")
-                                .style(style: .p2m, color: ColorPalette.gray600)
-                            Spacer()
-                        }
-                        Spacer()
-                    }
+                    BNText("고민 이유를 자세히 적을수록 더 정확한 투표 결과를 얻을 수 있어요!")
+                        .style(style: .p2m, color: ColorPalette.gray600)
+                        .allowsHitTesting(false)
                 }
+
+                ZeroInsetTextView(
+                    text: $viewModel.contents
+                )
+                    .frame(height: 84)
+                    .onChange(of: viewModel.contents) { oldValue, newValue in
+                        viewModel.didChangeContents(text: newValue)
+                    }
             }
             .frame(height: 84)
             HStack {
@@ -416,9 +408,6 @@ public struct CreateVoteView: View {
         }
         .padding(.top, 12)
         .background(.white)
-        .onTapGesture {
-            focusState = .contents
-        }
     }
     
     @ViewBuilder
@@ -426,6 +415,7 @@ public struct CreateVoteView: View {
         HStack(spacing: 8) {
             Button {
                 focusState = nil
+                dismissKeyboard()
                 viewModel.didTapAddPhotoButton()
             } label: {
                 VStack(spacing: 2) {
@@ -475,6 +465,7 @@ public struct CreateVoteView: View {
                     }
                     .onTapGesture {
                         focusState = nil
+                        dismissKeyboard()
                         photoEditDraft = PhotoEditDraft(
                             index: index,
                             sourceData: photo.sourceData,
@@ -490,6 +481,7 @@ public struct CreateVoteView: View {
     private var subAddPhoto: some View {
         Button {
             focusState = nil
+            dismissKeyboard()
             viewModel.didTapAddPhotoButton()
         } label: {
             HStack(spacing: 4) {
@@ -500,6 +492,58 @@ public struct CreateVoteView: View {
             }
         }
         .disabled(viewModel.isPhotoPickerEnabled == false)
+    }
+
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(
+            #selector(UIResponder.resignFirstResponder),
+            to: nil,
+            from: nil,
+            for: nil
+        )
+    }
+}
+
+private struct ZeroInsetTextView: UIViewRepresentable {
+    @Binding var text: String
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(text: $text)
+    }
+
+    func makeUIView(context: Context) -> UITextView {
+        let textView = UITextView()
+        textView.delegate = context.coordinator
+        textView.backgroundColor = .clear
+        textView.textContainerInset = .zero
+        textView.textContainer.lineFragmentPadding = 0
+        textView.contentInset = .zero
+        textView.font = BNFont.uiFont(.p2m)
+        textView.textColor = UIColor(ColorPalette.gray950)
+        textView.tintColor = UIColor(ColorPalette.gray950)
+        textView.isScrollEnabled = true
+        textView.showsVerticalScrollIndicator = false
+        textView.showsHorizontalScrollIndicator = false
+        textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        return textView
+    }
+
+    func updateUIView(_ uiView: UITextView, context: Context) {
+        if uiView.text != text {
+            uiView.text = text
+        }
+    }
+
+    final class Coordinator: NSObject, UITextViewDelegate {
+        @Binding private var text: String
+
+        init(text: Binding<String>) {
+            _text = text
+        }
+
+        func textViewDidChange(_ textView: UITextView) {
+            text = textView.text
+        }
     }
 }
 
@@ -517,7 +561,7 @@ private struct AlbumCropFlowView: View {
     let onDone: (ImageEditResult, Data) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var cropDraft: CropDraft?
-
+    
     var body: some View {
         SinglePhotoPicker(
             dismissOnPick: false,
@@ -563,7 +607,7 @@ private struct CameraCropFlowView: View {
     let onDone: (ImageEditResult, Data) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var cropDraft: CropDraft?
-
+    
     var body: some View {
         CameraPhotoPicker(
             onPicked: { _, data in
