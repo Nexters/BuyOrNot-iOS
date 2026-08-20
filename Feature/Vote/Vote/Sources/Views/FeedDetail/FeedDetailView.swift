@@ -16,12 +16,12 @@ public struct FeedDetailView: View {
     }
 
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var viewModel: FeedDetailViewModel
+    @StateObject var viewModel: FeedDetailViewModel
     let feedId: Int
     @State private var imageViewerDestination: ImageViewerDestination?
 
     public init(viewModel: FeedDetailViewModel, feedId: Int) {
-        self.viewModel = viewModel
+        _viewModel = StateObject(wrappedValue: viewModel)
         self.feedId = feedId
     }
 
