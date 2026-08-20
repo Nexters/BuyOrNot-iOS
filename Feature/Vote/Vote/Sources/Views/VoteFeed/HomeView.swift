@@ -170,9 +170,13 @@ public struct HomeView: View {
             stopFeedSessionIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .voteFeedDidCreate)) { _ in
+            let shouldRefreshMyFeedsDirectly = selectedTab == .myVotes
+            focusMyVotesTab()
             Task {
                 await viewModel.fetchFeeds()
-                await viewModel.fetchMyFeeds()
+                if shouldRefreshMyFeedsDirectly {
+                    await viewModel.fetchMyFeeds()
+                }
             }
         }
         .onChange(of: viewModel.selectedFilter) { _, _ in
@@ -403,6 +407,14 @@ public struct HomeView: View {
         guard visibleIndices.isEmpty == false else { return }
         currentTopVisibleIndex = visibleIndices.min() ?? currentTopVisibleIndex
         currentLastVisibleIndex = visibleIndices.max() ?? currentLastVisibleIndex
+    }
+
+    private func focusMyVotesTab() {
+        withAnimation {
+            selectedTab = .myVotes
+            showNavigationBar = true
+            showCategoryFilter = true
+        }
     }
 
     // 피드 체류 세션이 비활성 상태일 때만 조회 추적을 시작합니다.
