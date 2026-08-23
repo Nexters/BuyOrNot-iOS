@@ -153,26 +153,26 @@ public struct HomeView: View {
         }
         .onAppear {
             startFeedSessionIfNeeded()
-            Task {
-                await viewModel.refreshNotificationCount()
-            }
+            refreshNotificationCount()
         }
         .onDisappear {
             stopFeedSessionIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             startFeedSessionIfNeeded()
-            Task {
-                await viewModel.refreshNotificationCount()
-            }
+            refreshNotificationCount()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
             stopFeedSessionIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: .voteFeedDidCreate)) { _ in
+            let shouldRefreshMyFeedsDirectly = selectedTab == .myVotes
+            focusMyVotesTab()
             Task {
                 await viewModel.fetchFeeds()
-                await viewModel.fetchMyFeeds()
+                if shouldRefreshMyFeedsDirectly {
+                    await viewModel.fetchMyFeeds()
+                }
             }
         }
         .onChange(of: viewModel.selectedFilter) { _, _ in
@@ -201,6 +201,12 @@ public struct HomeView: View {
                 imageURLs: destination.imageURLs,
                 initialIndex: destination.initialIndex
             )
+        }
+    }
+
+    private func refreshNotificationCount() {
+        Task {
+            await viewModel.refreshNotificationCount()
         }
     }
 
@@ -403,6 +409,14 @@ public struct HomeView: View {
         guard visibleIndices.isEmpty == false else { return }
         currentTopVisibleIndex = visibleIndices.min() ?? currentTopVisibleIndex
         currentLastVisibleIndex = visibleIndices.max() ?? currentLastVisibleIndex
+    }
+
+    private func focusMyVotesTab() {
+        withAnimation {
+            selectedTab = .myVotes
+            showNavigationBar = true
+            showCategoryFilter = true
+        }
     }
 
     // 피드 체류 세션이 비활성 상태일 때만 조회 추적을 시작합니다.

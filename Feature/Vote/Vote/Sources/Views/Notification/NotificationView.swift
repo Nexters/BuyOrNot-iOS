@@ -57,8 +57,8 @@ public struct NotificationView: View {
                     case .success:
                         NotificationListContent(
                             notifications: viewModel.notifications,
-                            onTap: { feedId in
-                                viewModel.didTapNotification(feedId: feedId)
+                            onTap: { item in
+                                viewModel.didTapNotification(item)
                             }
                         )
                             .padding(.top, 10)
@@ -148,12 +148,12 @@ private struct NotificationPermissionBanner: View {
 
 private struct NotificationListContent: View {
     let notifications: [NotificationItemData]
-    let onTap: (Int) -> Void
+    let onTap: (NotificationItemData) -> Void
 
     var body: some View {
         LazyVStack(spacing: 0) {
             ForEach(notifications) { item in
-                NotificationCell(item: item, onTap: { onTap(item.feedId) })
+                NotificationCell(item: item, onTap: { onTap(item) })
             }
 
             BNText("30일 전 알림까지 보여줘요")

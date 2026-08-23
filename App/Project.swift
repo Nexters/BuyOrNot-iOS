@@ -8,7 +8,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let version = "0.2.0"
+let version = "0.2.1"
 let build = 0
 
 let project = Module.app.project(
@@ -24,7 +24,6 @@ let project = Module.app.project(
         .external(name: "FirebaseRemoteConfig"),
     ],
     infoPlist: .extendingDefault(
-        
         with: getAppInfoPlistValues()
     ),
     entitlements: "App/App.entitlements",
@@ -87,6 +86,11 @@ private func getAppInfoPlistValues() -> [String: Plist.Value] {
             .dictionary([
                 "CFBundleURLSchemes": .array([
                     .string("$REVERSED_CLIENT_ID"),
+                ]),
+            ]),
+            .dictionary([
+                "CFBundleURLSchemes": .array([
+                    .string("buy-or-not"),
                 ]),
             ]),
         ]),

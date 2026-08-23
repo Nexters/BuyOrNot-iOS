@@ -14,7 +14,7 @@ public struct NotificationItemData: Identifiable {
     public let status: String
     public let message: String
     public let timeAgo: String
-    public let isRead: Bool
+    public var isRead: Bool
     public let feedId: Int
 }
 
@@ -40,8 +40,21 @@ public final class NotificationViewModel: ObservableObject {
         self.selectedFilter = Self.cachedFilter
     }
 
-    func didTapNotification(feedId: Int) {
-        navigator.navigateToFeedDetail(feedId: feedId)
+    func didTapNotification(_ item: NotificationItemData) {
+        if item.isRead == false {
+            markNotificationAsRead(id: item.id)
+            Task {
+                do {
+                    try await notificationRepository.patchNotificationRead(id: item.id)
+                } catch {
+#if DEBUG
+                    print("[NotificationViewModel] patchNotificationRead error: \(error)")
+#endif
+                }
+            }
+        }
+
+        navigator.navigateToFeedDetail(feedId: item.feedId)
     }
 
     func onAppear() {
@@ -93,6 +106,17 @@ public final class NotificationViewModel: ObservableObject {
         case .myVotes: return "MY_FEED_CLOSED"
         case .participated: return "PARTICIPATED_FEED_CLOSED"
         }
+    }
+
+    private func markNotificationAsRead(id: String) {
+        notifications = notifications.map { item in
+            var item = item
+            if item.id == id {
+                item.isRead = true
+            }
+            return item
+        }
+        Self.cachedNotifications = notifications
     }
 
     private func toItemData(_ notification: AppNotification) -> NotificationItemData {

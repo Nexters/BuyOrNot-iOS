@@ -35,7 +35,7 @@ public struct NotificationBadge: View {
     }
 
     private var displayCount: String {
-        count > 99 ? "+99" : "\(count)"
+        count > 99 ? "99+" : "\(count)"
     }
 }
 
