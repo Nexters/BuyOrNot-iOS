@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let version = "0.2.1"
-let build = 0
+let build = 1
 
 let project = Module.app.project(
     dependencies: [
