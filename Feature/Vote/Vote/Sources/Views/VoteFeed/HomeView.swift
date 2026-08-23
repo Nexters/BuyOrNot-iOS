@@ -153,18 +153,14 @@ public struct HomeView: View {
         }
         .onAppear {
             startFeedSessionIfNeeded()
-            Task {
-                await viewModel.refreshNotificationCount()
-            }
+            refreshNotificationCount()
         }
         .onDisappear {
             stopFeedSessionIfNeeded()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             startFeedSessionIfNeeded()
-            Task {
-                await viewModel.refreshNotificationCount()
-            }
+            refreshNotificationCount()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
             stopFeedSessionIfNeeded()
@@ -205,6 +201,12 @@ public struct HomeView: View {
                 imageURLs: destination.imageURLs,
                 initialIndex: destination.initialIndex
             )
+        }
+    }
+
+    private func refreshNotificationCount() {
+        Task {
+            await viewModel.refreshNotificationCount()
         }
     }
 

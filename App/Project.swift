@@ -24,7 +24,6 @@ let project = Module.app.project(
         .external(name: "FirebaseRemoteConfig"),
     ],
     infoPlist: .extendingDefault(
-        
         with: getAppInfoPlistValues()
     ),
     entitlements: "App/App.entitlements",
