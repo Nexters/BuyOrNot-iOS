@@ -155,6 +155,12 @@ struct AppView: View {
             pushPendingStore.save(userInfo: userInfo)
             processPendingPushNavigationIfPossible()
         }
+        .onOpenURL { url in
+            guard pushPendingStore.save(url: url) else {
+                return
+            }
+            processPendingPushNavigationIfPossible()
+        }
         .onReceive(NotificationCenter.default.publisher(for: .cancelCreateVoteExternalNavigation)) { _ in
             clearPendingPushNavigation()
         }

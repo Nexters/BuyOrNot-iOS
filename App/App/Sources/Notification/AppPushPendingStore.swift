@@ -18,6 +18,15 @@ final class AppPushPendingStore {
         pendingDestination = AppPushDestination(userInfo: userInfo)
     }
 
+    @discardableResult
+    func save(url: URL) -> Bool {
+        guard let destination = AppPushDestination(url: url) else {
+            return false
+        }
+        pendingDestination = destination
+        return true
+    }
+
     func clear() {
         pendingDestination = nil
     }
