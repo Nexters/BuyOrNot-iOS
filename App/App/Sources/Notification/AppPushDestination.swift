@@ -13,11 +13,9 @@ enum AppPushDestination {
 
     init?(url: URL) {
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              components.scheme?.lowercased() == "buy-or-not",
-              components.host?.lowercased() == "feed",
               components.query == nil,
               components.fragment == nil,
-              let feedId = Self.feedId(from: components.path) else {
+              let feedId = Self.feedId(from: components) else {
             return nil
         }
         self = .feedDetail(feedId: feedId)
@@ -64,5 +62,20 @@ enum AppPushDestination {
             return nil
         }
         return feedId
+    }
+
+    private static func feedId(from components: URLComponents) -> Int? {
+        let scheme = components.scheme?.lowercased()
+        let host = components.host?.lowercased()
+
+        switch (scheme, host) {
+        case ("buy-or-not", "feed"):
+            return feedId(from: components.path)
+        case ("https", "buy-or-not.com"):
+            guard components.path.hasPrefix("/feed/") else { return nil }
+            return feedId(from: String(components.path.dropFirst("/feed".count)))
+        default:
+            return nil
+        }
     }
 }

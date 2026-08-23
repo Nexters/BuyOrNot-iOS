@@ -10,7 +10,8 @@
 	</array>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applink:*.buy-or-not.com</string>
+		<string>applinks:buy-or-not.com</string>
+		<string>applinks:*.buy-or-not.com</string>
 	</array>
 </dict>
 </plist>
